@@ -47,7 +47,7 @@ export default function Navigation() {
           
           <div className="hidden md:block">
             {isSignedIn ? (
-              <UserButton afterSignOutUrl="/" />
+              <UserButton />
             ) : (
               <SignInButton mode="modal">
                 <button className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-full font-medium transition-all shadow-md hover:shadow-lg">
@@ -78,7 +78,7 @@ export default function Navigation() {
             {isSignedIn ? (
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium text-gray-500">Account</span>
-                <UserButton afterSignOutUrl="/" />
+                <UserButton />
               </div>
             ) : (
               <SignInButton mode="modal">
