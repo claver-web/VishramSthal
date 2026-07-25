@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoomType {
+  STANDARD
+  DELUXE
+  SUITE
+  PREMIUM
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  clerkId       String    @unique
+  email         String    @unique
+  name          String?
+  phone         String?
+  createdAt     DateTime  @default(now())
+  bookings      Booking[]
+}
+
+model Room {
+  id            String        @id @default(cuid())
+  number        String        @unique
+  type          RoomType      @default(STANDARD)
+  price         Float
+  capacity      Int           @default(2)
+  description   String?
+  amenities     String[]
+  images        String[]
+  isAvailable   Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  bookings      Booking[]
+}
+
+model Booking {
+  id            String        @id @default(cuid())
+  userId        String
+  roomId        String
+  checkIn       DateTime
+  checkOut      DateTime
+  guests        Int           @default(1)
+  totalPrice    Float
+  status        BookingStatus @default(PENDING)
+  razorpayOrderId String?
+  razorpayPaymentId String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  user          User          @relation(fields: [userId], references: [id])
+  room          Room          @relation(fields: [roomId], references: [id])
+}
+
+model Admin {
+  id            String    @id @default(cuid())
+  username      String    @unique
+  password      String
+  token         String?
+  createdAt     DateTime  @default(now())
+}
