@@ -64,7 +64,8 @@ export default function RoomFilterPanel({ onMobileClose }: FilterProps) {
   };
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams);
+    const currentParams = searchParams.toString();
+    const params = new URLSearchParams(currentParams);
     if (debouncedSearch) params.set('q', debouncedSearch);
     else params.delete('q');
 
@@ -92,7 +93,10 @@ export default function RoomFilterPanel({ onMobileClose }: FilterProps) {
     if (sortOption && sortOption !== 'recommended') params.set('sort', sortOption);
     else params.delete('sort');
 
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    const newQueryString = params.toString();
+    if (currentParams !== newQueryString) {
+      router.replace(`${pathname}?${newQueryString}`, { scroll: false });
+    }
   }, [debouncedSearch, selectedTypes, minPrice, maxPrice, selectedAmenities, selectedCapacity, availableOnly, selectedView, sortOption, pathname, router, searchParams]);
 
   const toggleType = (id: string) => setSelectedTypes(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
@@ -104,7 +108,7 @@ export default function RoomFilterPanel({ onMobileClose }: FilterProps) {
       <div className="h-8 bg-gradient-to-r from-orange-400 to-orange-600 w-full relative" style={{ borderRadius: '1rem 1rem 0 0', clipPath: 'polygon(0 0, 5% 100%, 15% 0, 25% 100%, 35% 0, 50% 100%, 65% 0, 75% 100%, 85% 0, 95% 100%, 100% 0, 100% 100%, 0 100%)', transform: 'rotate(180deg)', top: '-1px' }}></div>
       <div className="h-4 bg-orange-600/10 w-full absolute top-0 left-0"></div>
 
-      <div className="p-5 flex-grow overflow-y-auto mt-2">
+      <div className="p-5 flex-grow mt-2">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <FilterIcon className="w-5 h-5 text-orange-500" />
@@ -254,6 +258,15 @@ export default function RoomFilterPanel({ onMobileClose }: FilterProps) {
           </label>
         </div>
       </div>
+
+      {/* Mobile Apply Button */}
+      {onMobileClose && (
+        <div className="p-4 border-t border-orange-500/20 bg-white dark:bg-gray-900 lg:hidden">
+          <button onClick={onMobileClose} className="w-full bg-orange-500 text-white font-bold py-3 rounded-xl hover:bg-orange-600 transition-all shadow-[0_0_15px_rgba(249,115,22,0.4)] active:scale-95">
+            Show Filtered Rooms
+          </button>
+        </div>
+      )}
     </div>
   );
 }
