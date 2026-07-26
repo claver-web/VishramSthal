@@ -155,18 +155,7 @@ function RoomsContent() {
 
 export default function RoomsPage() {
   return (
-    <div className="min-h-screen pt-32 pb-20 bg-[#F9F7F1] dark:bg-gray-900 transition-colors">
-      <div className="container mx-auto px-4 mb-12">
-        <Reveal>
-          <h1 className="text-4xl md:text-6xl font-extrabold text-center text-gray-900 dark:text-white tracking-tight mb-4">
-            Discover Your <span className="text-orange-500">Sanctuary</span>
-          </h1>
-          <p className="text-center text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
-            Find the perfect resting place for your spiritual journey in our thoughtfully designed rooms.
-          </p>
-        </Reveal>
-      </div>
-      
+    <div className="min-h-screen pt-24 pb-20 bg-[#F9F7F1] dark:bg-gray-900 transition-colors">
       <Suspense fallback={<div className="container mx-auto px-4 text-center py-20">Loading...</div>}>
         <RoomsContent />
       </Suspense>
