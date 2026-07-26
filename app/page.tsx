@@ -106,31 +106,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 2. DIVINE AMBIANCE SECTION */}
-      <section id="divine-ambiance" className="py-24 relative overflow-hidden bg-[var(--background)]">
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid md:grid-cols-3 gap-10">
-            {[
-              { title: 'Peaceful Environment', desc: 'Immerse yourself in a serene atmosphere inspired by the eternal groves of Vrindavan, where every breeze whispers divine love.', icon: '🌿' },
-              { title: 'Divine Architecture', desc: 'Experience the perfect harmony of modern luxury infused with traditional temple aesthetics, featuring intricate arches and sacred geometry.', icon: '🏛️' },
-              { title: 'Spiritual Experience', desc: 'Awaken your soul with morning aartis, meditation spaces, and the gentle chiming of temple bells creating a holistic retreat.', icon: '🪔' }
-            ].map((feature, i) => (
-              <Reveal key={i} delay={i * 200}>
-                <div className="bg-[var(--card-bg)] backdrop-blur-md p-10 rounded-2xl shadow-xl hover:-translate-y-4 transition-all duration-500 border-t-4 border-[var(--color-gold)] relative group overflow-hidden h-full flex flex-col items-center text-center">
-                  {/* Watermark */}
-                  <div className="absolute -bottom-10 -right-10 text-9xl opacity-5 group-hover:opacity-10 group-hover:rotate-12 transition-all transform origin-center font-sanskrit text-[var(--color-saffron)]">ॐ</div>
-                  
-                  <div className="text-6xl mb-6 bg-[var(--color-cream)] dark:bg-gray-800 p-4 rounded-full shadow-inner text-[var(--color-saffron)]">{feature.icon}</div>
-                  <h3 className="text-3xl font-serif mb-4 text-[var(--color-maroon)] dark:text-[var(--color-gold)]">{feature.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed font-sans">{feature.desc}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 3. PREMIUM ROOMS SHOWCASE SECTION */}
+      {/* 2. PREMIUM ROOMS SHOWCASE SECTION */}
       <section className="py-24 bg-[var(--color-cream)] dark:bg-[var(--color-midnight)] border-y border-[var(--border-color)]">
         <div className="container mx-auto px-4">
           <Reveal>
@@ -189,6 +165,38 @@ export default async function Home() {
                 </Reveal>
               );
             })}
+          </div>
+
+          <Reveal delay={400}>
+            <div className="mt-16 text-center">
+              <Link href="/rooms" className="inline-block px-10 py-4 bg-[var(--color-saffron)] text-white rounded-full font-bold text-lg hover:bg-[var(--color-gold)] hover:text-[var(--color-maroon)] transition-all shadow-lg hover:-translate-y-1">
+                Explore All Rooms
+              </Link>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 3. DIVINE AMBIANCE SECTION */}
+      <section id="divine-ambiance" className="py-24 relative overflow-hidden bg-[var(--background)]">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid md:grid-cols-3 gap-10">
+            {[
+              { title: 'Peaceful Environment', desc: 'Immerse yourself in a serene atmosphere inspired by the eternal groves of Vrindavan, where every breeze whispers divine love.', icon: '🌿' },
+              { title: 'Divine Architecture', desc: 'Experience the perfect harmony of modern luxury infused with traditional temple aesthetics, featuring intricate arches and sacred geometry.', icon: '🏛️' },
+              { title: 'Spiritual Experience', desc: 'Awaken your soul with morning aartis, meditation spaces, and the gentle chiming of temple bells creating a holistic retreat.', icon: '🪔' }
+            ].map((feature, i) => (
+              <Reveal key={i} delay={i * 200}>
+                <div className="bg-[var(--card-bg)] backdrop-blur-md p-10 rounded-2xl shadow-xl hover:-translate-y-4 transition-all duration-500 border-t-4 border-[var(--color-gold)] relative group overflow-hidden h-full flex flex-col items-center text-center">
+                  {/* Watermark */}
+                  <div className="absolute -bottom-10 -right-10 text-9xl opacity-5 group-hover:opacity-10 group-hover:rotate-12 transition-all transform origin-center font-sanskrit text-[var(--color-saffron)]">ॐ</div>
+                  
+                  <div className="text-6xl mb-6 bg-[var(--color-cream)] dark:bg-gray-800 p-4 rounded-full shadow-inner text-[var(--color-saffron)]">{feature.icon}</div>
+                  <h3 className="text-3xl font-serif mb-4 text-[var(--color-maroon)] dark:text-[var(--color-gold)]">{feature.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed font-sans">{feature.desc}</p>
+                </div>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
