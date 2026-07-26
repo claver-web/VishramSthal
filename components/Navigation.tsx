@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { UserButton, SignInButton, useUser } from '@clerk/nextjs';
 import { useStore } from '@/store/useStore';
 
@@ -22,8 +23,8 @@ export default function Navigation() {
     <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-md py-3' : 'bg-transparent py-5'}`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold text-lg group-hover:scale-105 transition-transform shadow-lg">
-            VS
+          <div className="w-12 h-12 relative group-hover:scale-105 transition-transform">
+            <Image src="/logoKrishna.png" alt="Vishram Sthal Logo" fill className="object-contain" priority />
           </div>
           <span className="font-bold text-xl tracking-tight hidden sm:block text-gray-900 dark:text-white">Vishram Sthal</span>
         </Link>
