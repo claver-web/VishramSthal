@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display, Cormorant_Garamond, Noto_Serif_Devanagari, Tangerine } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Navigation from "@/components/Navigation";
@@ -7,7 +7,11 @@ import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 import ThemeProvider from "@/components/ThemeProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
+const cormorant = Cormorant_Garamond({ weight: ["400", "600"], subsets: ["latin"], variable: "--font-cormorant" });
+const notoDevanagari = Noto_Serif_Devanagari({ weight: ["400", "700"], subsets: ["devanagari"], variable: "--font-noto-devanagari" });
+const tangerine = Tangerine({ weight: ["400", "700"], subsets: ["latin"], variable: "--font-tangerine" });
 
 export const metadata: Metadata = {
   title: "Vishram Sthal | Luxury Hotel in Word No. 6 Dehra Gopipur",
@@ -55,7 +59,7 @@ export default function RootLayout({
         <head>
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         </head>
-        <body className={`${inter.className} bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col`}>
+        <body className={`${inter.variable} ${playfair.variable} ${cormorant.variable} ${notoDevanagari.variable} ${tangerine.variable} font-sans bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col`}>
           <ThemeProvider />
           <Navigation />
           <main className="flex-grow pt-20">
