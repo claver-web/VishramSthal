@@ -24,7 +24,7 @@ export default function Navigation() {
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2 group">
           <div className="w-12 h-12 relative group-hover:scale-105 transition-transform">
-            <Image src="/logoKrishna.png" alt="Vishram Sthal Logo" fill className="object-contain" priority />
+            <Image src="/logoKrishna.png" alt="Vishram Sthal Logo" fill sizes="48px" className="object-contain" priority />
           </div>
           <span className="font-bold text-xl tracking-tight hidden sm:block text-gray-900 dark:text-white">Vishram Sthal</span>
         </Link>

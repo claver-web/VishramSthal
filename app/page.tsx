@@ -255,7 +255,7 @@ export default async function Home() {
                   <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[var(--color-saffron)]"></div>
                   
                   <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full border-4 border-[var(--color-gold)] bg-gray-200 overflow-hidden shadow-lg">
-                    <Image src={`https://i.pravatar.cc/150?u=${i}`} alt="Guest" fill className="object-cover" />
+                    <Image src={`https://i.pravatar.cc/150?u=${i}`} alt="Guest" fill sizes="80px" className="object-cover" />
                   </div>
                   
                   <div className="mt-8 mb-4 text-[var(--color-saffron)] flex justify-center gap-1">
