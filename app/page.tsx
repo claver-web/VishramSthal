@@ -242,7 +242,7 @@ export default async function Home() {
 
       {/* 5. GUEST TESTIMONIALS SECTION */}
       <section className="py-24 bg-[var(--color-cream)] dark:bg-[#151525] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1604017011826-d3b4c23f8914?q=80&w=2000')] opacity-5 bg-cover bg-center mix-blend-multiply dark:mix-blend-screen" />
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1582292866953-2708b73059da?q=80&w=2000')] opacity-10 bg-cover bg-center mix-blend-multiply dark:mix-blend-screen" />
         <div className="container mx-auto px-4 relative z-10 text-center">
           <Reveal>
             <h2 className="text-5xl font-serif text-[var(--color-maroon)] dark:text-[var(--color-gold)] mb-16">Blessings from Our Guests</h2>
