@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useUser, SignInButton } from '@clerk/nextjs';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Reveal from '@/components/Reveal';
+import RoomFilterPanel from '@/components/rooms/RoomFilterPanel';
+import RoomCard from '@/components/rooms/RoomCard';
+import { FilterIcon, GridIcon, ListIcon, XIcon } from '@/components/rooms/Icons';
 
 type Room = {
   id: string;
@@ -16,23 +18,25 @@ type Room = {
   isAvailable: boolean;
 };
 
-export default function RoomsPage() {
-  const { isSignedIn, isLoaded } = useUser();
+function RoomsContent() {
+  const searchParams = useSearchParams();
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [filter, setFilter] = useState('ALL');
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+
+  const queryString = searchParams.toString();
 
   useEffect(() => {
-    // We will build this API route in the next step, for now fetch/mock it
     const fetchRooms = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/rooms?type=${filter}`);
+        const res = await fetch(`/api/rooms${queryString ? `?${queryString}` : ''}`);
         if (res.ok) {
           const data = await res.json();
           setRooms(data);
         } else {
-          setRooms([]); // Fallback empty if api doesn't exist yet
+          setRooms([]);
         }
       } catch (err) {
         setRooms([]);
@@ -40,100 +44,132 @@ export default function RoomsPage() {
       setLoading(false);
     };
     fetchRooms();
-  }, [filter]);
+  }, [queryString]);
 
-  const filters = ['ALL', 'STANDARD', 'DELUXE', 'SUITE', 'PREMIUM'];
+  // Active filters for tags
+  const activeFilters: { key: string, label: string }[] = [];
+  searchParams.forEach((value, key) => {
+    if (key === 'q' && value) activeFilters.push({ key, label: `Search: ${value}` });
+    if (key === 'type' && value) value.split(',').forEach(v => activeFilters.push({ key: `type-${v}`, label: `Type: ${v}` }));
+    if (key === 'capacity' && value) activeFilters.push({ key, label: `Guests: ${value}` });
+    if (key === 'amenities' && value) value.split(',').forEach(v => activeFilters.push({ key: `am-${v}`, label: v }));
+    if (key === 'view' && value) activeFilters.push({ key, label: value });
+    if (key === 'minPrice' && value) activeFilters.push({ key, label: `Min ₹${value}` });
+    if (key === 'maxPrice' && value) activeFilters.push({ key, label: `Max ₹${value}` });
+  });
 
   return (
-    <div className="min-h-screen py-32 bg-gray-50 dark:bg-gray-900 transition-colors">
-      <div className="container mx-auto px-4">
-        <Reveal>
-          <h1 className="text-4xl md:text-6xl font-extrabold text-center mb-12 text-gray-900 dark:text-white tracking-tight">Discover Our Rooms</h1>
-        </Reveal>
+    <div className="container mx-auto px-4 lg:px-8 max-w-7xl relative">
+      <div className="flex flex-col lg:flex-row gap-8">
         
-        <Reveal delay={200}>
-          <div className="flex flex-wrap justify-center gap-4 mb-16">
-            {filters.map(f => (
-              <button 
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-8 py-3 rounded-full font-bold text-sm md:text-base transition-all shadow-md ${filter === f ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white transform scale-105' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-        </Reveal>
+        {/* Desktop Filter Panel */}
+        <div className="hidden lg:block w-80 shrink-0 sticky top-32 h-[calc(100vh-140px)]">
+          <RoomFilterPanel />
+        </div>
 
-        {loading ? (
-          <div className="grid md:grid-cols-3 gap-8">
-            {[1,2,3,4,5,6].map(i => (
-              <div key={i} className="animate-pulse bg-white dark:bg-gray-800 rounded-3xl h-[600px] shadow-xl"></div>
-            ))}
+        {/* Mobile Filter Drawer */}
+        <div className={`fixed inset-0 z-50 transform transition-transform duration-300 lg:hidden ${mobileFilterOpen ? 'translate-y-0' : 'translate-y-full'}`}>
+          <div className="absolute inset-0 bg-black/50" onClick={() => setMobileFilterOpen(false)} />
+          <div className="absolute bottom-0 left-0 right-0 h-[85vh] bg-[#FFFDF7] dark:bg-gray-800 rounded-t-3xl overflow-hidden shadow-2xl flex flex-col">
+            <RoomFilterPanel onMobileClose={() => setMobileFilterOpen(false)} />
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {rooms.length > 0 ? rooms.map((room, i) => (
-              <Reveal key={room.id} delay={i * 100}>
-                <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700 flex flex-col h-full hover:shadow-3xl hover:-translate-y-2 transition-all duration-300">
-                  <div className="h-56 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center relative group">
-                    <span className="text-gray-600 dark:text-gray-300 font-bold group-hover:scale-110 transition-transform">Room View Placeholder</span>
-                    <div className="absolute top-4 right-4">
-                      {room.isAvailable ? (
-                        <span className="bg-green-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-lg">Available</span>
-                      ) : (
-                        <span className="bg-red-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-lg">Booked</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="p-8 flex flex-col flex-grow">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white">{room.type} Room</h3>
-                        <p className="text-orange-500 font-bold mt-1">Room {room.number} • Up to {room.capacity} Guests</p>
-                      </div>
-                    </div>
-                    <div className="mb-4">
-                      <span className="text-3xl font-bold text-gray-900 dark:text-white">₹{room.price}</span>
-                      <span className="text-lg text-gray-500 dark:text-gray-400">/ night</span>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-300 my-4 flex-grow leading-relaxed">{room.description}</p>
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {room.amenities.slice(0, 4).map(amenity => (
-                        <span key={amenity} className="bg-orange-50 dark:bg-gray-700 text-orange-600 dark:text-orange-400 px-3 py-1.5 rounded-lg text-sm font-semibold border border-orange-100 dark:border-gray-600">
-                          {amenity}
-                        </span>
-                      ))}
-                      {room.amenities.length > 4 && (
-                        <span className="bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-lg text-sm font-semibold border border-gray-200 dark:border-gray-500">
-                          +{room.amenities.length - 4} more
-                        </span>
-                      )}
-                    </div>
-                    <div className="mt-auto">
-                      {isLoaded && isSignedIn ? (
-                        <Link href={`/booking/${room.id}`} className="block w-full text-center py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-lg rounded-xl transition-all shadow-lg transform hover:scale-105">
-                          Book Now
-                        </Link>
-                      ) : (
-                        <SignInButton mode="modal">
-                          <button className="block w-full text-center py-4 bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900 font-bold text-lg rounded-xl transition-all shadow-lg transform hover:scale-105">
-                            Sign In to Book
-                          </button>
-                        </SignInButton>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-            )) : (
-              <div className="col-span-1 md:col-span-3 text-center py-32">
-                <p className="text-2xl text-gray-500 dark:text-gray-400 font-medium">Loading rooms from database...</p>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 min-w-0 flex flex-col">
+          {/* Header Controls */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div>
+              <p className="text-gray-600 dark:text-gray-300 font-medium">
+                Showing <span className="font-bold text-gray-900 dark:text-white">{rooms.length}</span> {rooms.length === 1 ? 'sanctuary' : 'sanctuaries'}
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-4 w-full sm:w-auto">
+              <button 
+                onClick={() => setMobileFilterOpen(true)}
+                className="lg:hidden flex items-center gap-2 bg-orange-50 text-orange-600 px-4 py-2 rounded-xl font-bold"
+              >
+                <FilterIcon className="w-5 h-5" />
+                Filters
+              </button>
+              
+              <div className="flex items-center bg-gray-100 dark:bg-gray-900 rounded-lg p-1 ml-auto">
+                <button 
+                  onClick={() => setViewMode('grid')} 
+                  className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-gray-800 shadow text-orange-500' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
+                >
+                  <GridIcon className="w-5 h-5" />
+                </button>
+                <button 
+                  onClick={() => setViewMode('list')} 
+                  className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-gray-800 shadow text-orange-500' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
+                >
+                  <ListIcon className="w-5 h-5" />
+                </button>
               </div>
-            )}
+            </div>
           </div>
-        )}
+
+          {/* Active Filter Tags */}
+          {activeFilters.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-6">
+              {activeFilters.map(filter => (
+                <span key={filter.key} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200 border border-orange-200 dark:border-orange-800/50">
+                  {filter.label}
+                  {/* Note: In a real app we'd add an X icon to remove the filter, but URLSearchParams needs more logic to handle array deletions nicely without a router push callback per tag. */}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Room Grid / List */}
+          {loading ? (
+            <div className={`grid gap-8 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
+              {[1,2,3,4,5,6].map(i => (
+                <div key={i} className={`animate-pulse bg-white dark:bg-gray-800 rounded-3xl shadow-xl ${viewMode === 'grid' ? 'h-[500px]' : 'h-64'}`}></div>
+              ))}
+            </div>
+          ) : rooms.length > 0 ? (
+            <div className={`grid gap-8 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
+              {rooms.map((room, i) => (
+                <RoomCard key={room.id} room={room} viewMode={viewMode} index={i} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-gray-800 rounded-3xl border border-dashed border-gray-300 dark:border-gray-700">
+              <div className="w-24 h-24 bg-orange-50 dark:bg-gray-700 rounded-full flex items-center justify-center mb-6">
+                <FilterIcon className="w-10 h-10 text-orange-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No Sanctuaries Found</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-center max-w-md mb-8">
+                We couldn't find any rooms matching your divine preferences. Please try adjusting your filters or search criteria.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
+    </div>
+  );
+}
+
+export default function RoomsPage() {
+  return (
+    <div className="min-h-screen pt-32 pb-20 bg-[#F9F7F1] dark:bg-gray-900 transition-colors">
+      <div className="container mx-auto px-4 mb-12">
+        <Reveal>
+          <h1 className="text-4xl md:text-6xl font-extrabold text-center text-gray-900 dark:text-white tracking-tight mb-4">
+            Discover Your <span className="text-orange-500">Sanctuary</span>
+          </h1>
+          <p className="text-center text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
+            Find the perfect resting place for your spiritual journey in our thoughtfully designed rooms.
+          </p>
+        </Reveal>
+      </div>
+      
+      <Suspense fallback={<div className="container mx-auto px-4 text-center py-20">Loading...</div>}>
+        <RoomsContent />
+      </Suspense>
     </div>
   );
 }
