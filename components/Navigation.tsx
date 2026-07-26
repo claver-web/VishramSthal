@@ -23,8 +23,8 @@ export default function Navigation() {
     <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-md py-3' : 'bg-transparent py-5'}`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-12 h-12 relative group-hover:scale-105 transition-transform rounded-full overflow-hidden shadow-md">
-            <Image src="/logoKrishna.png" alt="Vishram Sthal Logo" fill sizes="48px" className="object-cover" priority quality={100} unoptimized />
+          <div className="w-16 h-12 relative group-hover:scale-105 transition-transform">
+            <Image src="/logoKrishna.png" alt="Vishram Sthal Logo" fill sizes="64px" className="object-contain" priority quality={100} unoptimized />
           </div>
           <span className="font-bold text-xl tracking-tight hidden sm:block text-gray-900 dark:text-white">Vishram Sthal</span>
         </Link>
