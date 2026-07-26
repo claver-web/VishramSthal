@@ -152,7 +152,7 @@ export default async function Home() {
               
               return (
                 <Reveal key={room.id} delay={i * 150}>
-                  <div className="group rounded-t-[40%] rounded-b-2xl overflow-hidden shadow-xl bg-white dark:bg-gray-800 h-full flex flex-col hover:shadow-[0_10px_30px_rgba(255,215,0,0.3)] transition-all duration-500 hover:-translate-y-2 border border-transparent hover:border-[var(--color-gold)] relative">
+                  <div className="group rounded-xl overflow-hidden shadow-xl bg-white dark:bg-gray-800 h-full flex flex-col hover:shadow-[0_10px_30px_rgba(255,215,0,0.3)] transition-all duration-500 hover:-translate-y-2 border border-transparent hover:border-[var(--color-gold)] relative">
                     <div className="h-64 relative overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
                       <div className="absolute inset-0 bg-[var(--color-saffron)] mix-blend-overlay opacity-30 z-10" />
@@ -181,7 +181,7 @@ export default async function Home() {
                         </div>
                       </div>
                       
-                      <Link href={`/rooms?type=${room.type}`} className="temple-arch block w-full text-center py-3 bg-gray-100 dark:bg-gray-700 text-[var(--color-maroon)] dark:text-[var(--color-gold)] hover:bg-[var(--color-saffron)] hover:text-white font-serif text-lg transition-colors border border-[var(--color-gold)]/30 group-hover:border-[var(--color-saffron)]">
+                      <Link href={`/rooms?type=${room.type}`} className="rounded-md block w-full text-center py-3 bg-gray-100 dark:bg-gray-700 text-[var(--color-maroon)] dark:text-[var(--color-gold)] hover:bg-[var(--color-saffron)] hover:text-white font-serif text-lg transition-colors border border-[var(--color-gold)]/30 group-hover:border-[var(--color-saffron)]">
                         View Details
                       </Link>
                     </div>
