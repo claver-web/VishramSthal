@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useUser, SignInButton } from '@clerk/nextjs';
 import { StarIcon } from './Icons';
 import Reveal from '@/components/Reveal';
@@ -46,14 +47,21 @@ export default function RoomCard({ room, viewMode, index }: RoomCardProps) {
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Image / Banner */}
-        <div className={`relative bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center overflow-hidden group ${isList ? 'w-full md:w-2/5 h-56 md:h-full shrink-0' : 'h-56'}`}>
-          <div className={`absolute inset-0 bg-black/10 transition-opacity duration-300 ${isHovered ? 'opacity-0' : 'opacity-100'}`}></div>
-          <span className="text-gray-300 font-bold group-hover:scale-110 transition-transform flex flex-col items-center gap-2">
-            <StarIcon className="w-8 h-8 text-gray-500" />
-            <span className="tracking-widest uppercase text-sm opacity-80">{spiritualName}</span>
+        <div className={`relative bg-gray-800 flex items-center justify-center overflow-hidden group ${isList ? 'w-full md:w-2/5 h-56 md:h-full shrink-0' : 'h-56'}`}>
+          <Image 
+            src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=800" 
+            alt="Room Image" 
+            fill 
+            className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-80"
+            sizes="(max-width: 768px) 100vw, 400px"
+          />
+          <div className={`absolute inset-0 bg-black/30 transition-opacity duration-300 ${isHovered ? 'opacity-0' : 'opacity-100'}`}></div>
+          <span className="relative z-10 text-gray-100 font-bold group-hover:scale-110 transition-transform flex flex-col items-center gap-2 drop-shadow-lg">
+            <StarIcon className="w-8 h-8 text-gold-400" />
+            <span className="tracking-widest uppercase text-sm">{spiritualName}</span>
           </span>
           
-          <div className="absolute top-4 right-4 flex gap-2">
+          <div className="absolute top-4 right-4 flex gap-2 z-10">
             {room.isAvailable ? (
               <span className="bg-green-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg border border-green-400">Available</span>
             ) : (
@@ -62,7 +70,7 @@ export default function RoomCard({ room, viewMode, index }: RoomCardProps) {
           </div>
           
           {/* Card Badge */}
-          <div className="absolute bottom-4 left-4">
+          <div className="absolute bottom-4 left-4 z-10">
             <span className="bg-gray-900/90 backdrop-blur-sm text-orange-400 px-3 py-1 rounded-lg text-xs font-bold shadow-lg shadow-black/10 uppercase tracking-wider">
               {room.type}
             </span>
