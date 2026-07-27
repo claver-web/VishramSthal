@@ -82,7 +82,7 @@ export default function Footer() {
               <h4 className="text-sm font-serif text-[var(--color-gold)] mb-3">Connect With Us</h4>
               <div className="flex gap-4">
                 {['Facebook', 'Instagram', 'Twitter'].map((social) => (
-                  <a key={social} href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[var(--color-gold)] hover:text-[var(--color-maroon)] transition-all transform hover:-translate-y-1 border border-[var(--color-gold)]/30" title={social}>
+                  <a key={social} href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[var(--color-gold)] hover:text-[var(--color-midnight)] transition-all transform hover:-translate-y-1 border border-[var(--color-gold)]/30" title={social}>
                     🪔
                   </a>
                 ))}

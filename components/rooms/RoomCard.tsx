@@ -41,15 +41,15 @@ export default function RoomCard({ room, viewMode, index }: RoomCardProps) {
   return (
     <Reveal delay={index * 50}>
       <div 
-        className={`bg-white dark:bg-gray-800 rounded-3xl shadow-lg hover:shadow-2xl overflow-hidden border border-orange-100 dark:border-gray-700 transition-all duration-300 transform ${isHovered ? '-translate-y-2' : ''} ${isList ? 'flex flex-col md:flex-row h-full md:h-64' : 'flex flex-col h-full'}`}
+        className={`bg-gray-800 rounded-3xl shadow-lg hover:shadow-2xl overflow-hidden border border-gray-700 transition-all duration-300 transform ${isHovered ? '-translate-y-2' : ''} ${isList ? 'flex flex-col md:flex-row h-full md:h-64' : 'flex flex-col h-full'}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Image / Banner */}
-        <div className={`relative bg-gradient-to-br from-orange-200 to-orange-400 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center overflow-hidden group ${isList ? 'w-full md:w-2/5 h-56 md:h-full shrink-0' : 'h-56'}`}>
+        <div className={`relative bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center overflow-hidden group ${isList ? 'w-full md:w-2/5 h-56 md:h-full shrink-0' : 'h-56'}`}>
           <div className={`absolute inset-0 bg-black/10 transition-opacity duration-300 ${isHovered ? 'opacity-0' : 'opacity-100'}`}></div>
-          <span className="text-orange-800 dark:text-gray-300 font-bold group-hover:scale-110 transition-transform flex flex-col items-center gap-2">
-            <StarIcon className="w-8 h-8 text-orange-600/50 dark:text-gray-500" />
+          <span className="text-gray-300 font-bold group-hover:scale-110 transition-transform flex flex-col items-center gap-2">
+            <StarIcon className="w-8 h-8 text-gray-500" />
             <span className="tracking-widest uppercase text-sm opacity-80">{spiritualName}</span>
           </span>
           
@@ -63,7 +63,7 @@ export default function RoomCard({ room, viewMode, index }: RoomCardProps) {
           
           {/* Card Badge */}
           <div className="absolute bottom-4 left-4">
-            <span className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm text-orange-600 dark:text-orange-400 px-3 py-1 rounded-lg text-xs font-bold shadow-lg shadow-black/10 uppercase tracking-wider">
+            <span className="bg-gray-900/90 backdrop-blur-sm text-orange-400 px-3 py-1 rounded-lg text-xs font-bold shadow-lg shadow-black/10 uppercase tracking-wider">
               {room.type}
             </span>
           </div>
@@ -74,35 +74,35 @@ export default function RoomCard({ room, viewMode, index }: RoomCardProps) {
           <div>
             <div className="flex justify-between items-start mb-2 gap-4">
               <div>
-                <h3 className="text-2xl font-extrabold text-gray-900 dark:text-white line-clamp-1">{spiritualName}</h3>
-                <p className="text-orange-600 dark:text-orange-400 font-semibold text-sm mt-1">Room {room.number} • {room.capacity} Guest{room.capacity > 1 ? 's' : ''}</p>
+                <h3 className="text-2xl font-extrabold text-white line-clamp-1">{spiritualName}</h3>
+                <p className="text-orange-400 font-semibold text-sm mt-1">Room {room.number} • {room.capacity} Guest{room.capacity > 1 ? 's' : ''}</p>
               </div>
               <div className="text-right shrink-0">
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">₹{room.price}</span>
-                <span className="block text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide mt-0.5">/ night</span>
+                <span className="text-2xl font-bold text-white">₹{room.price}</span>
+                <span className="block text-xs text-gray-400 font-medium uppercase tracking-wide mt-0.5">/ night</span>
               </div>
             </div>
             
-            <p className={`text-gray-600 dark:text-gray-300 mt-4 mb-5 leading-relaxed text-sm ${isList ? 'line-clamp-2' : 'line-clamp-3'}`}>
+            <p className={`text-gray-300 mt-4 mb-5 leading-relaxed text-sm ${isList ? 'line-clamp-2' : 'line-clamp-3'}`}>
               {room.description || `Experience the divine tranquility in our ${spiritualName}. Perfectly suited for your spiritual retreat.`}
             </p>
             
             <div className="flex flex-wrap gap-2 mb-6">
               {room.amenities.slice(0, isList ? 6 : 3).map(amenity => (
-                <span key={amenity} className="bg-orange-50 dark:bg-gray-700/50 text-orange-700 dark:text-orange-300 px-2.5 py-1 rounded-md text-xs font-semibold border border-orange-100 dark:border-gray-600 shadow-sm">
+                <span key={amenity} className="bg-gray-700/50 text-orange-300 px-2.5 py-1 rounded-md text-xs font-semibold border border-gray-600 shadow-sm">
                   {amenity}
                 </span>
               ))}
               {room.amenities.length > (isList ? 6 : 3) && (
-                <span className="bg-gray-100 dark:bg-gray-600/50 text-gray-600 dark:text-gray-400 px-2.5 py-1 rounded-md text-xs font-semibold border border-gray-200 dark:border-gray-500 shadow-sm">
+                <span className="bg-gray-600/50 text-gray-400 px-2.5 py-1 rounded-md text-xs font-semibold border border-gray-500 shadow-sm">
                   +{room.amenities.length - (isList ? 6 : 3)} more
                 </span>
               )}
             </div>
           </div>
           
-          <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex gap-3">
-            <Link href={`/rooms/${room.id}`} className="flex-1 text-center py-2.5 bg-white dark:bg-gray-900 border-2 border-orange-500 text-orange-600 dark:text-orange-400 font-bold rounded-xl transition-all hover:bg-orange-50 dark:hover:bg-gray-800 shadow-sm text-sm">
+          <div className="mt-auto pt-4 border-t border-gray-700 flex gap-3">
+            <Link href={`/rooms/${room.id}`} className="flex-1 text-center py-2.5 bg-gray-900 border-2 border-orange-500 text-orange-400 font-bold rounded-xl transition-all hover:bg-gray-800 shadow-sm text-sm">
               Details
             </Link>
             
@@ -112,7 +112,7 @@ export default function RoomCard({ room, viewMode, index }: RoomCardProps) {
               </Link>
             ) : (
               <SignInButton mode="modal">
-                <button className="flex-1 text-center py-2.5 bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900 font-bold rounded-xl transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm">
+                <button className="flex-1 text-center py-2.5 bg-white hover:bg-gray-100 text-gray-900 font-bold rounded-xl transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm">
                   Sign In
                 </button>
               </SignInButton>

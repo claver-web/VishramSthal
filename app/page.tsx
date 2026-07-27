@@ -41,10 +41,10 @@ export default async function Home() {
       {/* 1. HERO SECTION REDESIGN */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         {/* Layer 1: Soft gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-saffron)]/90 via-[var(--color-saffron)]/70 to-[var(--color-gold)]/40 dark:from-[var(--color-midnight)] dark:via-[#2a1b38]/90 dark:to-[var(--color-midnight)] z-10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-midnight)] via-[#2a1b38]/90 to-[var(--color-midnight)] z-10" />
         
         {/* Layer 2: Parallax background image */}
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1571536802807-30451e3955d8?q=80&w=2000')] bg-cover bg-fixed bg-center z-0 opacity-40 dark:opacity-20" />
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1571536802807-30451e3955d8?q=80&w=2000')] bg-cover bg-fixed bg-center z-0 opacity-20" />
         
         {/* Layer 3: Particles (simulated with CSS for now) */}
         <div className="absolute inset-0 z-15 pointer-events-none opacity-50 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4=')] mix-blend-overlay" />
@@ -52,7 +52,7 @@ export default async function Home() {
         <div className="relative z-20 text-center px-4 max-w-5xl mx-auto mt-20 flex flex-col items-center">
           <Reveal>
             <div className="w-16 h-16 mb-4 mx-auto animate-spin-slow opacity-80">
-              <svg viewBox="0 0 100 100" className="text-white dark:text-gold fill-current"><path d="M50 0 C55 20 70 30 100 50 C70 70 55 80 50 100 C45 80 30 70 0 50 C30 30 45 20 50 0 Z" /></svg>
+              <svg viewBox="0 0 100 100" className="text-gold fill-current"><path d="M50 0 C55 20 70 30 100 50 C70 70 55 80 50 100 C45 80 30 70 0 50 C30 30 45 20 50 0 Z" /></svg>
             </div>
           </Reveal>
           
@@ -63,7 +63,7 @@ export default async function Home() {
           </Reveal>
           
           <Reveal delay={200}>
-            <h1 className="text-6xl md:text-8xl font-serif text-transparent bg-clip-text bg-gradient-to-r from-[#FFFDD0] to-[#FFD700] mb-4 drop-shadow-[0_0_15px_rgba(255,215,0,0.8)] dark:drop-shadow-[0_0_20px_rgba(255,215,0,0.4)]">
+            <h1 className="text-6xl md:text-8xl font-serif text-transparent bg-clip-text bg-gradient-to-r from-[#FFFDD0] to-[#FFD700] mb-4 drop-shadow-[0_0_20px_rgba(255,215,0,0.4)]">
               Vishram Sthal
             </h1>
           </Reveal>
@@ -107,17 +107,17 @@ export default async function Home() {
       </section>
 
       {/* 2. PREMIUM ROOMS SHOWCASE SECTION */}
-      <section className="py-24 bg-[var(--color-cream)] dark:bg-[var(--color-midnight)] border-y border-[var(--border-color)]">
+      <section className="py-24 bg-[var(--color-midnight)] border-y border-[var(--border-color)]">
         <div className="container mx-auto px-4">
           <Reveal>
             <div className="text-center mb-16">
-              <h2 className="text-5xl font-serif text-[var(--color-maroon)] dark:text-[var(--color-gold)] mb-4">Your Divine Abodes</h2>
+              <h2 className="text-5xl font-serif text-[var(--color-gold)] mb-4">Your Divine Abodes</h2>
               <div className="flex justify-center items-center gap-4 mb-4">
                 <span className="w-24 h-px bg-[var(--color-saffron)]"></span>
                 <span className="text-2xl text-[var(--color-saffron)]">🌸</span>
                 <span className="w-24 h-px bg-[var(--color-saffron)]"></span>
               </div>
-              <p className="text-xl font-cormorant text-gray-600 dark:text-gray-300 italic">Choose your sacred sanctuary at Vishram Sthal</p>
+              <p className="text-xl font-cormorant text-gray-300 italic">Choose your sacred sanctuary at Vishram Sthal</p>
             </div>
           </Reveal>
 
@@ -128,7 +128,7 @@ export default async function Home() {
               
               return (
                 <Reveal key={room.id} delay={i * 150}>
-                  <div className="group rounded-xl overflow-hidden shadow-xl bg-white dark:bg-gray-800 h-full flex flex-col hover:shadow-[0_10px_30px_rgba(255,215,0,0.3)] transition-all duration-500 hover:-translate-y-2 border border-transparent hover:border-[var(--color-gold)] relative">
+                  <div className="group rounded-xl overflow-hidden shadow-xl bg-gray-800 h-full flex flex-col hover:shadow-[0_10px_30px_rgba(255,215,0,0.3)] transition-all duration-500 hover:-translate-y-2 border border-transparent hover:border-[var(--color-gold)] relative">
                     <div className="h-64 relative overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
                       <div className="absolute inset-0 bg-[var(--color-saffron)] mix-blend-overlay opacity-30 z-10" />
@@ -153,9 +153,9 @@ export default async function Home() {
                     </div>
                     
                     <div className="p-6 flex flex-col flex-grow bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZjliMjM0IiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')]">
-                      <p className="text-gray-600 dark:text-gray-300 font-sans text-sm mb-4 italic flex-grow">{desc}</p>
+                      <p className="text-gray-300 font-sans text-sm mb-4 italic flex-grow">{desc}</p>
                       
-                      <div className="flex justify-between items-end mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+                      <div className="flex justify-between items-end mb-6 pb-4 border-b border-gray-700">
                         <div>
                           <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Starting from</p>
                           <p className="text-3xl font-bold text-[var(--color-saffron)]">₹{room.price}</p>
@@ -165,7 +165,7 @@ export default async function Home() {
                         </div>
                       </div>
                       
-                      <Link href={`/rooms?type=${room.type}`} className="rounded-md block w-full text-center py-3 bg-gray-100 dark:bg-gray-700 text-[var(--color-maroon)] dark:text-[var(--color-gold)] hover:bg-[var(--color-saffron)] hover:text-white font-serif text-lg transition-colors border border-[var(--color-gold)]/30 group-hover:border-[var(--color-saffron)]">
+                      <Link href={`/rooms?type=${room.type}`} className="rounded-md block w-full text-center py-3 bg-gray-700 text-[var(--color-gold)] hover:bg-[var(--color-saffron)] hover:text-white font-serif text-lg transition-colors border border-[var(--color-gold)]/30 group-hover:border-[var(--color-saffron)]">
                         View Details
                       </Link>
                     </div>
@@ -177,7 +177,7 @@ export default async function Home() {
 
           <Reveal delay={400}>
             <div className="mt-16 text-center">
-              <Link href="/rooms" className="inline-block px-10 py-4 bg-[var(--color-saffron)] text-white rounded-full font-bold text-lg hover:bg-[var(--color-gold)] hover:text-[var(--color-maroon)] transition-all shadow-lg hover:-translate-y-1">
+              <Link href="/rooms" className="inline-block px-10 py-4 bg-[var(--color-saffron)] text-white rounded-full font-bold text-lg hover:bg-[var(--color-gold)] hover:text-gray-900 transition-all shadow-lg hover:-translate-y-1">
                 Explore All Rooms
               </Link>
             </div>
@@ -199,9 +199,9 @@ export default async function Home() {
                   {/* Watermark */}
                   <div className="absolute -bottom-10 -right-10 text-9xl opacity-5 group-hover:opacity-10 group-hover:rotate-12 transition-all transform origin-center font-sanskrit text-[var(--color-saffron)]">ॐ</div>
                   
-                  <div className="text-6xl mb-6 bg-[var(--color-cream)] dark:bg-gray-800 p-4 rounded-full shadow-inner text-[var(--color-saffron)]">{feature.icon}</div>
-                  <h3 className="text-3xl font-serif mb-4 text-[var(--color-maroon)] dark:text-[var(--color-gold)]">{feature.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed font-sans">{feature.desc}</p>
+                  <div className="text-6xl mb-6 bg-gray-800 p-4 rounded-full shadow-inner text-[var(--color-saffron)]">{feature.icon}</div>
+                  <h3 className="text-3xl font-serif mb-4 text-[var(--color-gold)]">{feature.title}</h3>
+                  <p className="text-gray-300 leading-relaxed font-sans">{feature.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -214,7 +214,7 @@ export default async function Home() {
         <div className="container mx-auto px-4">
           <Reveal>
             <div className="text-center mb-16">
-              <h2 className="text-5xl font-serif text-[var(--color-maroon)] dark:text-[var(--color-gold)] mb-4">Divine Experiences Await</h2>
+              <h2 className="text-5xl font-serif text-[var(--color-gold)] mb-4">Divine Experiences Await</h2>
               <div className="flex justify-center items-center gap-4 mb-4">
                 <span className="w-16 h-px bg-[var(--color-gold)]"></span>
                 <span className="text-xl">🪔</span>
@@ -233,13 +233,13 @@ export default async function Home() {
               { title: 'Peacock Gardens', desc: 'Stroll through our lush gardens, home to beautiful peacocks echoing Vrindavan.', icon: '🦚' },
             ].map((exp, i) => (
               <Reveal key={i} delay={i * 100}>
-                <div className="flex items-start gap-6 p-6 rounded-2xl hover:bg-white dark:hover:bg-gray-800 transition-colors shadow-sm hover:shadow-lg border border-transparent hover:border-[var(--color-gold)]/50 group cursor-pointer">
+                <div className="flex items-start gap-6 p-6 rounded-2xl hover:bg-gray-800 transition-colors shadow-sm hover:shadow-lg border border-transparent hover:border-[var(--color-gold)]/50 group cursor-pointer">
                   <div className="w-16 h-16 rounded-full bg-[var(--color-saffron)]/10 flex items-center justify-center text-3xl group-hover:rotate-12 transition-transform shrink-0 shadow-inner">
                     {exp.icon}
                   </div>
                   <div>
-                    <h3 className="text-xl font-serif font-bold text-[var(--color-maroon)] dark:text-[var(--color-gold)] mb-2 group-hover:text-[var(--color-saffron)] transition-colors">{exp.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{exp.desc}</p>
+                    <h3 className="text-xl font-serif font-bold text-[var(--color-gold)] mb-2 group-hover:text-[var(--color-saffron)] transition-colors">{exp.title}</h3>
+                    <p className="text-gray-300 text-sm leading-relaxed">{exp.desc}</p>
                   </div>
                 </div>
               </Reveal>
@@ -249,11 +249,11 @@ export default async function Home() {
       </section>
 
       {/* 5. GUEST TESTIMONIALS SECTION */}
-      <section className="py-24 bg-[var(--color-cream)] dark:bg-[#151525] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1582292866953-2708b73059da?q=80&w=2000')] opacity-10 bg-cover bg-center mix-blend-multiply dark:mix-blend-screen" />
+      <section className="py-24 bg-[#151525] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1582292866953-2708b73059da?q=80&w=2000')] opacity-10 bg-cover bg-center mix-blend-screen" />
         <div className="container mx-auto px-4 relative z-10 text-center">
           <Reveal>
-            <h2 className="text-5xl font-serif text-[var(--color-maroon)] dark:text-[var(--color-gold)] mb-16">Blessings from Our Guests</h2>
+            <h2 className="text-5xl font-serif text-[var(--color-gold)] mb-16">Blessings from Our Guests</h2>
           </Reveal>
           
           <div className="flex flex-wrap justify-center gap-8">
@@ -263,7 +263,7 @@ export default async function Home() {
               { name: 'Amit V.', loc: 'Chandigarh', quote: 'Satvik food and the peaceful gardens offered the perfect spiritual retreat our family needed.' }
             ].map((testimonial, i) => (
               <Reveal key={i} delay={i * 200}>
-                <div className="bg-[#fffdf0] dark:bg-gray-800 p-8 w-full max-w-sm mx-auto shadow-xl relative mt-8 border-2 border-[#e8dcb8] dark:border-gray-700 rounded-sm">
+                <div className="bg-gray-800 p-8 w-full max-w-sm mx-auto shadow-xl relative mt-8 border-2 border-gray-700 rounded-sm">
                   {/* Parchment styling corners */}
                   <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[var(--color-saffron)]"></div>
                   <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[var(--color-saffron)]"></div>
@@ -278,12 +278,12 @@ export default async function Home() {
                     {'🪷🪷🪷🪷🪷'}
                   </div>
                   
-                  <p className="font-cormorant text-xl italic text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
+                  <p className="font-cormorant text-xl italic text-gray-300 mb-6 leading-relaxed">
                     "{testimonial.quote}"
                   </p>
                   
-                  <div className="border-t border-gray-300 dark:border-gray-600 pt-4">
-                    <p className="font-bold text-[var(--color-maroon)] dark:text-[var(--color-gold)] font-serif text-lg">{testimonial.name}</p>
+                  <div className="border-t border-gray-600 pt-4">
+                    <p className="font-bold text-[var(--color-gold)] font-serif text-lg">{testimonial.name}</p>
                     <p className="text-xs text-gray-500 uppercase tracking-widest">{testimonial.loc}</p>
                   </div>
                 </div>
@@ -297,13 +297,13 @@ export default async function Home() {
       <section className="py-24 bg-[var(--background)]">
         <div className="container mx-auto px-4">
           <Reveal>
-            <h2 className="text-4xl md:text-5xl font-serif text-center text-[var(--color-maroon)] dark:text-[var(--color-gold)] mb-12">Divine Blessings & Offers</h2>
+            <h2 className="text-4xl md:text-5xl font-serif text-center text-[var(--color-gold)] mb-12">Divine Blessings & Offers</h2>
           </Reveal>
           
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {/* Offer 1 */}
             <Reveal delay={100}>
-              <div className="flex flex-col sm:flex-row bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-[var(--color-gold)] group">
+              <div className="flex flex-col sm:flex-row bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-[var(--color-gold)] group">
                 <div className="sm:w-2/5 bg-[var(--color-saffron)] p-6 flex flex-col justify-center items-center text-white relative overflow-hidden">
                   <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1582560475093-ba66accbc424?q=80&w=400')] bg-cover opacity-20 mix-blend-multiply" />
                   <span className="relative z-10 text-5xl font-bold mb-2 font-serif">20%</span>
@@ -312,8 +312,8 @@ export default async function Home() {
                 <div className="p-8 sm:w-3/5 flex flex-col justify-between relative">
                   <div>
                     <span className="absolute top-4 right-4 text-[var(--color-saffron)] text-xs font-bold px-2 py-1 bg-[var(--color-saffron)]/10 rounded-full animate-pulse">LIMITED TIME</span>
-                    <h3 className="text-2xl font-serif text-gray-900 dark:text-white mb-2">Spiritual Retreat Package</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Stay 3 nights and receive complimentary morning aarti access, yoga sessions, and one satvik dinner.</p>
+                    <h3 className="text-2xl font-serif text-white mb-2">Spiritual Retreat Package</h3>
+                    <p className="text-sm text-gray-400 mb-4">Stay 3 nights and receive complimentary morning aarti access, yoga sessions, and one satvik dinner.</p>
                   </div>
                   <button className="w-full py-3 border-2 border-[var(--color-saffron)] text-[var(--color-saffron)] font-bold rounded-lg hover:bg-[var(--color-saffron)] hover:text-white transition-colors">
                     Claim Blessing
@@ -324,7 +324,7 @@ export default async function Home() {
 
             {/* Offer 2 */}
             <Reveal delay={300}>
-              <div className="flex flex-col sm:flex-row bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-[var(--color-gold)] group">
+              <div className="flex flex-col sm:flex-row bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-[var(--color-gold)] group">
                 <div className="sm:w-2/5 bg-[var(--color-maroon)] p-6 flex flex-col justify-center items-center text-white relative overflow-hidden">
                   <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?q=80&w=400')] bg-cover opacity-20 mix-blend-overlay" />
                   <span className="relative z-10 text-5xl font-bold mb-2 font-serif">15%</span>
@@ -333,8 +333,8 @@ export default async function Home() {
                 <div className="p-8 sm:w-3/5 flex flex-col justify-between relative">
                   <div>
                     <span className="absolute top-4 right-4 text-[var(--color-maroon)] text-xs font-bold px-2 py-1 bg-[var(--color-maroon)]/10 rounded-full">FESTIVE</span>
-                    <h3 className="text-2xl font-serif text-gray-900 dark:text-white mb-2">Janmashtami Special</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Celebrate divine love with special room decor, prasad baskets, and VIP temple darshan access.</p>
+                    <h3 className="text-2xl font-serif text-white mb-2">Janmashtami Special</h3>
+                    <p className="text-sm text-gray-400 mb-4">Celebrate divine love with special room decor, prasad baskets, and VIP temple darshan access.</p>
                   </div>
                   <button className="w-full py-3 border-2 border-[var(--color-maroon)] text-[var(--color-maroon)] font-bold rounded-lg hover:bg-[var(--color-maroon)] hover:text-white transition-colors">
                     Claim Blessing
@@ -347,12 +347,12 @@ export default async function Home() {
       </section>
 
       {/* 7. LOCATION SECTION */}
-      <section className="py-24 bg-gray-50 dark:bg-gray-900 border-t border-[var(--border-color)]">
+      <section className="py-24 bg-gray-900 border-t border-[var(--border-color)]">
         <div className="container mx-auto px-4">
           <Reveal>
-            <h2 className="text-4xl font-serif text-center text-[var(--color-maroon)] dark:text-[var(--color-gold)] mb-12">Blessed Location</h2>
+            <h2 className="text-4xl font-serif text-center text-[var(--color-gold)] mb-12">Blessed Location</h2>
           </Reveal>
-          <div className="flex flex-col lg:flex-row gap-12 bg-white dark:bg-gray-800 p-4 rounded-3xl shadow-xl border border-[var(--color-gold)]/30">
+          <div className="flex flex-col lg:flex-row gap-12 bg-gray-800 p-4 rounded-3xl shadow-xl border border-[var(--color-gold)]/30">
             <div className="lg:w-1/2 rounded-2xl overflow-hidden h-[400px] relative bg-gray-200">
               {/* Simulated Map */}
               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1000')] bg-cover bg-center opacity-80" />
@@ -361,7 +361,7 @@ export default async function Home() {
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-[var(--color-saffron)] mb-2 animate-bounce">
                   <span className="text-2xl">🛕</span>
                 </div>
-                <div className="bg-white dark:bg-gray-900 px-4 py-2 rounded-lg shadow-xl font-bold text-sm">
+                <div className="bg-gray-900 px-4 py-2 rounded-lg shadow-xl font-bold text-sm">
                   Word No. 6, Dehra Gopipur
                 </div>
               </div>
@@ -376,13 +376,13 @@ export default async function Home() {
                   { name: 'Spiritual Markets', dist: '0.2 km (2 min walk)', icon: '🛍️' },
                   { name: 'Meditation Gardens', dist: '1.5 km (5 min drive)', icon: '🚗' },
                 ].map((site, i) => (
-                  <li key={i} className="flex items-center gap-4 p-4 rounded-xl hover:bg-[var(--color-cream)] dark:hover:bg-gray-700 transition-colors border border-transparent hover:border-[var(--color-gold)]/50 group">
+                  <li key={i} className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-700 transition-colors border border-transparent hover:border-[var(--color-gold)]/50 group">
                     <div className="w-12 h-12 rounded-full bg-[var(--color-saffron)]/20 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform">
                       {site.icon}
                     </div>
                     <div>
-                      <h4 className="font-bold text-lg text-gray-900 dark:text-white">{site.name}</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{site.dist}</p>
+                      <h4 className="font-bold text-lg text-white">{site.name}</h4>
+                      <p className="text-sm text-gray-400">{site.dist}</p>
                     </div>
                   </li>
                 ))}
