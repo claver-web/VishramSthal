@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     // Build Prisma query conditionally
     const where: any = {};
     if (type) where.type = type;
-    if (status) where.status = status;
+    if (status) where.isAvailable = status !== 'Booked';
 
     const rooms = await prisma.room.findMany({
       where,
@@ -34,13 +34,14 @@ export async function POST(request: Request) {
     
     const newRoom = await prisma.room.create({
       data: {
+        number: body.number || `RM-${Date.now().toString().slice(-4)}`,
         name: body.name,
         type: body.type,
         price: body.price,
         capacity: body.capacity,
         description: body.description,
         amenities: body.amenities || [],
-        status: body.status || 'Available',
+        isAvailable: body.status !== 'Booked',
       }
     });
 

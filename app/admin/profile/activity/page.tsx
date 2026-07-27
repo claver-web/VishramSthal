@@ -1,7 +1,7 @@
 'use client';
 
 import { 
-  Search, Filter, ShieldCheck, Activity, Key, LogIn, Edit 
+  Search, Filter, ShieldCheck, Activity, Key, LogIn, Edit, Clock, MapPin
 } from 'lucide-react';
 
 const mockActivity: any[] = [];

@@ -1,10 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 import prisma from '@/lib/prisma';
 
-const Reveal = dynamic(() => import('@/components/Reveal'));
-import prisma from '@/lib/prisma';
+const Reveal = nextDynamic(() => import('@/components/Reveal'));
 
 export const dynamic = 'force-dynamic';
 

@@ -57,9 +57,9 @@ const paymentMethodData = [
   { name: 'Wallet', value: 0 },
 ];
 
-const recentActivity = [];
+const recentActivity: any[] = [];
 
-const upcomingCheckIns = [];
+const upcomingCheckIns: any[] = [];
 
 const COLORS = ['#ea580c', '#f97316', '#fdba74', '#fed7aa'];
 const OCCUPANCY_COLORS = ['#ea580c', '#22c55e', '#ef4444'];
