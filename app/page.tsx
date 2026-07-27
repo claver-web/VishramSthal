@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import Reveal from '@/components/Reveal';
+import dynamic from 'next/dynamic';
+import prisma from '@/lib/prisma';
+
+const Reveal = dynamic(() => import('@/components/Reveal'));
 import prisma from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -44,7 +47,16 @@ export default async function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-midnight)] via-[#2a1b38]/90 to-[var(--color-midnight)] z-10" />
         
         {/* Layer 2: Parallax background image */}
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1571536802807-30451e3955d8?q=80&w=2000')] bg-cover bg-fixed bg-center z-0 opacity-20" />
+        <Image 
+          src="https://images.unsplash.com/photo-1571536802807-30451e3955d8?q=80&w=2000"
+          alt="Vishram Sthal Hero"
+          fill
+          priority
+          placeholder="blur"
+          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mO8/e79fwAJzAPm44z/YQAAAABJRU5ErkJggg=="
+          className="object-cover object-center z-0 opacity-20"
+          sizes="100vw"
+        />
         
         {/* Layer 3: Particles (simulated with CSS for now) */}
         <div className="absolute inset-0 z-15 pointer-events-none opacity-50 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4=')] mix-blend-overlay" />
@@ -391,13 +403,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
-      {/* FLOATING CTA */}
-      <div className="fixed bottom-8 right-8 z-50 animate-bounce">
-        <Link href="/rooms" className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-[var(--color-saffron)] to-[var(--color-saffron-dark)] text-white rounded-full shadow-[0_0_20px_rgba(249,115,22,0.5)] hover:shadow-[0_0_30px_rgba(255,215,0,0.8)] transition-all">
-          <span className="text-2xl">🪷</span>
-        </Link>
-      </div>
 
     </div>
   );

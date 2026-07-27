@@ -7,12 +7,13 @@ import Footer from "@/components/Footer";
 import MainWrapper from "@/components/MainWrapper";
 import { Toaster } from "react-hot-toast";
 import Preloader from "@/components/Preloader";
+import ScrollToTop from "@/components/ScrollToTop";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
-const cormorant = Cormorant_Garamond({ weight: ["400", "600"], subsets: ["latin"], variable: "--font-cormorant" });
-const notoDevanagari = Noto_Serif_Devanagari({ weight: ["400", "700"], subsets: ["devanagari"], variable: "--font-noto-devanagari" });
-const tangerine = Tangerine({ weight: ["400", "700"], subsets: ["latin"], variable: "--font-tangerine" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: 'swap' });
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair", display: 'swap' });
+const cormorant = Cormorant_Garamond({ weight: ["400", "600"], subsets: ["latin"], variable: "--font-cormorant", display: 'swap' });
+const notoDevanagari = Noto_Serif_Devanagari({ weight: ["400", "700"], subsets: ["devanagari"], variable: "--font-noto-devanagari", display: 'swap' });
+const tangerine = Tangerine({ weight: ["400", "700"], subsets: ["latin"], variable: "--font-tangerine", display: 'swap' });
 
 export const metadata: Metadata = {
   title: "Vishram Sthal | Luxury Hotel in Word No. 6 Dehra Gopipur",
@@ -66,6 +67,7 @@ export default function RootLayout({
           <MainWrapper>
             {children}
           </MainWrapper>
+          <ScrollToTop />
           <Toaster position="bottom-right" />
           <Footer />
         </body>
