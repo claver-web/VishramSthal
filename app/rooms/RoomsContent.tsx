@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Reveal from '@/components/Reveal';
 import RoomFilterPanel from '@/components/rooms/RoomFilterPanel';
 import RoomCard from '@/components/rooms/RoomCard';
+import RoomCardSkeleton from '@/components/rooms/RoomCardSkeleton';
 import { FilterIcon, GridIcon, ListIcon, XIcon } from '@/components/rooms/Icons';
 
 type Room = {
@@ -128,7 +129,7 @@ export default function RoomsContent() {
           {loading ? (
             <div className={`grid gap-8 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
               {[1,2,3,4,5,6].map(i => (
-                <div key={i} className={`animate-pulse bg-gray-800 rounded-3xl shadow-xl ${viewMode === 'grid' ? 'h-[500px]' : 'h-64'}`}></div>
+                <RoomCardSkeleton key={i} viewMode={viewMode} />
               ))}
             </div>
           ) : rooms.length > 0 ? (
@@ -138,14 +139,21 @@ export default function RoomsContent() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-20 bg-gray-800 rounded-3xl border border-dashed border-gray-700">
-              <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center mb-6">
+            <div className="flex flex-col items-center justify-center py-24 bg-gray-800 rounded-3xl border border-dashed border-gray-700 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-mandala-pattern opacity-5 group-hover:opacity-10 transition-opacity duration-500"></div>
+              <div className="relative z-10 w-24 h-24 bg-gray-900 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-black/50 border border-gray-700">
                 <FilterIcon className="w-10 h-10 text-orange-400" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-2">No Sanctuaries Found</h3>
-              <p className="text-gray-400 text-center max-w-md mb-8">
-                We couldn't find any rooms matching your divine preferences. Please try adjusting your filters or search criteria.
+              <h3 className="relative z-10 text-3xl font-extrabold text-white mb-3 font-serif">No Sanctuaries Found</h3>
+              <p className="relative z-10 text-gray-400 text-center max-w-md mb-8 leading-relaxed">
+                We couldn't find any sanctuaries matching your divine preferences. Please adjust your search criteria or clear some filters to reveal more options.
               </p>
+              <button 
+                onClick={() => window.location.href = '/rooms'}
+                className="relative z-10 px-8 py-3 bg-gray-900 border-2 border-orange-500 text-orange-400 font-bold rounded-xl transition-all hover:bg-orange-500 hover:text-gray-900 shadow-md hover:shadow-lg hover:shadow-orange-500/20"
+              >
+                Clear Filters
+              </button>
             </div>
           )}
         </div>

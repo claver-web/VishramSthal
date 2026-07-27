@@ -16,7 +16,7 @@ const notoDevanagari = Noto_Serif_Devanagari({ weight: ["400", "700"], subsets: 
 const tangerine = Tangerine({ weight: ["400", "700"], subsets: ["latin"], variable: "--font-tangerine", display: 'swap' });
 
 export const metadata: Metadata = {
-  title: "Vishram Sthal | Luxury Hotel in Word No. 6 Dehra Gopipur",
+  title: "Vishram Sthal - Divine Luxury Retreat | Dehra Gopipur",
   description: "Experience premium comfort at Vishram Sthal, a luxury hotel located in Word No. 6, Dehra Gopipur. Book your stay now for an unforgettable vacation.",
   openGraph: {
     title: 'Vishram Sthal | Luxury Hotel',
@@ -33,6 +33,10 @@ export const metadata: Metadata = {
     description: 'Experience premium comfort at Vishram Sthal in Word No. 6, Dehra Gopipur.',
     images: ['https://images.unsplash.com/photo-1542314831-c6a4d14d8c85?w=1200&h=630&fit=crop'],
   },
+};
+
+export const viewport = {
+  themeColor: '#0f0f1a',
 };
 
 export default function RootLayout({
