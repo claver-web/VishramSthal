@@ -1,6 +1,12 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith('/admin')) return null;
   return (
     <footer className="relative bg-[var(--color-maroon)] text-[#fef3c7] pt-16 pb-8 overflow-hidden transition-colors duration-300 mt-auto border-t-[8px] border-[var(--color-gold)]">
       {/* Decorative Top Border (Temple Arch Pattern) */}

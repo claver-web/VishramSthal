@@ -4,8 +4,9 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import MainWrapper from "@/components/MainWrapper";
 import { Toaster } from "react-hot-toast";
-import ThemeProvider from "@/components/ThemeProvider";
+import Preloader from "@/components/Preloader";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
@@ -55,16 +56,16 @@ export default function RootLayout({
 
   return (
     <ClerkProvider>
-      <html lang="en" className="scroll-smooth">
+      <html lang="en" className="scroll-smooth dark">
         <head>
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         </head>
         <body className={`${inter.variable} ${playfair.variable} ${cormorant.variable} ${notoDevanagari.variable} ${tangerine.variable} font-sans bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col`}>
-          <ThemeProvider />
+          <Preloader />
           <Navigation />
-          <main className="flex-grow pt-20">
+          <MainWrapper>
             {children}
-          </main>
+          </MainWrapper>
           <Toaster position="bottom-right" />
           <Footer />
         </body>

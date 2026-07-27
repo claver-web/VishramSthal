@@ -132,8 +132,16 @@ export default async function Home() {
                     <div className="h-64 relative overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
                       <div className="absolute inset-0 bg-[var(--color-saffron)] mix-blend-overlay opacity-30 z-10" />
-                      {/* Placeholder Image */}
-                      <div className="w-full h-full bg-gray-300 dark:bg-gray-700 bg-[url('https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80')] bg-cover bg-center group-hover:scale-110 transition-transform duration-700" />
+                      {/* Image with Placeholder */}
+                      <Image
+                        src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80"
+                        alt={name}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-700"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                        placeholder="blur"
+                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mO8/e79fwAJzAPm44z/YQAAAABJRU5ErkJggg=="
+                      />
                       <div className="absolute bottom-4 left-4 z-20">
                         <h3 className="text-3xl font-serif text-white font-bold tracking-wide drop-shadow-lg">{name}</h3>
                         <p className="text-white/90 text-sm font-sans">{room.type} ROOM</p>
@@ -263,7 +271,7 @@ export default async function Home() {
                   <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[var(--color-saffron)]"></div>
                   
                   <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full border-4 border-[var(--color-gold)] bg-gray-200 overflow-hidden shadow-lg">
-                    <Image src={`https://i.pravatar.cc/150?u=${i}`} alt="Guest" fill sizes="80px" className="object-cover" />
+                    <Image src={`https://i.pravatar.cc/150?u=${i}`} alt="Guest" fill sizes="80px" className="object-cover" placeholder="blur" blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mO8/e79fwAJzAPm44z/YQAAAABJRU5ErkJggg==" />
                   </div>
                   
                   <div className="mt-8 mb-4 text-[var(--color-saffron)] flex justify-center gap-1">

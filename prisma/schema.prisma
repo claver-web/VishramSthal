@@ -29,44 +29,117 @@ model User {
   phone         String?
   createdAt     DateTime  @default(now())
   bookings      Booking[]
+  reviews       Review[]
 }
 
 model Room {
   id            String        @id @default(cuid())
   number        String        @unique
   type          RoomType      @default(STANDARD)
+  name          String?
+  theme         String?
   price         Float
+  weekendPrice  Float?
   capacity      Int           @default(2)
+  size          Int?
   description   String?
   amenities     String[]
   images        String[]
+  videoTour     String?
+  taxIncluded   Boolean       @default(false)
+  metaTitle     String?
+  metaDescription String?
   isAvailable   Boolean       @default(true)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   bookings      Booking[]
+  reviews       Review[]
 }
 
 model Booking {
-  id            String        @id @default(cuid())
-  userId        String
-  roomId        String
-  checkIn       DateTime
-  checkOut      DateTime
-  guests        Int           @default(1)
-  totalPrice    Float
-  status        BookingStatus @default(PENDING)
-  razorpayOrderId String?
+  id                String        @id @default(cuid())
+  userId            String
+  roomId            String
+  checkIn           DateTime
+  checkOut          DateTime
+  guests            Int           @default(1)
+  totalPrice        Float
+  status            BookingStatus @default(PENDING)
+  razorpayOrderId   String?
   razorpayPaymentId String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  user          User          @relation(fields: [userId], references: [id])
-  room          Room          @relation(fields: [roomId], references: [id])
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  user              User          @relation(fields: [userId], references: [id])
+  room              Room          @relation(fields: [roomId], references: [id])
+  transactions      Transaction[]
 }
 
 model Admin {
-  id            String    @id @default(cuid())
-  username      String    @unique
+  id            String             @id @default(cuid())
+  username      String             @unique
   password      String
   token         String?
-  createdAt     DateTime  @default(now())
+  createdAt     DateTime           @default(now())
+  activityLogs  AdminActivityLog[]
+}
+
+model AdminActivityLog {
+  id        String   @id @default(cuid())
+  adminId   String
+  action    String
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  roomId    String
+  rating    Int
+  comment   String
+  reply     String?
+  status    String   @default("PENDING") // PENDING, PUBLISHED, REJECTED
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+}
+
+model Offer {
+  id          String   @id @default(cuid())
+  title       String
+  code        String   @unique
+  discountPct Float
+  validUntil  DateTime
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model Transaction {
+  id              String   @id @default(cuid())
+  bookingId       String
+  amount          Float
+  method          String
+  status          String
+  razorpayOrderId String?
+  createdAt       DateTime @default(now())
+  booking         Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  url       String
+  type      String   // IMAGE, VIDEO, DOCUMENT
+  filename  String
+  size      Int
+  createdAt DateTime @default(now())
 }

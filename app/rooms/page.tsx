@@ -63,8 +63,8 @@ function RoomsContent() {
       <div className="flex flex-col lg:flex-row gap-8">
         
         {/* Desktop Filter Panel */}
-        <div className="hidden lg:block w-80 shrink-0">
-          <div className="fixed top-24 w-80" style={{ maxHeight: 'calc(100vh - 120px)', overflowY: 'hidden' }}>
+        <div className="hidden lg:block w-72 shrink-0">
+          <div className="sticky top-24 h-[calc(100vh-96px)] pb-4">
             <RoomFilterPanel />
           </div>
         </div>

@@ -3,13 +3,17 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { UserButton, SignInButton, useUser } from '@clerk/nextjs';
 import { useStore } from '@/store/useStore';
 
 export default function Navigation() {
+  const pathname = usePathname();
   const { isSignedIn } = useUser();
-  const { isDarkMode, toggleDarkMode, isMenuOpen, toggleMenu, setMenuOpen } = useStore();
+  const { isMenuOpen, toggleMenu, setMenuOpen } = useStore();
   const [scrolled, setScrolled] = useState(false);
+
+  if (pathname?.startsWith('/admin')) return null;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,7 +28,7 @@ export default function Navigation() {
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2 group">
           <div className="w-16 h-16 relative group-hover:scale-105 transition-transform rounded-full overflow-hidden shadow-md border border-[var(--color-saffron)] bg-white flex items-center justify-center">
-            <Image src="/logoKrishna.png" alt="Vishram Sthal Logo" fill sizes="64px" className="object-contain scale-[1.3]" priority unoptimized />
+            <Image src="/logoKrishna.png" alt="Vishram Sthal Logo" fill sizes="64px" className="object-contain scale-[1.3]" priority unoptimized placeholder="blur" blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mO8/e79fwAJzAPm44z/YQAAAABJRU5ErkJggg==" />
           </div>
           <span className="font-bold text-xl tracking-tight hidden sm:block text-gray-900 dark:text-white">Vishram Sthal</span>
         </Link>
@@ -38,13 +42,7 @@ export default function Navigation() {
         </div>
 
         <div className="flex items-center gap-4">
-          <button onClick={toggleDarkMode} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" aria-label="Toggle Dark Mode">
-            {isDarkMode ? (
-              <svg className="w-5 h-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-            ) : (
-              <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-            )}
-          </button>
+          
           
           <div className="hidden md:block">
             {isSignedIn ? (

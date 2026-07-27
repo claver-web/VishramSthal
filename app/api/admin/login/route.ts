@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
-import prisma from '@/lib/prisma';
+import jwt from 'jsonwebtoken';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,13 +11,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    const token = crypto.randomBytes(32).toString('hex');
-
-    await prisma.admin.upsert({
-      where: { username: 'Admin' },
-      update: { token },
-      create: { username: 'Admin', password: 'admin', token },
-    });
+    // Bypass slow database upserts entirely for Admin login.
+    // We sign a fast, stateless JWT token instead.
+    const secret = process.env.ADMIN_JWT_SECRET || 'fallback_secret_key';
+    const token = jwt.sign({ username: 'Admin', role: 'admin' }, secret, { expiresIn: '24h' });
 
     return NextResponse.json({ success: true, token });
   } catch (error) {
