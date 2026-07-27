@@ -2,93 +2,254 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { UserButton, SignInButton, useUser } from '@clerk/nextjs';
-import { useStore } from '@/store/useStore';
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
+
+const NAV_LINKS = [
+  { name: 'Home', href: '/' },
+  { name: 'Divine Abodes', href: '/rooms' },
+  { name: 'About', href: '/about' },
+  { name: 'Gallery', href: '/gallery' },
+  { name: 'Contact', href: '/contact' },
+];
 
 export default function Navigation() {
   const pathname = usePathname();
   const { isSignedIn } = useUser();
-  const { isMenuOpen, toggleMenu, setMenuOpen } = useStore();
-  const [scrolled, setScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    
+    // Transparent at top (scrollY < 100)
+    if (latest > 100) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
+
+    // Hide navbar when scrolling down (after 300px), show when scrolling up
+    if (latest > 300 && latest > previous && !isMobileMenuOpen) {
+      setIsHidden(true);
+    } else {
+      setIsHidden(false);
+    }
+  });
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMobileMenuOpen]);
 
   if (pathname?.startsWith('/admin')) return null;
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-md py-3' : 'bg-transparent py-5'}`}>
-      <div className="container mx-auto px-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-16 h-16 relative group-hover:scale-105 transition-transform rounded-full overflow-hidden shadow-md border border-[var(--color-saffron)] bg-white flex items-center justify-center">
-            <Image src="/logoKrishna.png" alt="Vishram Sthal Logo" fill sizes="64px" className="object-contain scale-[1.3]" priority unoptimized placeholder="blur" blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mO8/e79fwAJzAPm44z/YQAAAABJRU5ErkJggg==" />
+    <>
+      <motion.nav
+        variants={{
+          visible: { y: 0 },
+          hidden: { y: '-100%' },
+        }}
+        animate={isHidden ? 'hidden' : 'visible'}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className={`fixed top-0 left-0 w-full z-50 transition-colors duration-300 ${
+          isScrolled
+            ? 'bg-[#1a1a2e]/85 backdrop-blur-xl border-b border-amber-500/20 shadow-[0_4px_30px_rgba(0,0,0,0.3)] py-3'
+            : 'bg-transparent py-5'
+        }`}
+      >
+        <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
+          
+          {/* Logo Section */}
+          <Link href="/" className="group flex items-center gap-3 transition-transform hover:scale-105">
+            <motion.div
+              animate={{
+                boxShadow: [
+                  '0 0 10px rgba(245,158,11,0.2)',
+                  '0 0 20px rgba(245,158,11,0.6)',
+                  '0 0 10px rgba(245,158,11,0.2)',
+                ],
+              }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shrink-0"
+            >
+              <svg viewBox="0 0 40 40" className="w-8 h-8 text-[#1a1a2e]" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 12 L16 28 L22 12 M24 12 C24 12, 30 10, 30 16 C30 22, 24 24, 30 26 C36 28, 30 32, 24 28" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </motion.div>
+            <div className="flex flex-col">
+              <span className="font-serif text-xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent">
+                Vishram Sthal
+              </span>
+              <span className="text-xs text-amber-500/80 uppercase tracking-widest font-medium">
+                Dehra Gopipur
+              </span>
+            </div>
+          </Link>
+
+          {/* Desktop Links */}
+          <div className="hidden lg:flex items-center gap-8">
+            {NAV_LINKS.map((link) => {
+              const isActive = pathname === link.href || (pathname === '/' && link.href === '/');
+              
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`relative font-medium transition-colors text-sm uppercase tracking-wider group py-1 ${
+                    isActive ? 'text-amber-400' : 'text-gray-300 hover:text-amber-400'
+                  }`}
+                >
+                  {link.name}
+                  <span className={`absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-amber-400 to-orange-500 transition-transform origin-left duration-300 ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
+                </Link>
+              );
+            })}
           </div>
-          <span className="font-bold text-xl tracking-tight hidden sm:block text-gray-900 dark:text-white">Vishram Sthal</span>
-        </Link>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-8">
-          <Link href="/" className="text-gray-700 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 font-medium transition-colors">Home</Link>
-          <Link href="/rooms" className="text-gray-700 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 font-medium transition-colors">Rooms</Link>
-          <Link href="/about" className="text-gray-700 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 font-medium transition-colors">About</Link>
-          <Link href="/contact" className="text-gray-700 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 font-medium transition-colors">Contact</Link>
-        </div>
-
-        <div className="flex items-center gap-4">
-          
-          
-          <div className="hidden md:block">
+          {/* CTA & User */}
+          <div className="hidden lg:flex items-center gap-6">
             {isSignedIn ? (
               <UserButton />
             ) : (
               <SignInButton mode="modal">
-                <button className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-full font-medium transition-all shadow-md hover:shadow-lg">
+                <button className="text-sm font-medium text-gray-300 hover:text-amber-400 transition-colors">
                   Sign In
                 </button>
               </SignInButton>
             )}
+            
+            <Link
+              href="/rooms"
+              className="group relative flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_20px_rgba(249,115,22,0.4)] transition-all hover:scale-105 hover:shadow-[0_0_25px_rgba(249,115,22,0.6)]"
+            >
+              <span>Book Your Stay</span>
+              <span className="text-lg">🪷</span>
+            </Link>
           </div>
 
-          <button onClick={toggleMenu} className="md:hidden p-2 text-gray-700 dark:text-gray-300">
-            {isMenuOpen ? (
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-            ) : (
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
-            )}
+          {/* Mobile Toggle */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden relative z-50 p-2 text-amber-500 focus:outline-none"
+            aria-label="Toggle menu"
+          >
+            <motion.div
+              animate={isMobileMenuOpen ? 'open' : 'closed'}
+              className="w-6 h-5 flex flex-col justify-between"
+            >
+              <motion.span
+                variants={{
+                  closed: { rotate: 0, y: 0 },
+                  open: { rotate: 45, y: 9 },
+                }}
+                className="w-full h-0.5 bg-current origin-left transition-all"
+              />
+              <motion.span
+                variants={{
+                  closed: { opacity: 1 },
+                  open: { opacity: 0 },
+                }}
+                className="w-full h-0.5 bg-current transition-all"
+              />
+              <motion.span
+                variants={{
+                  closed: { rotate: 0, y: 0 },
+                  open: { rotate: -45, y: -9 },
+                }}
+                className="w-full h-0.5 bg-current origin-left transition-all"
+              />
+            </motion.div>
           </button>
         </div>
-      </div>
+      </motion.nav>
 
-      {/* Mobile Menu */}
-      <div className={`md:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-900 shadow-xl transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-96 border-t dark:border-gray-800' : 'max-h-0'}`}>
-        <div className="flex flex-col p-4 gap-4">
-          <Link href="/" onClick={() => setMenuOpen(false)} className="text-gray-700 dark:text-gray-300 font-medium p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">Home</Link>
-          <Link href="/rooms" onClick={() => setMenuOpen(false)} className="text-gray-700 dark:text-gray-300 font-medium p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">Rooms</Link>
-          <Link href="/about" onClick={() => setMenuOpen(false)} className="text-gray-700 dark:text-gray-300 font-medium p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">About</Link>
-          <Link href="/contact" onClick={() => setMenuOpen(false)} className="text-gray-700 dark:text-gray-300 font-medium p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">Contact</Link>
-          <div className="p-2 pt-4 border-t dark:border-gray-800">
-            {isSignedIn ? (
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-gray-500">Account</span>
-                <UserButton />
+      {/* Mobile Menu Panel */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="absolute right-0 top-0 bottom-0 w-3/4 max-w-sm bg-[#1a1a2e]/95 backdrop-blur-xl border-l border-amber-500/20 shadow-2xl p-6 flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex flex-col mt-24 gap-6">
+                {NAV_LINKS.map((link, i) => {
+                  const isActive = pathname === link.href;
+                  return (
+                    <motion.div
+                      key={link.name}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 + i * 0.1 }}
+                    >
+                      <Link
+                        href={link.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`text-xl font-medium block ${
+                          isActive ? 'text-amber-400' : 'text-gray-300 hover:text-amber-400'
+                        }`}
+                      >
+                        {link.name}
+                      </Link>
+                    </motion.div>
+                  );
+                })}
               </div>
-            ) : (
-              <SignInButton mode="modal">
-                <button className="w-full bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-lg font-medium transition-colors">
-                  Sign In
-                </button>
-              </SignInButton>
-            )}
-          </div>
-        </div>
-      </div>
-    </nav>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="mt-auto flex flex-col gap-6 border-t border-amber-500/20 pt-6 pb-8"
+              >
+                {isSignedIn ? (
+                  <div className="flex items-center gap-4">
+                    <UserButton />
+                    <span className="text-gray-300 font-medium">My Account</span>
+                  </div>
+                ) : (
+                  <SignInButton mode="modal">
+                    <button className="text-left text-lg font-medium text-gray-300 hover:text-amber-400">
+                      Sign In
+                    </button>
+                  </SignInButton>
+                )}
+                
+                <Link
+                  href="/rooms"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_20px_rgba(249,115,22,0.4)]"
+                >
+                  <span>Book Your Stay</span>
+                  <span>🪷</span>
+                </Link>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
