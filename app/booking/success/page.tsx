@@ -109,6 +109,25 @@ export default function BookingSuccessPage() {
             </motion.div>
           )}
 
+          <div className="w-full bg-neutral-950/50 rounded-2xl border border-neutral-800 p-6 mb-8 text-left">
+            <h3 className="text-xl font-semibold text-amber-500 mb-4 border-b border-neutral-800 pb-4">Welcome to Vishram Sthal</h3>
+            <p className="text-neutral-300 mb-4 text-sm leading-relaxed">
+              We eagerly await your arrival. Here is our address to help you reach your divine sanctuary:
+            </p>
+            <div className="bg-neutral-900 rounded-xl p-4 border border-amber-500/20">
+              <p className="font-medium text-neutral-200 mb-1">Vishram Sthal (Radha Krishna Mandir Area)</p>
+              <p className="text-sm text-neutral-400 mb-4">Word No. 6, Dehra Gopipur, Himachal Pradesh 177101</p>
+              <a 
+                href="https://www.google.com/maps/place/%E0%A4%B6%E0%A5%8D%E0%A4%B0%E0%A5%80+%E0%A4%B0%E0%A4%BE%E0%A4%A7%E0%A5%87+%E0%A4%B0%E0%A4%BE%E0%A4%A7%E0%A5%87+%E0%A4%B5%E0%A4%BF%E0%A4%B6%E0%A5%8D%E0%A4%B0%E0%A4%BE%E0%A4%AE+%E0%A4%B8%E0%A5%8D%E0%A4%A5%E0%A4%B2%E0%A5%80/@31.8791444,76.2160431,230m/data=!3m1!1e3!4m15!1m8!3m7!1s0x391b3970c005823f:0x5eebb5903b1d012!2sDehra+Gopipur,+Himachal+Pradesh+177101!3b1!8m2!3d31.8817558!4d76.2146448!16zL20vMGYxY2ti!3m5!1s0x391b39b3a3b742e1:0x3c53ba0b800f489a!8m2!3d31.8793295!4d76.2164309!16s%2Fg%2F11zcnkkv9j!5m1!1e4?entry=ttu" 
+                target="_blank" 
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-sm text-amber-500 hover:text-amber-400 font-bold transition-colors"
+              >
+                Get Directions on Maps <ArrowRight size={16} />
+              </a>
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4 w-full">
             <Link href="/bookings" className="flex-1">
               <button className="w-full py-3 px-4 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-medium transition-colors border border-neutral-700 hover:border-neutral-600 flex items-center justify-center gap-2">

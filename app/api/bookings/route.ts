@@ -18,6 +18,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Lookup or create the user in our database using the Clerk ID
+    let dbUser;
+    if (authUserId) {
+      dbUser = await prisma.user.upsert({
+        where: { clerkId: authUserId },
+        update: {},
+        create: {
+          clerkId: authUserId,
+          email: body.guestEmail || `user_${authUserId}@example.com`,
+          name: body.guestName || 'Guest',
+        }
+      });
+    } else {
+      // If passing direct userId, assume it's the db user id
+      dbUser = await prisma.user.findUnique({ where: { id: finalUserId } });
+      if (!dbUser) {
+        return NextResponse.json({ error: 'User not found in DB' }, { status: 404 });
+      }
+    }
+
     if (!roomId || !checkIn || !checkOut) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
@@ -45,7 +65,7 @@ export async function POST(req: Request) {
 
     const booking = await prisma.booking.create({
       data: {
-        userId: finalUserId,
+        userId: dbUser.id,
         roomId,
         checkIn: checkInDate,
         checkOut: checkOutDate,
