@@ -13,8 +13,10 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'ik.imagekit.io' }
     ],
   },
-  serverActions: {
-    bodySizeLimit: '10mb',
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
   },
 };
 
