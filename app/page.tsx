@@ -14,6 +14,14 @@ export default async function Home() {
     take: 4,
   });
 
+  // Fetch reviews from the database
+  const recentReviews = await prisma.review.findMany({
+    where: { status: 'PUBLISHED' },
+    include: { user: true },
+    orderBy: { createdAt: 'desc' },
+    take: 3
+  });
+
   // Default room details if none in DB yet
   const defaultRooms = [
     { id: '1', type: 'STANDARD', price: 2500, capacity: 2, isAvailable: true, number: '101' },
@@ -268,12 +276,8 @@ export default async function Home() {
           </Reveal>
           
           <div className="flex flex-wrap justify-center gap-8">
-            {[
-              { name: 'Rahul S.', loc: 'Delhi', quote: 'A truly divine experience. The ambiance makes you feel like you are residing in a royal temple.' },
-              { name: 'Priya K.', loc: 'Mumbai', quote: 'The Krishna Kunj room was spectacular. Waking up to the sound of temple bells was magical.' },
-              { name: 'Amit V.', loc: 'Chandigarh', quote: 'Satvik food and the peaceful gardens offered the perfect spiritual retreat our family needed.' }
-            ].map((testimonial, i) => (
-              <Reveal key={i} delay={i * 200}>
+            {recentReviews.length > 0 ? recentReviews.map((testimonial, i) => (
+              <Reveal key={testimonial.id} delay={i * 200}>
                 <div className="bg-gray-800 p-8 w-full max-w-sm mx-auto shadow-xl relative mt-8 border-2 border-gray-700 rounded-sm">
                   {/* Parchment styling corners */}
                   <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[var(--color-saffron)]"></div>
@@ -282,25 +286,44 @@ export default async function Home() {
                   <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[var(--color-saffron)]"></div>
                   
                   <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full border-4 border-[var(--color-gold)] bg-gray-200 overflow-hidden shadow-lg">
-                    <Image src={`https://i.pravatar.cc/150?u=${i}`} alt="Guest" fill sizes="80px" className="object-cover" placeholder="blur" blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mO8/e79fwAJzAPm44z/YQAAAABJRU5ErkJggg==" />
+                    <Image 
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.user?.name || 'Google Guest')}&background=f97316&color=fff&size=150`} 
+                      alt="Guest" 
+                      fill 
+                      sizes="80px" 
+                      className="object-cover" 
+                      unoptimized
+                    />
                   </div>
                   
                   <div className="mt-8 mb-4 text-[var(--color-saffron)] flex justify-center gap-1">
-                    {'🪷🪷🪷🪷🪷'}
+                    {'🪷'.repeat(testimonial.rating || 5)}
                   </div>
                   
-                  <p className="font-cormorant text-xl italic text-gray-300 mb-6 leading-relaxed">
-                    "{testimonial.quote}"
+                  <p className="font-cormorant text-xl italic text-gray-300 mb-6 leading-relaxed line-clamp-4">
+                    "{testimonial.comment}"
                   </p>
                   
                   <div className="border-t border-gray-600 pt-4">
-                    <p className="font-bold text-[var(--color-gold)] font-serif text-lg">{testimonial.name}</p>
-                    <p className="text-xs text-gray-500 uppercase tracking-widest">{testimonial.loc}</p>
+                    <p className="font-bold text-[var(--color-gold)] font-serif text-lg">{testimonial.user?.name || 'Google Guest'}</p>
+                    <p className="text-xs text-gray-500 uppercase tracking-widest">Verified Guest</p>
                   </div>
                 </div>
               </Reveal>
-            ))}
+            )) : (
+              <p className="text-gray-400 italic">Divine blessings from our guests will appear here soon.</p>
+            )}
           </div>
+          
+          {recentReviews.length > 0 && (
+            <Reveal delay={600}>
+              <div className="mt-16 text-center">
+                <Link href="/reviews" className="inline-block px-10 py-4 bg-transparent border-2 border-[var(--color-saffron)] text-[var(--color-saffron)] rounded-full font-bold text-lg hover:bg-[var(--color-saffron)] hover:text-white transition-all shadow-lg hover:-translate-y-1">
+                  See More Reviews
+                </Link>
+              </div>
+            </Reveal>
+          )}
         </div>
       </section>
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { UserButton, SignInButton, useUser } from '@clerk/nextjs';
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
@@ -83,11 +84,9 @@ export default function Navigation() {
                 ],
               }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shrink-0"
+              className="w-14 h-14 flex items-center justify-center shrink-0 relative rounded-full overflow-hidden"
             >
-              <svg viewBox="0 0 40 40" className="w-8 h-8 text-[#1a1a2e]" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 12 L16 28 L22 12 M24 12 C24 12, 30 10, 30 16 C30 22, 24 24, 30 26 C36 28, 30 32, 24 28" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <Image src="/logoKrishna.png" alt="Vishram Sthal Logo" fill className="object-cover" />
             </motion.div>
             <div className="flex flex-col">
               <span className="font-serif text-xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent">

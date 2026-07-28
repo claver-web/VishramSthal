@@ -1,4 +1,5 @@
-export default function ConfirmBookingPage({ params }: { params: { roomId: string } }) {
+export default async function ConfirmBookingPage({ params }: { params: Promise<{ roomId: string }> }) {
+  const { roomId } = await params;
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-200 flex items-center justify-center p-8">
       <div className="text-center max-w-2xl bg-neutral-900 p-12 rounded-3xl border border-neutral-800">

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { 
   Home, 
@@ -146,8 +147,8 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsO
       `}>
         <div className="p-4 sticky top-0 bg-[#0f172a] z-10 border-b border-[#1e293b]">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#ea580c] to-[#c2410c] flex items-center justify-center text-white font-black text-lg shadow-lg shadow-orange-500/20">
-              VS
+            <div className="w-12 h-12 relative bg-transparent rounded-full overflow-hidden">
+              <Image src="/logoKrishna.png" alt="Logo" fill className="object-cover" />
             </div>
             <div>
               <h2 className="text-lg font-black text-white tracking-tight">Vishram Sthal</h2>

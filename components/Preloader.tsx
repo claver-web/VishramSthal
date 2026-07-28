@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 export default function Preloader() {
   const [show, setShow] = useState(true);
@@ -79,7 +80,7 @@ export default function Preloader() {
                    />
                  ))}
                </motion.div>
-               <span className="font-playfair text-5xl font-bold text-white z-10 drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]">VS</span>
+               <Image src="/logoKrishna.png" alt="Vishram Sthal Logo" width={80} height={80} className="z-10 object-cover rounded-full drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]" />
             </div>
 
             {/* Typewriter text */}

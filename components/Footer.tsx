@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 export default function Footer() {
@@ -24,8 +25,8 @@ export default function Footer() {
           
           {/* Column 1: Vishram Sthal */}
           <div>
-            <Link href="/" className="inline-block mb-6">
-              <span className="text-3xl font-serif text-[var(--color-gold)] drop-shadow-md">Vishram Sthal</span>
+            <Link href="/" className="inline-block mb-6 relative w-48 h-16">
+              <Image src="/logoKrishna.png" alt="Vishram Sthal Logo" fill className="object-contain object-left" />
             </Link>
             <p className="text-white/80 font-sans text-sm leading-relaxed mb-6">
               A premium spiritual retreat inspired by the divine love of Radha Krishna, offering luxurious stays and serene ambiance.

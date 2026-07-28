@@ -41,6 +41,7 @@ export async function POST(request: Request) {
         capacity: body.capacity,
         description: body.description,
         amenities: body.amenities || [],
+        images: body.images || [],
         isAvailable: body.status !== 'Booked',
       }
     });

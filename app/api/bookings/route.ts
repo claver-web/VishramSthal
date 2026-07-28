@@ -52,7 +52,6 @@ export async function POST(req: Request) {
         guests: guests ? parseInt(guests.toString(), 10) : 1,
         totalPrice,
         status,
-        paymentMethod: paymentMethod || 'ONLINE',
       },
       include: {
         room: true,

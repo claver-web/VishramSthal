@@ -90,7 +90,7 @@ export default async function UserBookingsPage() {
                   <div className="p-6 flex-1 flex flex-col justify-between">
                     <div>
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-xl font-bold text-neutral-100">{booking.room.name || \`Room \${booking.room.number}\`}</h3>
+                        <h3 className="text-xl font-bold text-neutral-100">{booking.room.name || `Room ${booking.room.number}`}</h3>
                         <p className="text-lg font-semibold text-amber-500 flex items-center">
                           <IndianRupee size={16} className="mr-0.5" />
                           {booking.totalPrice.toLocaleString('en-IN')}
@@ -124,7 +124,7 @@ export default async function UserBookingsPage() {
                           <IndianRupee className="text-neutral-500 shrink-0 mt-0.5" size={18} />
                           <div>
                             <p className="text-xs text-neutral-500 mb-1">Payment</p>
-                            <p className="text-sm font-medium text-neutral-300">{booking.paymentMethod}</p>
+                            <p className="text-sm font-medium text-neutral-300">Online</p>
                           </div>
                         </div>
                       </div>

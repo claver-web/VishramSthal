@@ -7,6 +7,7 @@ import Reveal from '@/components/Reveal';
 
 interface Room {
   id: string;
+  name?: string | null;
   number: string;
   type: string;
   price: number;
@@ -14,6 +15,7 @@ interface Room {
   description: string;
   amenities: string[];
   isAvailable: boolean;
+  images?: string[];
 }
 
 interface RoomCardProps {
@@ -38,6 +40,9 @@ export default function RoomCard({ room, viewMode, index }: RoomCardProps) {
 
   const spiritualName = getSpiritualName(room.type);
   const isList = viewMode === 'list';
+  const displayImage = room.images && room.images.length > 0 
+    ? room.images[0] 
+    : 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=800';
 
   return (
     <Reveal delay={index * 50}>
@@ -49,8 +54,8 @@ export default function RoomCard({ room, viewMode, index }: RoomCardProps) {
         {/* Image / Banner */}
         <div className={`relative bg-gray-800 flex items-center justify-center overflow-hidden group ${isList ? 'w-full md:w-2/5 h-56 md:h-full shrink-0' : 'h-56'}`}>
           <Image 
-            src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=800" 
-            alt="Room Image" 
+            src={displayImage} 
+            alt={room.name || `Room ${room.number}`} 
             fill 
             className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-80"
             sizes="(max-width: 768px) 100vw, 400px"
