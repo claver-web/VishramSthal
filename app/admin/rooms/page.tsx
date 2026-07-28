@@ -15,14 +15,40 @@ export default function RoomsPage() {
   const [rooms, setRooms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchRooms = async () => {
+    setLoading(true);
+    const { getRooms } = await import('./actions');
+    const data = await getRooms();
+    setRooms(data);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    import('./actions').then(({ getRooms }) => {
-      getRooms().then(data => {
-        setRooms(data);
-        setLoading(false);
-      });
-    });
+    fetchRooms();
   }, []);
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure you want to delete this room?")) {
+      const { deleteRoom } = await import('./actions');
+      const res = await deleteRoom(id);
+      if (res.success) {
+        fetchRooms();
+      } else {
+        alert("Failed to delete room");
+      }
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (confirm(`Are you sure you want to delete ${selectedRooms.length} rooms?`)) {
+      const { deleteRoom } = await import('./actions');
+      for (const id of selectedRooms) {
+        await deleteRoom(id);
+      }
+      setSelectedRooms([]);
+      fetchRooms();
+    }
+  };
 
   const toggleSelectAll = () => {
     if (selectedRooms.length === rooms.length && rooms.length > 0) {
@@ -88,10 +114,16 @@ export default function RoomsPage() {
           {selectedRooms.length > 0 && (
             <div className="flex items-center gap-2">
               <span className="text-sm font-bold text-[#ea580c]">{selectedRooms.length} selected</span>
-              <select className="bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 text-sm font-medium outline-none">
-                <option>Bulk Actions</option>
-                <option>Delete Selected</option>
-                <option>Mark Available</option>
+              <select 
+                className="bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 text-sm font-medium outline-none"
+                onChange={(e) => {
+                  if (e.target.value === 'delete') handleBulkDelete();
+                  e.target.value = '';
+                }}
+              >
+                <option value="">Bulk Actions</option>
+                <option value="delete">Delete Selected</option>
+                <option value="mark_available">Mark Available</option>
               </select>
             </div>
           )}
@@ -176,8 +208,8 @@ export default function RoomsPage() {
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button className="p-1.5 text-gray-500 hover:text-[#ea580c] transition-colors"><Eye className="w-4 h-4" /></button>
-                        <button className="p-1.5 text-gray-500 hover:text-blue-500 transition-colors"><Edit className="w-4 h-4" /></button>
-                        <button className="p-1.5 text-gray-500 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                        <Link href={`/admin/rooms/edit/${room.id}`} className="p-1.5 text-gray-500 hover:text-blue-500 transition-colors"><Edit className="w-4 h-4" /></Link>
+                        <button onClick={() => handleDelete(room.id)} className="p-1.5 text-gray-500 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     </td>
                   </tr>
@@ -216,7 +248,7 @@ export default function RoomsPage() {
                 <div className="mt-4 flex items-center justify-between">
                   <span className="text-xl font-black text-gray-900 dark:text-white">₹{room.price}<span className="text-xs text-gray-500 font-normal">/night</span></span>
                   <div className="flex gap-2">
-                    <button className="p-2 bg-gray-50 dark:bg-[#0f172a] rounded-lg hover:text-[#ea580c] transition-colors"><Edit className="w-4 h-4" /></button>
+                    <Link href={`/admin/rooms/edit/${room.id}`} className="p-2 bg-gray-50 dark:bg-[#0f172a] rounded-lg hover:text-[#ea580c] transition-colors"><Edit className="w-4 h-4" /></Link>
                   </div>
                 </div>
               </div>
