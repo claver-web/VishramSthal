@@ -81,6 +81,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ booking }, { status: 201 });
   } catch (error: any) {
     console.error('Booking creation error:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: errorMessage, details: error }, { status: 500 });
   }
 }
