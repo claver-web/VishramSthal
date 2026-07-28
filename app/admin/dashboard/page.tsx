@@ -24,38 +24,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
 
-// --- MOCK DATA FOR CHARTS & TABLES ---
-const revenueData = [
-  { name: '1', revenue: 0 }, { name: '5', revenue: 0 }, { name: '10', revenue: 0 },
-  { name: '15', revenue: 0 }, { name: '20', revenue: 0 }, { name: '25', revenue: 0 },
-  { name: '30', revenue: 0 },
-];
-
-const bookingTrendData = [
-  { name: 'Mon', bookings: 0 }, { name: 'Tue', bookings: 0 }, { name: 'Wed', bookings: 0 },
-  { name: 'Thu', bookings: 0 }, { name: 'Fri', bookings: 0 }, { name: 'Sat', bookings: 0 },
-  { name: 'Sun', bookings: 0 },
-];
-
-const occupancyData = [
-  { name: 'Occupied', value: 0 },
-  { name: 'Available', value: 0 },
-  { name: 'Maintenance', value: 0 },
-];
-
-const roomTypeData = [
-  { name: 'Standard', value: 0 },
-  { name: 'Deluxe', value: 0 },
-  { name: 'Suite', value: 0 },
-  { name: 'Premium', value: 0 },
-];
-
-const paymentMethodData = [
-  { name: 'UPI', value: 0 },
-  { name: 'Card', value: 0 },
-  { name: 'Net Banking', value: 0 },
-  { name: 'Wallet', value: 0 },
-];
+// Charts Data passed directly into the components now
 
 const COLORS = ['#ea580c', '#f97316', '#fdba74', '#fed7aa'];
 const OCCUPANCY_COLORS = ['#ea580c', '#22c55e', '#ef4444'];
@@ -139,10 +108,10 @@ export default function AdminDashboard() {
       {/* Charts - Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 min-w-0">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Revenue Trend (Last 30 Days)</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Revenue Trend (This Month)</h3>
           <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueData}>
+              <LineChart data={data?.charts?.revenueData || []}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
                 <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
@@ -157,10 +126,10 @@ export default function AdminDashboard() {
         </div>
 
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Booking Trend</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Booking Trend (Last 7 Days)</h3>
           <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={bookingTrendData}>
+              <BarChart data={data?.charts?.bookingTrendData || []}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
                 <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
@@ -182,8 +151,8 @@ export default function AdminDashboard() {
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={occupancyData} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                  {occupancyData.map((entry, index) => (
+                <Pie data={data?.charts?.occupancyData || []} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                  {(data?.charts?.occupancyData || []).map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={OCCUPANCY_COLORS[index % OCCUPANCY_COLORS.length]} />
                   ))}
                 </Pie>
@@ -199,8 +168,8 @@ export default function AdminDashboard() {
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={roomTypeData} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                  {roomTypeData.map((entry, index) => (
+                <Pie data={data?.charts?.roomTypeData || []} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                  {(data?.charts?.roomTypeData || []).map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -216,8 +185,8 @@ export default function AdminDashboard() {
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={paymentMethodData} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                  {paymentMethodData.map((entry, index) => (
+                <Pie data={data?.charts?.paymentMethodData || []} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                  {(data?.charts?.paymentMethodData || []).map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
