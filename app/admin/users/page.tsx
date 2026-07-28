@@ -1,16 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Search, Filter, Download, MoreVertical, Eye, Edit, Trash2, 
   Mail, Ban, CheckCircle, XCircle, User, Star, IndianRupee,
   Clock, Calendar, MessageSquare, ShieldAlert, X
 } from 'lucide-react';
 
-const mockUsers: any[] = [];
-
 export default function UsersPage() {
   const [activeUser, setActiveUser] = useState<any>(null);
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    import('./actions').then(({ getUsers }) => {
+      getUsers().then(data => {
+        setUsers(data);
+        setLoading(false);
+      });
+    });
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -203,7 +212,11 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-              {mockUsers.length === 0 && (
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-16 text-center text-gray-500 dark:text-gray-400">Loading users...</td>
+                </tr>
+              ) : users.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
                     <div className="flex flex-col items-center justify-center">
@@ -213,8 +226,7 @@ export default function UsersPage() {
                     </div>
                   </td>
                 </tr>
-              )}
-              {mockUsers.map((user) => (
+              ) : users.map((user) => (
                 <tr key={user.id} className="hover:bg-orange-50/30 dark:hover:bg-[#0f172a]/50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">

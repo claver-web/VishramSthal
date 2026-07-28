@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Search, Filter, Download, Printer, MoreVertical, Eye, 
@@ -9,17 +9,46 @@ import {
   ArrowUpDown, X, User, MapPin, IndianRupee, Hash
 } from 'lucide-react';
 
-const mockBookings: any[] = [];
-
 export default function BookingsPage() {
   const [selectedBookings, setSelectedBookings] = useState<string[]>([]);
   const [activeBooking, setActiveBooking] = useState<any>(null);
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchBookings = async () => {
+    try {
+      const { getBookings } = await import('./actions');
+      const data = await getBookings();
+      setBookings(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  const handleUpdateStatus = async (id: string, status: string) => {
+    try {
+      const { updateBookingStatus } = await import('./actions');
+      await updateBookingStatus(id, status);
+      fetchBookings();
+      if (activeBooking && activeBooking.id === id) {
+        setActiveBooking({ ...activeBooking, status });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const toggleSelectAll = () => {
-    if (selectedBookings.length === mockBookings.length) {
+    if (selectedBookings.length === bookings.length && bookings.length > 0) {
       setSelectedBookings([]);
     } else {
-      setSelectedBookings(mockBookings.map(b => b.id));
+      setSelectedBookings(bookings.map(b => b.id));
     }
   };
 
@@ -177,21 +206,23 @@ export default function BookingsPage() {
           {/* Action Footer */}
           <div className="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-[#1e293b] flex justify-between gap-4">
             {activeBooking.status === 'Pending' && (
-              <button className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-green-500/20">
+              <button onClick={() => handleUpdateStatus(activeBooking.id, 'Confirmed')} className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-green-500/20">
                 Confirm Booking
               </button>
             )}
             {activeBooking.status === 'Confirmed' && (
-              <button className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-blue-500/20">
-                Mark Check-in
+              <button onClick={() => handleUpdateStatus(activeBooking.id, 'Completed')} className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-blue-500/20">
+                Mark Completed
               </button>
             )}
             <button className="px-6 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-bold py-3 rounded-xl transition-colors">
               Edit Details
             </button>
-            <button className="px-6 bg-red-100 hover:bg-red-200 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 font-bold py-3 rounded-xl transition-colors">
-              Cancel
-            </button>
+            {activeBooking.status !== 'Cancelled' && (
+              <button onClick={() => handleUpdateStatus(activeBooking.id, 'Cancelled')} className="px-6 bg-red-100 hover:bg-red-200 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 font-bold py-3 rounded-xl transition-colors">
+                Cancel
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -288,7 +319,7 @@ export default function BookingsPage() {
             <thead className="bg-gray-50 dark:bg-[#0f172a] text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">
               <tr>
                 <th className="px-6 py-4 w-12">
-                  <input type="checkbox" checked={selectedBookings.length === mockBookings.length} onChange={toggleSelectAll} className="rounded border-gray-300 text-[#ea580c] focus:ring-[#ea580c]" />
+                  <input type="checkbox" checked={selectedBookings.length === bookings.length && bookings.length > 0} onChange={toggleSelectAll} className="rounded border-gray-300 text-[#ea580c] focus:ring-[#ea580c]" />
                 </th>
                 <th className="px-6 py-4">Booking ID</th>
                 <th className="px-6 py-4">Guest</th>
@@ -300,7 +331,11 @@ export default function BookingsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-              {mockBookings.length === 0 && (
+              {loading ? (
+                <tr>
+                  <td colSpan={8} className="px-6 py-16 text-center text-gray-500 dark:text-gray-400">Loading bookings...</td>
+                </tr>
+              ) : bookings.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
                     <div className="flex flex-col items-center justify-center">
@@ -310,8 +345,7 @@ export default function BookingsPage() {
                     </div>
                   </td>
                 </tr>
-              )}
-              {mockBookings.map((b) => (
+              ) : bookings.map((b) => (
                 <tr key={b.id} className={`hover:bg-orange-50/30 dark:hover:bg-[#0f172a]/50 transition-colors ${selectedBookings.includes(b.id) ? 'bg-orange-50/50 dark:bg-orange-500/5' : ''}`}>
                   <td className="px-6 py-4">
                     <input type="checkbox" checked={selectedBookings.includes(b.id)} onChange={() => toggleSelect(b.id)} className="rounded border-gray-300 text-[#ea580c] focus:ring-[#ea580c]" />
@@ -365,10 +399,10 @@ export default function BookingsPage() {
             </select>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">0 of 0</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">{bookings.length} of {bookings.length}</span>
             <div className="flex gap-1">
               <button className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-400 disabled:opacity-50" disabled><ChevronLeft className="w-5 h-5" /></button>
-              <button className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1e293b]"><ChevronRight className="w-5 h-5" /></button>
+              <button className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-400 disabled:opacity-50" disabled><ChevronRight className="w-5 h-5" /></button>
             </div>
           </div>
         </div>

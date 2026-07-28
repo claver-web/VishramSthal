@@ -57,30 +57,35 @@ const paymentMethodData = [
   { name: 'Wallet', value: 0 },
 ];
 
-const recentActivity: any[] = [];
-
-const upcomingCheckIns: any[] = [];
-
 const COLORS = ['#ea580c', '#f97316', '#fdba74', '#fed7aa'];
 const OCCUPANCY_COLORS = ['#ea580c', '#22c55e', '#ef4444'];
 
 export default function AdminDashboard() {
   const [date, setDate] = useState('');
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     const today = new Date();
     setDate(today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
+    
+    import('./actions').then(({ getDashboardData }) => {
+      getDashboardData().then(res => {
+        setData(res);
+        setLoading(false);
+      });
+    });
   }, []);
 
   const stats = [
-    { title: 'Total Rooms', value: '0', subtitle: '0 Available, 0 Booked', icon: Building2, change: '0%', isUp: true },
-    { title: "Today's Check-ins", value: '0', subtitle: '0 Guests arriving today', icon: CalendarCheck, change: '0%', isUp: true },
-    { title: "Today's Check-outs", value: '0', subtitle: '0 Guests departing', icon: CalendarClock, change: '0%', isUp: false },
-    { title: 'Active Bookings', value: '0', subtitle: '0 Confirmed reservations', icon: Activity, change: '0%', isUp: true },
-    { title: 'Revenue Today', value: '₹0', subtitle: 'Across all bookings', icon: IndianRupee, change: '0%', isUp: true },
-    { title: 'Total Revenue', value: '₹0', subtitle: 'This month', icon: TrendingUp, change: '0%', isUp: true },
-    { title: 'New Users', value: '0', subtitle: 'Registered this month', icon: Users, change: '0%', isUp: true },
-    { title: 'Average Rating', value: '0.0/5', subtitle: 'Based on 0 reviews', icon: Star, change: '0', isUp: true },
+    { title: 'Total Rooms', value: data?.stats?.totalRooms || '0', subtitle: 'Registered in DB', icon: Building2, change: '0%', isUp: true },
+    { title: "Active Bookings", value: data?.stats?.activeBookings || '0', subtitle: 'Confirmed reservations', icon: Activity, change: '0%', isUp: true },
+    { title: "Pending Bookings", value: data?.stats?.pendingBookings || '0', subtitle: 'Awaiting confirmation', icon: CalendarClock, change: '0%', isUp: false },
+    { title: 'Pending Reviews', value: data?.stats?.pendingReviews || '0', subtitle: 'Awaiting moderation', icon: MessageSquare, change: '0%', isUp: true },
+    { title: 'Revenue Today', value: `₹${data?.stats?.revenueToday || '0'}`, subtitle: 'Across all bookings', icon: IndianRupee, change: '0%', isUp: true },
+    { title: 'Total Revenue', value: `₹${data?.stats?.totalRevenue || '0'}`, subtitle: 'This month', icon: TrendingUp, change: '0%', isUp: true },
+    { title: 'New Users', value: data?.stats?.newUsers || '0', subtitle: 'Registered this month', icon: Users, change: '0%', isUp: true },
+    { title: 'Average Rating', value: `${data?.stats?.avgRating || '0.0'}/5`, subtitle: `Based on ${data?.stats?.totalReviews || '0'} reviews`, icon: Star, change: '0', isUp: true },
   ];
 
   return (
@@ -243,22 +248,32 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                {recentActivity.map((act) => (
-                  <tr key={act.id} className="hover:bg-gray-50 dark:hover:bg-[#0f172a]/50 transition-colors">
-                    <td className="px-4 py-4 text-sm font-medium text-gray-900 dark:text-gray-200">{act.activity}</td>
-                    <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{act.user}</td>
-                    <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{act.time}</td>
-                    <td className="px-4 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
-                        act.status === 'Success' ? 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400' :
-                        act.status === 'Warning' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400' :
-                        'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400'
-                      }`}>
-                        {act.status}
-                      </span>
-                    </td>
+                {loading ? (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-8 text-center text-gray-500">Loading...</td>
                   </tr>
-                ))}
+                ) : data?.recentActivity?.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-8 text-center text-gray-500">No recent activity</td>
+                  </tr>
+                ) : (
+                  data?.recentActivity?.map((act: any) => (
+                    <tr key={act.id} className="hover:bg-gray-50 dark:hover:bg-[#0f172a]/50 transition-colors">
+                      <td className="px-4 py-4 text-sm font-medium text-gray-900 dark:text-gray-200">{act.activity}</td>
+                      <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{act.user}</td>
+                      <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{act.time}</td>
+                      <td className="px-4 py-4">
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
+                          act.status === 'Success' ? 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400' :
+                          act.status === 'Warning' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400' :
+                          'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400'
+                        }`}>
+                          {act.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -275,22 +290,28 @@ export default function AdminDashboard() {
               </h3>
             </div>
             <div className="space-y-4">
-              {upcomingCheckIns.map((booking) => (
-                <div key={booking.id} className="p-4 rounded-2xl bg-gray-50 dark:bg-[#0f172a] border border-gray-100 dark:border-gray-800 flex flex-col gap-3">
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-0">
-                    <div>
-                      <p className="font-bold text-gray-900 dark:text-white truncate">{booking.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">ID: {booking.id} • Room: {booking.room}</p>
+              {loading ? (
+                <div className="text-center text-gray-500 py-4">Loading...</div>
+              ) : data?.upcomingCheckIns?.length === 0 ? (
+                <div className="text-center text-gray-500 py-4">No upcoming check-ins today</div>
+              ) : (
+                data?.upcomingCheckIns?.map((booking: any) => (
+                  <div key={booking.id} className="p-4 rounded-2xl bg-gray-50 dark:bg-[#0f172a] border border-gray-100 dark:border-gray-800 flex flex-col gap-3">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-0">
+                      <div>
+                        <p className="font-bold text-gray-900 dark:text-white truncate">{booking.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">ID: {booking.id} • Room: {booking.room}</p>
+                      </div>
+                      <span className="text-xs font-bold px-2 py-1 bg-orange-100 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400 rounded-full whitespace-nowrap self-start">
+                        {booking.time}
+                      </span>
                     </div>
-                    <span className="text-xs font-bold px-2 py-1 bg-orange-100 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400 rounded-full whitespace-nowrap self-start">
-                      {booking.time}
-                    </span>
+                    <button className="w-full py-2 bg-gradient-to-r from-[#ea580c] to-[#c2410c] text-white text-sm font-bold rounded-xl shadow-md hover:shadow-lg transition-all">
+                      View Booking
+                    </button>
                   </div>
-                  <button className="w-full py-2 bg-gradient-to-r from-[#ea580c] to-[#c2410c] text-white text-sm font-bold rounded-xl shadow-md hover:shadow-lg transition-all">
-                    Mark as Arrived
-                  </button>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
@@ -308,7 +329,7 @@ export default function AdminDashboard() {
                   </div>
                   <span className="font-medium text-gray-700 dark:text-gray-300">Booking Approvals</span>
                 </div>
-                <span className="w-6 h-6 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center">5</span>
+                <span className="w-6 h-6 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center">{data?.stats?.pendingBookings || 0}</span>
               </div>
               <div className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0f172a] cursor-pointer transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700">
                 <div className="flex items-center gap-3">
@@ -317,7 +338,7 @@ export default function AdminDashboard() {
                   </div>
                   <span className="font-medium text-gray-700 dark:text-gray-300">Pending Reviews</span>
                 </div>
-                <span className="w-6 h-6 rounded-full bg-[#ea580c] text-white text-xs font-bold flex items-center justify-center">12</span>
+                <span className="w-6 h-6 rounded-full bg-[#ea580c] text-white text-xs font-bold flex items-center justify-center">{data?.stats?.pendingReviews || 0}</span>
               </div>
               <div className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0f172a] cursor-pointer transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700">
                 <div className="flex items-center gap-3">

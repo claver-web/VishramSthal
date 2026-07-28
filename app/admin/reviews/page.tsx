@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Star, Search, Filter, CheckCircle, XCircle, MessageSquare, 
   Trash2, Award, CornerDownRight, ThumbsUp, Send, MoreVertical,
@@ -24,6 +24,64 @@ const mockReviews: any[] = [];
 
 export default function ReviewsPage() {
   const [activeReply, setActiveReply] = useState<string | null>(null);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [replyText, setReplyText] = useState('');
+
+  const fetchReviews = async () => {
+    try {
+      const { getReviews } = await import('./actions');
+      const data = await getReviews();
+      setReviews(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const handleStatusChange = async (id: string, status: string) => {
+    try {
+      const { updateReviewStatus } = await import('./actions');
+      const res = await updateReviewStatus(id, status);
+      if (res.success) {
+        fetchReviews();
+      } else {
+        alert('Failed to update status');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSubmitReply = async (id: string) => {
+    if (!replyText.trim()) return;
+    try {
+      const { addReply } = await import('./actions');
+      const res = await addReply(id, replyText);
+      if (res.success) {
+        setReplyText('');
+        setActiveReply(null);
+        fetchReviews();
+      } else {
+        alert('Failed to add reply');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const totalReviews = reviews.length;
+  const avgRating = totalReviews > 0 ? (reviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews).toFixed(1) : '0.0';
+
+  const distribution = [5, 4, 3, 2, 1].map(stars => ({
+    name: `${stars} Star${stars > 1 ? 's' : ''}`,
+    count: reviews.filter(r => Math.round(r.rating) === stars).length
+  }));
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -57,14 +115,14 @@ export default function ReviewsPage() {
           <div>
             <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Average Rating</p>
             <div className="flex items-end gap-3">
-              <h3 className="text-5xl font-black text-gray-900 dark:text-white">0.0</h3>
-              <div className="flex pb-1.5"><Star className="w-5 h-5 fill-gray-200 text-gray-200 dark:fill-gray-700 dark:text-gray-700" /><Star className="w-5 h-5 fill-gray-200 text-gray-200 dark:fill-gray-700 dark:text-gray-700" /><Star className="w-5 h-5 fill-gray-200 text-gray-200 dark:fill-gray-700 dark:text-gray-700" /><Star className="w-5 h-5 fill-gray-200 text-gray-200 dark:fill-gray-700 dark:text-gray-700" /><Star className="w-5 h-5 fill-gray-200 text-gray-200 dark:fill-gray-700 dark:text-gray-700" /></div>
+              <h3 className="text-5xl font-black text-gray-900 dark:text-white">{avgRating}</h3>
+              <div className="flex pb-1.5"><Star className="w-5 h-5 fill-yellow-400 text-yellow-400" /></div>
             </div>
-            <p className="text-sm text-gray-500 mt-2 font-bold">No data</p>
+            <p className="text-sm text-gray-500 mt-2 font-bold">{totalReviews} {totalReviews === 1 ? 'Review' : 'Reviews'}</p>
           </div>
           <div className="mt-6 flex items-center gap-3 bg-gray-50 dark:bg-gray-900/20 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
-            <Smile className="w-5 h-5 text-gray-400" />
-            <span className="text-sm font-bold text-gray-500">No reviews yet</span>
+            <MessageSquare className="w-5 h-5 text-gray-400" />
+            <span className="text-sm font-bold text-gray-500">{totalReviews > 0 ? 'Showing live data' : 'No reviews yet'}</span>
           </div>
         </div>
 
@@ -83,11 +141,11 @@ export default function ReviewsPage() {
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
           <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Rating Distribution</h3>
           <div className="space-y-2">
-            {distData.map((d, i) => (
+            {distribution.map((d, i) => (
               <div key={i} className="flex items-center gap-3 text-sm font-bold">
                 <span className="w-14 text-gray-600 dark:text-gray-400">{d.name}</span>
                 <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-yellow-400 rounded-full" style={{ width: `${(d.count / 187) * 100}%` }}></div>
+                  <div className="h-full bg-yellow-400 rounded-full" style={{ width: `${totalReviews > 0 ? (d.count / totalReviews) * 100 : 0}%` }}></div>
                 </div>
                 <span className="w-8 text-right text-gray-900 dark:text-white">{d.count}</span>
               </div>
@@ -118,37 +176,38 @@ export default function ReviewsPage() {
 
       {/* Reviews List */}
       <div className="space-y-6">
-        {mockReviews.length === 0 && (
+        {loading ? (
+          <div className="text-center text-gray-500 dark:text-gray-400 py-10">Loading reviews...</div>
+        ) : reviews.length === 0 ? (
           <div className="bg-white dark:bg-[#1e293b] p-16 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col items-center justify-center text-center">
             <MessageSquare className="w-12 h-12 mb-4 text-gray-300 dark:text-gray-600" />
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No reviews yet</h3>
             <p className="text-gray-500 dark:text-gray-400 text-sm max-w-sm">When guests leave feedback after their stay, it will appear here for you to moderate and reply to.</p>
           </div>
-        )}
-        {mockReviews.map((review) => (
+        ) : (
+          reviews.map((review) => (
           <div key={review.id} className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#ea580c] to-[#c2410c] text-white flex items-center justify-center font-black text-lg shadow-lg shadow-orange-500/20 flex-shrink-0">
-                  {review.avatar}
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#ea580c] to-[#c2410c] text-white flex items-center justify-center font-black text-lg shadow-lg shadow-orange-500/20 flex-shrink-0 uppercase">
+                  {(review.user?.name || review.user?.email || 'G')[0]}
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    {review.guest} 
-                    {review.featured && <span className="bg-orange-100 text-[#ea580c] dark:bg-orange-900/30 px-2 py-0.5 rounded-full text-[10px] uppercase flex items-center gap-1"><Award className="w-3 h-3" /> Featured</span>}
+                    {review.user?.name || review.user?.email || 'Guest'} 
                   </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{review.room} • {review.date}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{review.room?.name || 'Room ' + review.room?.number} • {new Date(review.createdAt).toLocaleDateString()}</p>
                   <div className="mt-2">{renderStars(review.rating)}</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusBadge(review.status)}`}>{review.status}</span>
                 <div className="flex gap-1 bg-gray-50 dark:bg-[#0f172a] rounded-xl border border-gray-100 dark:border-gray-800 p-1">
-                  {review.status === 'Pending' && (
-                    <button className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors tooltip-trigger" title="Publish"><CheckCircle className="w-4 h-4" /></button>
+                  {review.status === 'PENDING' && (
+                    <button onClick={() => handleStatusChange(review.id, 'PUBLISHED')} className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors tooltip-trigger" title="Publish"><CheckCircle className="w-4 h-4" /></button>
                   )}
-                  {review.status !== 'Rejected' && (
-                    <button className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors tooltip-trigger" title="Reject"><XCircle className="w-4 h-4" /></button>
+                  {review.status !== 'REJECTED' && (
+                    <button onClick={() => handleStatusChange(review.id, 'REJECTED')} className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors tooltip-trigger" title="Reject"><XCircle className="w-4 h-4" /></button>
                   )}
                   <button className="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white rounded-lg transition-colors tooltip-trigger" title="More Options"><MoreVertical className="w-4 h-4" /></button>
                 </div>
@@ -156,7 +215,7 @@ export default function ReviewsPage() {
             </div>
 
             <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-4">
-              "{review.text}"
+              "{review.comment}"
             </p>
 
             {/* Admin Reply Section */}
@@ -179,18 +238,20 @@ export default function ReviewsPage() {
                     <CornerDownRight className="w-5 h-5 text-gray-400 absolute -left-7 top-4" />
                     <textarea 
                       rows={3} 
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
                       className="w-full bg-transparent text-sm outline-none resize-none dark:text-white"
-                      placeholder={`Write a reply to ${review.guest}...`}
+                      placeholder={`Write a reply...`}
                       autoFocus
                     ></textarea>
                     <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
                       <div className="flex gap-2">
-                        <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 rounded cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700">Template: Thank You</span>
-                        <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 rounded cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700">Template: Apology</span>
+                        <span onClick={() => setReplyText('Thank you for your feedback! We are glad you enjoyed your stay.')} className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 rounded cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700">Template: Thank You</span>
+                        <span onClick={() => setReplyText('We apologize for the inconvenience. We have noted your feedback and will improve.')} className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 rounded cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700">Template: Apology</span>
                       </div>
                       <div className="flex gap-2">
-                        <button onClick={() => setActiveReply(null)} className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">Cancel</button>
-                        <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#ea580c] to-[#c2410c] text-white text-sm font-bold rounded-xl shadow-md">
+                        <button onClick={() => { setActiveReply(null); setReplyText(''); }} className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">Cancel</button>
+                        <button onClick={() => handleSubmitReply(review.id)} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#ea580c] to-[#c2410c] text-white text-sm font-bold rounded-xl shadow-md">
                           Publish Reply <Send className="w-3 h-3" />
                         </button>
                       </div>
@@ -207,7 +268,8 @@ export default function ReviewsPage() {
               </div>
             )}
           </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
