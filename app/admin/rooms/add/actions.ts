@@ -17,10 +17,11 @@ export async function uploadRoomImage(formData: FormData) {
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
+    const base64Data = buffer.toString('base64');
 
     return new Promise((resolve, reject) => {
       imagekit.upload({
-        file: buffer,
+        file: base64Data,
         fileName: file.name || 'room-image.jpg',
         folder: '/Rooms'
       }, (error, result) => {
