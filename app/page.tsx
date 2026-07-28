@@ -22,15 +22,7 @@ export default async function Home() {
     take: 3
   });
 
-  // Default room details if none in DB yet
-  const defaultRooms = [
-    { id: '1', type: 'STANDARD', price: 2500, capacity: 2, isAvailable: true, number: '101' },
-    { id: '2', type: 'DELUXE', price: 4500, capacity: 2, isAvailable: true, number: '201' },
-    { id: '3', type: 'SUITE', price: 8500, capacity: 4, isAvailable: true, number: '301' },
-    { id: '4', type: 'PREMIUM', price: 12000, capacity: 2, isAvailable: true, number: '401' },
-  ];
-
-  const displayRooms = rooms.length > 0 ? rooms : defaultRooms;
+  const displayRooms = rooms;
 
   const roomNames = {
     'STANDARD': 'Tulsi Nivas',
@@ -140,10 +132,18 @@ export default async function Home() {
             </div>
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {displayRooms.length === 0 ? (
+            <div className="text-center py-12 text-gray-400 italic">
+              New sacred sanctuaries are currently being prepared. Check back soon!
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {displayRooms.map((room, i) => {
-              const name = roomNames[room.type as keyof typeof roomNames] || room.type;
-              const desc = roomDescriptions[room.type as keyof typeof roomDescriptions] || 'A comfortable stay.';
+              const name = room.name || roomNames[room.type as keyof typeof roomNames] || room.type;
+              const desc = room.description || roomDescriptions[room.type as keyof typeof roomDescriptions] || 'A comfortable stay.';
+              const displayImage = room.images && room.images.length > 0 
+                ? room.images[0] 
+                : 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80';
               
               return (
                 <Reveal key={room.id} delay={i * 150}>
@@ -153,7 +153,7 @@ export default async function Home() {
                       <div className="absolute inset-0 bg-[var(--color-saffron)] mix-blend-overlay opacity-30 z-10" />
                       {/* Image with Placeholder */}
                       <Image
-                        src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80"
+                        src={displayImage}
                         alt={name}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-700"
@@ -163,7 +163,7 @@ export default async function Home() {
                       />
                       <div className="absolute bottom-4 left-4 z-20">
                         <h3 className="text-3xl font-serif text-white font-bold tracking-wide drop-shadow-lg">{name}</h3>
-                        <p className="text-white/90 text-sm font-sans">{room.type} ROOM</p>
+                        <p className="text-white/90 text-sm font-sans uppercase tracking-widest">{room.type} ROOM</p>
                       </div>
                       <div className="absolute top-4 right-4 z-20 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2">
                         <span className={`w-3 h-3 rounded-full ${room.isAvailable ? 'bg-green-400 animate-diya-flicker' : 'bg-red-400'}`}></span>
@@ -193,6 +193,7 @@ export default async function Home() {
               );
             })}
           </div>
+          )}
 
           <Reveal delay={400}>
             <div className="mt-16 text-center">
