@@ -135,13 +135,7 @@ export default function Navigation() {
               </SignInButton>
             )}
             
-            <Link
-              href="/rooms"
-              className="group relative flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_20px_rgba(249,115,22,0.4)] transition-all hover:scale-105 hover:shadow-[0_0_25px_rgba(249,115,22,0.6)]"
-            >
-              <span>Book Your Stay</span>
-              <span className="text-lg">🪷</span>
-            </Link>
+
           </div>
 
           {/* Mobile Toggle */}
@@ -241,14 +235,7 @@ export default function Navigation() {
                   </SignInButton>
                 )}
                 
-                <Link
-                  href="/rooms"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 w-full py-3 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_20px_rgba(249,115,22,0.4)]"
-                >
-                  <span>Book Your Stay</span>
-                  <span>🪷</span>
-                </Link>
+
               </motion.div>
             </motion.div>
           </motion.div>
