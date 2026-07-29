@@ -5,12 +5,6 @@ import { SearchIcon, FilterIcon, XIcon, ChevronDownIcon, ChevronUpIcon, CheckIco
 import { useDebounce } from '@/hooks/useDebounce';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
-const ROOM_TYPES = [
-  { id: 'STANDARD', name: 'Tulsi Nivas (Standard)' },
-  { id: 'DELUXE', name: 'Kunj Kutir (Deluxe)' },
-  { id: 'SUITE', name: 'Radha Mahal (Suite)' },
-  { id: 'PREMIUM', name: 'Krishna Kunj (Premium)' },
-];
 
 const AMENITIES = [
   'AC', 'Non-AC', 'Private Room', 'Dormitory', 'Attached Bathroom',
@@ -42,7 +36,7 @@ export default function RoomFilterPanel({ onMobileClose }: FilterProps) {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const debouncedSearch = useDebounce(searchQuery, 300);
 
-  const [selectedTypes, setSelectedTypes] = useState<string[]>(searchParams.get('type')?.split(',').filter(Boolean) || []);
+
   const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
   const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>(searchParams.get('amenities')?.split(',').filter(Boolean) || []);
@@ -52,7 +46,6 @@ export default function RoomFilterPanel({ onMobileClose }: FilterProps) {
   const [sortOption, setSortOption] = useState<string>(searchParams.get('sort') || 'recommended');
 
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    type: true,
     price: true,
     amenities: false,
     capacity: true,
@@ -68,9 +61,6 @@ export default function RoomFilterPanel({ onMobileClose }: FilterProps) {
     const params = new URLSearchParams(currentParams);
     if (debouncedSearch) params.set('q', debouncedSearch);
     else params.delete('q');
-
-    if (selectedTypes.length > 0) params.set('type', selectedTypes.join(','));
-    else params.delete('type');
 
     if (minPrice) params.set('minPrice', minPrice);
     else params.delete('minPrice');
@@ -97,9 +87,9 @@ export default function RoomFilterPanel({ onMobileClose }: FilterProps) {
     if (currentParams !== newQueryString) {
       router.replace(`${pathname}?${newQueryString}`, { scroll: false });
     }
-  }, [debouncedSearch, selectedTypes, minPrice, maxPrice, selectedAmenities, selectedCapacity, availableOnly, selectedView, sortOption, pathname, router, searchParams]);
+  }, [debouncedSearch, minPrice, maxPrice, selectedAmenities, selectedCapacity, availableOnly, selectedView, sortOption, pathname, router, searchParams]);
 
-  const toggleType = (id: string) => setSelectedTypes(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
+
   const toggleAmenity = (am: string) => setSelectedAmenities(prev => prev.includes(am) ? prev.filter(a => a !== am) : [...prev, am]);
 
   return (
@@ -150,25 +140,6 @@ export default function RoomFilterPanel({ onMobileClose }: FilterProps) {
           </div>
         </div>
 
-        {/* Room Type */}
-        <div className="mb-4 border-t border-gray-700 pt-3">
-          <button onClick={() => toggleSection('type')} className="w-full flex justify-between items-center mb-2 group">
-            <span className="text-sm font-bold text-gray-200 group-hover:text-orange-500 transition-colors">Spiritual Room Type</span>
-            {expandedSections.type ? <ChevronUpIcon className="w-4 h-4 text-gray-500" /> : <ChevronDownIcon className="w-4 h-4 text-gray-500" />}
-          </button>
-          {expandedSections.type && (
-            <div className="space-y-2 mt-2">
-              {ROOM_TYPES.map(type => (
-                <label key={type.id} className="flex items-center gap-2 cursor-pointer group">
-                  <div className={`w-4 h-4 rounded flex items-center justify-center border transition-all ${selectedTypes.includes(type.id) ? 'bg-orange-500 border-orange-500' : 'bg-gray-900 border-gray-600 group-hover:border-orange-400'}`}>
-                    {selectedTypes.includes(type.id) && <CheckIcon className="w-3 h-3 text-white" />}
-                  </div>
-                  <span className="text-gray-300 text-xs">{type.name}</span>
-                </label>
-              ))}
-            </div>
-          )}
-        </div>
 
         {/* Price Range */}
         <div className="mb-4 border-t border-gray-700 pt-3">
