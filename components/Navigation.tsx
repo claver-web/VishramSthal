@@ -56,6 +56,11 @@ export default function Navigation() {
 
   if (pathname?.startsWith('/admin')) return null;
 
+  const activeNavLinks = [...NAV_LINKS];
+  if (isSignedIn) {
+    activeNavLinks.push({ name: 'My Bookings', href: '/bookings' });
+  }
+
   return (
     <>
       <motion.nav
@@ -100,7 +105,7 @@ export default function Navigation() {
 
           {/* Desktop Links */}
           <div className="hidden lg:flex items-center gap-8">
-            {NAV_LINKS.map((link) => {
+            {activeNavLinks.map((link) => {
               const isActive = pathname === link.href || (pathname === '/' && link.href === '/');
               
               return (
@@ -194,7 +199,7 @@ export default function Navigation() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex flex-col mt-24 gap-6">
-                {NAV_LINKS.map((link, i) => {
+                {activeNavLinks.map((link, i) => {
                   const isActive = pathname === link.href;
                   return (
                     <motion.div
