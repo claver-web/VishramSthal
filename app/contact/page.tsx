@@ -85,7 +85,14 @@ export default function ContactPage() {
                     <span className="text-4xl">📞</span>
                     <div>
                       <p className="font-extrabold mb-1">Phone</p>
-                      <p className="opacity-90">+91 9876543210</p>
+                      <p className="opacity-90">+91 9815271636</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-6">
+                    <span className="text-4xl">💬</span>
+                    <div>
+                      <p className="font-extrabold mb-1">WhatsApp</p>
+                      <p className="opacity-90"><a href="https://wa.me/918988478367" target="_blank" rel="noopener noreferrer" className="hover:underline">+91 8988478367</a></p>
                     </div>
                   </div>
                   <div className="flex items-start gap-6">

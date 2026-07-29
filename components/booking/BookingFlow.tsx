@@ -1,6 +1,5 @@
 'use client';
-import React, { useState } from 'react';
-import GuestForm from './GuestForm';
+import React, { useState, useEffect } from 'react';
 import BookingSummary from './BookingSummary';
 import { useUser, SignInButton } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
@@ -8,19 +7,25 @@ import { useRouter } from 'next/navigation';
 export default function BookingFlow({ room }: { room: any }) {
   const { isSignedIn, user, isLoaded } = useUser();
   const router = useRouter();
+
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
-  const [step, setStep] = useState(1);
-  const [guestData, setGuestData] = useState<any>(null);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [guests, setGuests] = useState(1);
   const [isBooking, setIsBooking] = useState(false);
-  
-  // To avoid calculating nights if dates are invalid
+
+  // Pre-fill from Clerk user
+  useEffect(() => {
+    if (isLoaded && user) {
+      setFullName(user.fullName || '');
+      setEmail(user.primaryEmailAddress?.emailAddress || '');
+    }
+  }, [isLoaded, user]);
+
   const hasValidDates = checkIn && checkOut && new Date(checkIn) < new Date(checkOut);
-  
-  if (!hasValidDates && step > 1) {
-    setStep(1);
-  }
-  
+  const isFormComplete = hasValidDates && fullName.trim() !== '' && email.trim() !== '' && guests > 0;
+
   if (!isLoaded) {
     return <div className="text-amber-500 p-8 text-center animate-pulse">Loading...</div>;
   }
@@ -42,12 +47,8 @@ export default function BookingFlow({ room }: { room: any }) {
     );
   }
 
-  const handleGuestSubmit = (data: any) => {
-    setGuestData(data);
-    setStep(3);
-  };
-
   const handleBooking = async (paymentMethod: 'CASH' | 'RAZORPAY') => {
+    if (!isFormComplete) return;
     setIsBooking(true);
     try {
       const res = await fetch('/api/bookings', {
@@ -56,16 +57,17 @@ export default function BookingFlow({ room }: { room: any }) {
         body: JSON.stringify({
           roomId: room.id,
           userId: user?.id,
+          guestName: fullName,
+          guestEmail: email,
           checkIn,
           checkOut,
-          guests: guestData?.guests || 1,
+          guests,
           paymentMethod,
         }),
       });
-      
+
       const data = await res.json();
       if (res.ok) {
-        // Assuming there is a success page. If not, redirect to /rooms for now.
         router.push('/booking/success');
       } else {
         alert('Booking failed: ' + data.error);
@@ -78,103 +80,125 @@ export default function BookingFlow({ room }: { room: any }) {
     }
   };
 
+  const inputClass = "w-full bg-neutral-950 border border-neutral-800 text-neutral-200 p-3 rounded-xl focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all";
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* Left Side */}
-      <div className="lg:col-span-2 space-y-8">
-        
-        {/* Step 1: Dates */}
-        <section className={`p-6 md:p-8 rounded-3xl border shadow-xl relative overflow-hidden transition-colors ${hasValidDates ? 'bg-neutral-900 border-neutral-800' : 'bg-[#1a1a2e] border-amber-500/50'}`}>
-          <div className={`absolute top-0 left-0 w-2 h-full ${hasValidDates ? 'bg-green-500' : 'bg-amber-500'}`}></div>
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg ${hasValidDates ? 'bg-green-500 text-neutral-950' : 'bg-amber-500 text-neutral-950'}`}>
-                {hasValidDates ? '✓' : '1'}
-              </span>
-              <h2 className="text-2xl text-white font-serif">Select Your Dates</h2>
-            </div>
-          </div>
-          
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <label className="block text-sm text-neutral-400 mb-2">Check-in Date</label>
-              <input 
-                type="date" 
-                value={checkIn}
-                onChange={(e) => setCheckIn(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 text-neutral-200 p-3 rounded-xl focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all [color-scheme:dark]"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block text-sm text-neutral-400 mb-2">Check-out Date</label>
-              <input 
-                type="date" 
-                value={checkOut}
-                min={checkIn}
-                onChange={(e) => setCheckOut(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 text-neutral-200 p-3 rounded-xl focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all [color-scheme:dark]"
-              />
-            </div>
-          </div>
-        </section>
+      {/* Left Side — Single Form */}
+      <div className="lg:col-span-2">
+        <section className="p-6 md:p-8 rounded-3xl border border-neutral-800 bg-neutral-900 shadow-xl space-y-8">
 
-        {/* Step 2: Guest Details */}
-        <section className={`p-6 md:p-8 rounded-3xl border shadow-xl relative overflow-hidden transition-all duration-500 ${hasValidDates ? 'bg-neutral-900 border-neutral-800 opacity-100' : 'bg-neutral-900 border-neutral-800 opacity-50 pointer-events-none'}`}>
-          <div className="absolute top-0 left-0 w-2 h-full bg-neutral-700"></div>
-          <div className="flex items-center gap-4 mb-6">
-            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg ${(hasValidDates && step < 3) ? 'bg-amber-500 text-neutral-950' : step === 3 ? 'bg-green-500 text-neutral-950' : 'bg-neutral-700 text-neutral-400'}`}>
-              {step === 3 ? '✓' : '2'}
-            </span>
-            <h2 className="text-2xl text-white font-serif">Guest Details</h2>
-          </div>
-          
-          {!hasValidDates ? (
-            <p className="text-neutral-500">Please select valid dates first to proceed.</p>
-          ) : step === 3 ? (
-            <div className="text-green-400 flex items-center gap-2 font-bold bg-green-500/10 p-4 rounded-xl border border-green-500/20">
-              <span>✓</span> Guest Details Confirmed 
-              <button onClick={() => setStep(2)} className="text-amber-500 text-sm ml-auto hover:underline font-normal">Edit Details</button>
+          {/* Dates */}
+          <div>
+            <h2 className="text-xl text-white font-serif mb-4 flex items-center gap-3">
+              <span className="w-7 h-7 rounded-full bg-amber-500 text-neutral-950 flex items-center justify-center text-sm font-bold">1</span>
+              Select Your Dates
+            </h2>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <label className="block text-sm text-neutral-400 mb-1.5">Check-in</label>
+                <input
+                  type="date"
+                  value={checkIn}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                  className={`${inputClass} [color-scheme:dark]`}
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm text-neutral-400 mb-1.5">Check-out</label>
+                <input
+                  type="date"
+                  value={checkOut}
+                  min={checkIn}
+                  onChange={(e) => setCheckOut(e.target.value)}
+                  className={`${inputClass} [color-scheme:dark]`}
+                />
+              </div>
             </div>
-          ) : (
-            <GuestForm onSubmit={handleGuestSubmit} defaultValues={guestData} />
-          )}
-        </section>
-
-        {/* Step 3: Payment Options */}
-        <section className={`p-6 md:p-8 rounded-3xl border shadow-xl relative overflow-hidden transition-all duration-500 ${step === 3 ? 'bg-neutral-900 border-amber-500/30 opacity-100 shadow-[0_0_30px_rgba(245,158,11,0.1)]' : 'bg-neutral-900 border-neutral-800 opacity-50 pointer-events-none hidden md:block'}`}>
-          <div className={`absolute top-0 left-0 w-2 h-full ${step === 3 ? 'bg-amber-500' : 'bg-neutral-700'}`}></div>
-          <div className="flex items-center gap-4 mb-6">
-            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg ${step === 3 ? 'bg-amber-500 text-neutral-950 animate-pulse' : 'bg-neutral-700 text-neutral-400'}`}>3</span>
-            <h2 className="text-2xl text-white font-serif">Secure Payment</h2>
           </div>
-          
-          {step === 3 ? (
-            <div className="space-y-4">
-              <p className="text-neutral-400 mb-6">Select your preferred divine payment method to confirm your reservation.</p>
-              
-              <button 
+
+          {/* Divider */}
+          <div className="border-t border-neutral-800" />
+
+          {/* Guest Info — inline fields, no separate card */}
+          <div>
+            <h2 className="text-xl text-white font-serif mb-4 flex items-center gap-3">
+              <span className="w-7 h-7 rounded-full bg-amber-500 text-neutral-950 flex items-center justify-center text-sm font-bold">2</span>
+              Your Details
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-2 sm:col-start-1 sm:col-end-2">
+                <label className="block text-sm text-neutral-400 mb-1.5">Full Name <span className="text-red-400">*</span></label>
+                <input
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Your full name"
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-neutral-400 mb-1.5">Email <span className="text-red-400">*</span></label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-neutral-400 mb-1.5">Number of Guests <span className="text-red-400">*</span></label>
+                <select
+                  value={guests}
+                  onChange={(e) => setGuests(Number(e.target.value))}
+                  className={`${inputClass} appearance-none`}
+                >
+                  {[1, 2, 3, 4, 5, 6].map((n) => (
+                    <option key={n} value={n}>{n} {n === 1 ? 'Guest' : 'Guests'}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-neutral-800" />
+
+          {/* Booking Buttons */}
+          <div>
+            <h2 className="text-xl text-white font-serif mb-4 flex items-center gap-3">
+              <span className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold ${isFormComplete ? 'bg-amber-500 text-neutral-950' : 'bg-neutral-700 text-neutral-400'}`}>3</span>
+              Confirm Booking
+            </h2>
+
+            {!isFormComplete && (
+              <p className="text-neutral-500 text-sm mb-4">Please fill in all required fields above to proceed.</p>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
                 onClick={() => handleBooking('RAZORPAY')}
-                disabled={isBooking}
-                className="w-full py-4 px-6 bg-gradient-to-r from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white font-bold rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] disabled:opacity-50 border border-blue-500/30 shadow-lg shadow-blue-900/20"
+                disabled={!isFormComplete || isBooking}
+                className="flex-1 py-4 px-6 bg-gradient-to-r from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 border border-blue-500/30 shadow-lg shadow-blue-900/20"
               >
-                {isBooking ? 'Processing...' : '💳 Pay Now (Razorpay)'}
+                {isBooking ? 'Processing...' : '💳 Pay Now'}
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => handleBooking('CASH')}
-                disabled={isBooking}
-                className="w-full py-4 px-6 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-bold rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] disabled:opacity-50 shadow-lg shadow-amber-900/20"
+                disabled={!isFormComplete || isBooking}
+                className="flex-1 py-4 px-6 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg shadow-amber-900/20"
               >
                 {isBooking ? 'Processing...' : '🏨 Pay at Check-in'}
               </button>
             </div>
-          ) : (
-            <p className="text-neutral-500">Complete guest details to view payment options.</p>
-          )}
+          </div>
+
         </section>
       </div>
 
-      {/* Right Side (40%) */}
+      {/* Right Side — Summary */}
       <div className="lg:col-span-1">
         <BookingSummary room={room} checkIn={checkIn} checkOut={checkOut} />
       </div>

@@ -61,7 +61,7 @@ export default function AdminProfilePage() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Phone Number</label>
-                  <input type="text" defaultValue="+91 9876543210" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold outline-none focus:border-[#ea580c] dark:text-white" />
+                  <input type="text" defaultValue="+91 9815271636" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold outline-none focus:border-[#ea580c] dark:text-white" />
                 </div>
               </div>
             </div>

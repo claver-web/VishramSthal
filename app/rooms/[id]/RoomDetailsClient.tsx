@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
-  ChevronLeft, ChevronRight, X, MapPin, Star, Play, PlayCircle, 
-  Check, CheckCircle2, Navigation, Map, Info, HelpCircle, ChevronDown
+  ChevronLeft, ChevronRight, X, Star, PlayCircle, 
+  CheckCircle2, Info, HelpCircle
 } from 'lucide-react';
 
 export default function RoomDetailsClient({ room }: { room: any }) {
@@ -23,7 +23,7 @@ export default function RoomDetailsClient({ room }: { room: any }) {
   // Scroll spy effect for sticky nav
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['overview', 'amenities', 'gallery', 'reviews', 'location', 'policies'];
+      const sections = ['overview', 'amenities', 'gallery', 'reviews', 'policies'];
       for (const section of sections) {
         const el = document.getElementById(section);
         if (el) {
@@ -48,7 +48,7 @@ export default function RoomDetailsClient({ room }: { room: any }) {
 
   return (
     <div className="bg-neutral-950 min-h-screen text-neutral-200 font-sans pb-24">
-      {/* 2.1 Hero Section Redesign */}
+      {/* Hero Section */}
       <section className="relative w-full h-[50vh] md:h-[70vh] bg-black overflow-hidden group">
         <Image 
           src={images[activeImage]} 
@@ -93,16 +93,11 @@ export default function RoomDetailsClient({ room }: { room: any }) {
             <span className="text-neutral-400">/ night</span>
           </div>
           
-          <div className="flex gap-4">
-            <Link href={`/booking/${room.id}`} className="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-neutral-950 px-8 py-3 rounded-full font-bold shadow-lg shadow-amber-500/20 transition-all hover:scale-105">
-              Book This Sanctuary
-            </Link>
-            {room.videoTour && (
-              <button className="flex items-center gap-2 border border-amber-500/50 bg-black/50 backdrop-blur-md text-amber-400 px-6 py-3 rounded-full font-bold hover:bg-amber-500/10 transition-all">
-                <PlayCircle className="w-5 h-5" /> Play Video
-              </button>
-            )}
-          </div>
+          {room.videoTour && (
+            <button className="flex items-center gap-2 border border-amber-500/50 bg-black/50 backdrop-blur-md text-amber-400 px-6 py-3 rounded-full font-bold hover:bg-amber-500/10 transition-all">
+              <PlayCircle className="w-5 h-5" /> Play Video
+            </button>
+          )}
         </div>
 
         {/* Thumbnail Strip */}
@@ -128,38 +123,41 @@ export default function RoomDetailsClient({ room }: { room: any }) {
         </div>
       </section>
 
-      {/* 2.2 Sticky Navigation Bar */}
-      <div className="sticky top-0 z-40 bg-[#1a1a2e]/90 backdrop-blur-xl border-b border-amber-500/30 shadow-lg hidden md:block">
-        <div className="container mx-auto px-8 max-w-7xl h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4 text-sm font-bold text-neutral-400">
-            {['Overview', 'Amenities', 'Gallery', 'Reviews', 'Location', 'Policies'].map((item) => {
+      {/* Sticky Navigation Bar with Book Now Button */}
+      <div className="sticky top-0 z-40 bg-[#1a1a2e]/90 backdrop-blur-xl border-b border-amber-500/30 shadow-lg">
+        <div className="container mx-auto px-4 md:px-8 max-w-7xl h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm font-bold text-neutral-400 overflow-x-auto scrollbar-hide">
+            {['Overview', 'Amenities', 'Gallery', 'Reviews', 'Policies'].map((item) => {
               const id = item.toLowerCase();
               return (
                 <button 
                   key={id} 
                   onClick={() => scrollTo(id)}
-                  className={`px-4 py-5 border-b-2 transition-all ${activeSection === id ? 'border-amber-500 text-amber-500' : 'border-transparent hover:text-white'}`}
+                  className={`px-2 md:px-4 py-5 border-b-2 transition-all whitespace-nowrap ${activeSection === id ? 'border-amber-500 text-amber-500' : 'border-transparent hover:text-white'}`}
                 >
                   {item}
                 </button>
               );
             })}
           </div>
-          <div className="flex items-center gap-6">
-            <div className="text-right">
-              <span className="block text-xs text-neutral-400">Starting from</span>
+          <div className="flex items-center gap-3 md:gap-6 shrink-0">
+            <div className="text-right hidden sm:block">
+              <span className="block text-[10px] text-neutral-400">Starting from</span>
               <span className="text-lg font-black text-white">₹{room.price}</span>
             </div>
-            <Link href={`/booking/${room.id}`} className="bg-amber-500 hover:bg-amber-400 text-neutral-950 px-6 py-2 rounded-full font-bold shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all">
+            <Link 
+              href={`/booking/${room.id}`}
+              className="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-neutral-950 px-4 md:px-6 py-2 md:py-2.5 rounded-full font-bold text-sm md:text-base shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all hover:scale-105 active:scale-95 whitespace-nowrap"
+            >
               Book Now
             </Link>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 md:px-8 max-w-7xl py-12 flex flex-col lg:flex-row gap-12 relative">
-        {/* Main Content Column */}
-        <div className="lg:w-[65%] space-y-16">
+      {/* Main Content */}
+      <div className="container mx-auto px-4 md:px-8 max-w-7xl py-12">
+        <div className="max-w-4xl mx-auto space-y-16">
           
           {/* Section 1: Overview */}
           <section id="overview" className="scroll-mt-24">
@@ -228,12 +226,12 @@ export default function RoomDetailsClient({ room }: { room: any }) {
             </div>
           </section>
           
-          {/* Section 5: Reviews */}
+          {/* Section 4: Reviews */}
           <section id="reviews" className="scroll-mt-24">
             <h2 className="text-3xl font-serif text-white mb-6 flex items-center gap-3">
               <span className="w-8 h-1 bg-amber-500 rounded-full"></span> Guest Experiences
             </h2>
-            <div className="bg-[#1a1a2e] p-8 rounded-3xl border border-neutral-800 mb-8 flex items-center gap-8">
+            <div className="bg-[#1a1a2e] p-6 md:p-8 rounded-3xl border border-neutral-800 mb-8 flex flex-col md:flex-row items-center gap-8">
               <div className="text-center">
                 <span className="text-6xl font-black text-white">4.8</span>
                 <div className="flex items-center justify-center gap-1 my-2">
@@ -241,7 +239,7 @@ export default function RoomDetailsClient({ room }: { room: any }) {
                 </div>
                 <span className="text-sm text-neutral-400">128 Reviews</span>
               </div>
-              <div className="flex-1 space-y-2 border-l border-neutral-800 pl-8">
+              <div className="flex-1 space-y-2 w-full md:border-l md:border-neutral-800 md:pl-8">
                 {[
                   { stars: 5, pct: 85 },
                   { stars: 4, pct: 10 },
@@ -290,7 +288,7 @@ export default function RoomDetailsClient({ room }: { room: any }) {
             </div>
           </section>
 
-          {/* Section 8: Policies */}
+          {/* Section 5: Policies */}
           <section id="policies" className="scroll-mt-24">
             <h2 className="text-3xl font-serif text-white mb-6 flex items-center gap-3">
               <span className="w-8 h-1 bg-amber-500 rounded-full"></span> Important Policies
@@ -318,48 +316,6 @@ export default function RoomDetailsClient({ room }: { room: any }) {
             </div>
           </section>
 
-        </div>
-
-        {/* 2.4 Floating Booking Widget (Sticky Sidebar) */}
-        <div className="lg:w-[35%]">
-          <div className="sticky top-24 bg-[#1a1a2e] rounded-3xl p-6 md:p-8 border-2 border-amber-500/20 shadow-2xl shadow-black">
-            <div className="flex items-baseline gap-2 mb-6 border-b border-neutral-800 pb-6">
-              <span className="text-4xl font-black text-amber-500">₹{room.price}</span>
-              <span className="text-neutral-400 font-medium">/ night</span>
-            </div>
-            
-            <div className="space-y-4 mb-8">
-              <div className="grid grid-cols-2 border border-neutral-700 rounded-xl overflow-hidden divide-x divide-neutral-700">
-                <div className="p-3 bg-neutral-900">
-                  <span className="block text-[10px] uppercase font-bold text-neutral-500">Check-in</span>
-                  <span className="text-sm font-medium text-white">Select date</span>
-                </div>
-                <div className="p-3 bg-neutral-900">
-                  <span className="block text-[10px] uppercase font-bold text-neutral-500">Check-out</span>
-                  <span className="text-sm font-medium text-white">Select date</span>
-                </div>
-              </div>
-              <div className="p-3 bg-neutral-900 border border-neutral-700 rounded-xl flex justify-between items-center">
-                <div>
-                  <span className="block text-[10px] uppercase font-bold text-neutral-500">Guests</span>
-                  <span className="text-sm font-medium text-white">2 Adults</span>
-                </div>
-                <ChevronDown className="w-4 h-4 text-neutral-400" />
-              </div>
-            </div>
-            
-            <Link 
-              href={`/booking/${room.id}`}
-              className="block w-full text-center bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-neutral-950 font-black text-lg py-4 rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.2)] transition-all hover:scale-[1.02] mb-4"
-            >
-              Reserve Your Stay 🪷
-            </Link>
-            
-            <div className="text-center space-y-2 text-sm font-medium">
-              <p className="text-green-400">✓ Free cancellation available</p>
-              <p className="text-neutral-400">No payment needed until confirmation</p>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -403,7 +359,6 @@ export default function RoomDetailsClient({ room }: { room: any }) {
             </button>
           </div>
           
-          {/* Thumbnail strip in lightbox */}
           <div className="h-24 bg-neutral-950/80 flex items-center justify-center gap-2 px-4 overflow-x-auto pb-4 shrink-0 border-t border-neutral-900">
             {images.map((img: string, idx: number) => (
               <button 

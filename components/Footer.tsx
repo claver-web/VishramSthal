@@ -71,7 +71,11 @@ export default function Footer() {
             <ul className="space-y-4 font-sans text-sm text-white/90">
               <li className="flex items-center gap-3">
                 <span className="text-[var(--color-gold)]">📞</span>
-                +91 9876543210
+                +91 9815271636
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="text-[var(--color-gold)]">💬</span>
+                <a href="https://wa.me/918988478367" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--color-gold)] transition-colors">WhatsApp: +91 8988478367</a>
               </li>
               <li className="flex items-center gap-3">
                 <span className="text-[var(--color-gold)]">✉️</span>

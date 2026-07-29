@@ -56,7 +56,7 @@ export default function RootLayout({
       "addressRegion": "Himachal Pradesh",
       "addressCountry": "IN"
     },
-    "telephone": "+91 9876543210"
+    "telephone": "+91 9815271636"
   };
 
   return (
