@@ -172,8 +172,7 @@ export default async function Home() {
                     </div>
                     
                     <div className="p-6 flex flex-col flex-grow bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZjliMjM0IiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')]">
-                      <p className="text-gray-300 font-sans text-sm mb-4 italic flex-grow">{desc}</p>
-                      
+
                       <div className="flex justify-between items-end mb-6 pb-4 border-b border-gray-700">
                         <div>
                           <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Starting from</p>
