@@ -96,9 +96,6 @@ export default function RoomCard({ room, viewMode, index }: RoomCardProps) {
               </div>
             </div>
             
-            <p className={`text-gray-300 mt-4 mb-5 leading-relaxed text-sm ${isList ? 'line-clamp-2' : 'line-clamp-3'}`}>
-              {room.description || `Experience the divine tranquility in our ${spiritualName}. Perfectly suited for your spiritual retreat.`}
-            </p>
             
             <div className="flex flex-wrap gap-2 mb-6">
               {room.amenities.slice(0, isList ? 6 : 3).map(amenity => (

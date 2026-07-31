@@ -9,7 +9,7 @@ import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-
 
 const NAV_LINKS = [
   { name: 'Home', href: '/' },
-  { name: 'Divine Abodes', href: '/rooms' },
+  { name: 'Rooms', href: '/rooms' },
   { name: 'About', href: '/about' },
   { name: 'Gallery', href: '/gallery' },
   { name: 'Contact', href: '/contact' },
@@ -129,7 +129,7 @@ export default function Navigation() {
               <UserButton />
             ) : (
               <SignInButton mode="modal">
-                <button className="text-sm font-medium text-gray-300 hover:text-amber-400 transition-colors">
+                <button className="px-5 py-2 border border-amber-500/50 rounded-full text-sm font-medium text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-[0_0_10px_rgba(249,115,22,0.1)] hover:shadow-[0_0_15px_rgba(249,115,22,0.3)]">
                   Sign In
                 </button>
               </SignInButton>
@@ -229,7 +229,7 @@ export default function Navigation() {
                   </div>
                 ) : (
                   <SignInButton mode="modal">
-                    <button className="text-left text-lg font-medium text-gray-300 hover:text-amber-400">
+                    <button className="w-full py-2 border border-amber-500/50 rounded-full text-center text-lg font-medium text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-[0_0_10px_rgba(249,115,22,0.1)]">
                       Sign In
                     </button>
                   </SignInButton>
