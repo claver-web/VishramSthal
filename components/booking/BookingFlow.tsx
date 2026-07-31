@@ -68,7 +68,21 @@ export default function BookingFlow({ room }: { room: any }) {
 
       const data = await res.json();
       if (res.ok) {
-        router.push('/booking/success');
+        const booking = data.booking;
+        const formatDate = (dateString: string) => {
+          return new Date(dateString).toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric'
+          });
+        };
+        const queryParams = new URLSearchParams({
+          paymentMethod,
+          roomName: booking.room.name || booking.room.spiritualName || `Room ${booking.room.number}`,
+          checkIn: formatDate(booking.checkIn),
+          checkOut: formatDate(booking.checkOut),
+          guests: booking.guests.toString(),
+          totalPrice: `₹${booking.totalPrice.toLocaleString('en-IN')}`
+        });
+        router.push(`/booking/success?${queryParams.toString()}`);
       } else {
         alert('Booking failed: ' + data.error);
         setIsBooking(false);
