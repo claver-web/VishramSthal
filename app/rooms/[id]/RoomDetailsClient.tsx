@@ -77,14 +77,7 @@ export default function RoomDetailsClient({ room }: { room: any }) {
             <span className="bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-1 rounded-md text-sm font-bold tracking-wider uppercase">
               {room.type}
             </span>
-            <div className="flex items-center gap-1 text-amber-500">
-              <Star className="w-5 h-5 fill-amber-500" />
-              <Star className="w-5 h-5 fill-amber-500" />
-              <Star className="w-5 h-5 fill-amber-500" />
-              <Star className="w-5 h-5 fill-amber-500" />
-              <Star className="w-5 h-5 fill-amber-500" />
-              <span className="text-white ml-1 text-sm font-medium">(128 Reviews)</span>
-            </div>
+
           </div>
           
           <div className="flex items-baseline gap-2 mb-8">
@@ -127,7 +120,7 @@ export default function RoomDetailsClient({ room }: { room: any }) {
       <div className="sticky top-0 z-40 bg-[#1a1a2e]/90 backdrop-blur-xl border-b border-amber-500/30 shadow-lg">
         <div className="container mx-auto px-4 md:px-8 max-w-7xl h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm font-bold text-neutral-400 overflow-x-auto scrollbar-hide">
-            {['Overview', 'Amenities', 'Gallery', 'Reviews', 'Policies'].map((item) => {
+            {['Overview', 'Amenities', 'Gallery', 'Policies'].map((item) => {
               const id = item.toLowerCase();
               return (
                 <button 
@@ -226,67 +219,6 @@ export default function RoomDetailsClient({ room }: { room: any }) {
             </div>
           </section>
           
-          {/* Section 4: Reviews */}
-          <section id="reviews" className="scroll-mt-24">
-            <h2 className="text-3xl font-serif text-white mb-6 flex items-center gap-3">
-              <span className="w-8 h-1 bg-amber-500 rounded-full"></span> Guest Experiences
-            </h2>
-            <div className="bg-[#1a1a2e] p-6 md:p-8 rounded-3xl border border-neutral-800 mb-8 flex flex-col md:flex-row items-center gap-8">
-              <div className="text-center">
-                <span className="text-6xl font-black text-white">4.8</span>
-                <div className="flex items-center justify-center gap-1 my-2">
-                  {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-amber-500 text-amber-500" />)}
-                </div>
-                <span className="text-sm text-neutral-400">128 Reviews</span>
-              </div>
-              <div className="flex-1 space-y-2 w-full md:border-l md:border-neutral-800 md:pl-8">
-                {[
-                  { stars: 5, pct: 85 },
-                  { stars: 4, pct: 10 },
-                  { stars: 3, pct: 3 },
-                  { stars: 2, pct: 1 },
-                  { stars: 1, pct: 1 },
-                ].map(row => (
-                  <div key={row.stars} className="flex items-center gap-3 text-sm">
-                    <span className="w-12 text-neutral-400 flex items-center gap-1">{row.stars} <Star className="w-3 h-3 fill-current" /></span>
-                    <div className="flex-1 h-2 bg-neutral-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-amber-500 rounded-full" style={{ width: `${row.pct}%` }}></div>
-                    </div>
-                    <span className="w-8 text-right text-neutral-500">{row.pct}%</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="space-y-6">
-              {[1, 2].map(i => (
-                <div key={i} className="p-6 bg-neutral-900 rounded-2xl border border-neutral-800">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-amber-500/20 text-amber-500 rounded-full flex items-center justify-center font-bold text-lg">
-                        {i === 1 ? 'R' : 'S'}
-                      </div>
-                      <div>
-                        <p className="text-white font-bold">{i === 1 ? 'Rahul Sharma' : 'Sunita Desai'}</p>
-                        <p className="text-xs text-neutral-500">Stayed in June 2026</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-1">
-                      {[1,2,3,4,5].map(s => <Star key={s} className="w-4 h-4 fill-amber-500 text-amber-500" />)}
-                    </div>
-                  </div>
-                  <h4 className="text-lg font-bold text-white mb-2">Truly a Divine Experience!</h4>
-                  <p className="text-neutral-400 text-sm leading-relaxed mb-4">
-                    The room was absolutely spotless and exactly as shown in the pictures. The temple view from the balcony in the morning during aarti time was mesmerizing. Will definitely book again.
-                  </p>
-                  <div className="bg-[#1a1a2e] p-4 rounded-xl border border-neutral-800 ml-6">
-                    <p className="text-xs text-amber-500 font-bold mb-1">Response from Host</p>
-                    <p className="text-sm text-neutral-300">Jai Shri Krishna Rahul! We are so glad you enjoyed the divine atmosphere. Looking forward to welcoming you back to Vishram Sthal.</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
 
           {/* Section 5: Policies */}
           <section id="policies" className="scroll-mt-24">
