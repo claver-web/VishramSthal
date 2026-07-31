@@ -26,7 +26,7 @@ interface RoomCardProps {
 
 const getSpiritualName = (type: string) => {
   switch (type) {
-    case 'STANDARD': return 'Tulsi Nivas';
+    case 'STANDARD': return 'Standard Room';
     case 'DELUXE': return 'Kunj Kutir';
     case 'SUITE': return 'Radha Mahal';
     case 'PREMIUM': return 'Krishna Kunj';

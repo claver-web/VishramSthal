@@ -25,7 +25,7 @@ export default async function Home() {
   const displayRooms = rooms;
 
   const roomNames = {
-    'STANDARD': 'Tulsi Nivas',
+    'STANDARD': 'Standard Room',
     'DELUXE': 'Kunj Kutir',
     'SUITE': 'Radha Mahal',
     'PREMIUM': 'Krishna Kunj'

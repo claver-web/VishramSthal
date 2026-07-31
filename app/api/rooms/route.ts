@@ -66,7 +66,7 @@ export async function GET(req: Request) {
       // If query matches a spiritual name loosely, map to type
       const q = query.toLowerCase();
       const mappedTypes = [];
-      if ('tulsi nivas'.includes(q) || 'standard'.includes(q)) mappedTypes.push('STANDARD');
+      if ('standard'.includes(q)) mappedTypes.push('STANDARD');
       if ('kunj kutir'.includes(q) || 'deluxe'.includes(q)) mappedTypes.push('DELUXE');
       if ('radha mahal'.includes(q) || 'suite'.includes(q)) mappedTypes.push('SUITE');
       if ('krishna kunj'.includes(q) || 'premium'.includes(q)) mappedTypes.push('PREMIUM');

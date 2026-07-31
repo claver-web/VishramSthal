@@ -8,6 +8,8 @@ import MainWrapper from "@/components/MainWrapper";
 import { Toaster } from "react-hot-toast";
 import Preloader from "@/components/Preloader";
 import ScrollToTop from "@/components/ScrollToTop";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
+import { Suspense } from 'react';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: 'swap' });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair", display: 'swap' });
@@ -69,6 +71,9 @@ export default function RootLayout({
           <Preloader />
           <Navigation />
           <MainWrapper>
+            <Suspense fallback={null}>
+              <AnalyticsTracker />
+            </Suspense>
             {children}
           </MainWrapper>
           <ScrollToTop />

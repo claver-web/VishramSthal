@@ -143,3 +143,12 @@ enum BookingStatus {
   CANCELLED
   COMPLETED
 }
+
+model VisitorLog {
+  id        String   @id @default(cuid())
+  path      String
+  device    String?  // 'Mobile', 'Desktop', 'Tablet'
+  source    String?  // 'Direct', 'Search', 'Social', 'Referral'
+  sessionId String?
+  createdAt DateTime @default(now())
+}
