@@ -30,16 +30,56 @@ export async function getDashboardData() {
     const reviews = await prisma.review.findMany();
     const avgRating = reviews.length ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1) : '0.0';
 
+    // Daily Visitors Stats from VisitorLog
+    const todayVisitorLogs = await prisma.visitorLog.findMany({
+      where: { createdAt: { gte: startOfToday } }
+    });
+
+    const dailyVisitorsToday = new Set(todayVisitorLogs.map(l => l.sessionId)).size;
+    const dailyPageViewsToday = todayVisitorLogs.length;
+
+    // Daily Visitor Trend over last 7 days
+    const last7Days = new Date();
+    last7Days.setDate(last7Days.getDate() - 7);
+    last7Days.setHours(0,0,0,0);
+
+    const logsLast7 = await prisma.visitorLog.findMany({
+      where: { createdAt: { gte: last7Days } }
+    });
+
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dailyVisitorsData = days.map(day => ({ name: day, visitors: 0, views: 0 }));
+
+    const sessionPerDay = new Map<string, Set<string>>();
+    logsLast7.forEach(l => {
+      const dayName = days[l.createdAt.getDay()];
+      if (!sessionPerDay.has(dayName)) {
+        sessionPerDay.set(dayName, new Set());
+      }
+      if (l.sessionId) {
+        sessionPerDay.get(dayName)!.add(l.sessionId);
+      }
+      const dayItem = dailyVisitorsData.find(d => d.name === dayName);
+      if (dayItem) dayItem.views += 1;
+    });
+
+    sessionPerDay.forEach((sessions, dayName) => {
+      const dayItem = dailyVisitorsData.find(d => d.name === dayName);
+      if (dayItem) dayItem.visitors = sessions.size;
+    });
+
     const recentActivityRaw = await prisma.booking.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },
-      include: { user: true }
+      include: { user: true, room: true }
     });
 
     const recentActivity = recentActivityRaw.map(b => ({
       id: b.id,
-      activity: 'New Booking',
+      activity: b.status === 'CONFIRMED' ? `Booked Room ${b.room?.number || ''}` : `Booking Requested`,
       user: b.user?.name || b.user?.email || 'Guest',
+      room: b.room?.name || `Room ${b.room?.number}`,
+      amount: b.totalPrice,
       time: new Date(b.createdAt).toLocaleString(),
       status: b.status === 'CONFIRMED' ? 'Success' : b.status === 'PENDING' ? 'Warning' : 'Info'
     }));
@@ -71,7 +111,7 @@ export async function getDashboardData() {
     });
     const roomTypeData = Object.keys(typeCount).map(k => ({ name: k.charAt(0) + k.slice(1).toLowerCase(), value: typeCount[k] }));
 
-    // Occupancy Data (Simplified: based on isAvailable flag)
+    // Occupancy Data
     const occupied = rooms.filter(r => !r.isAvailable).length;
     const available = rooms.filter(r => r.isAvailable).length;
     const occupancyData = [
@@ -90,14 +130,10 @@ export async function getDashboardData() {
        paymentMethodData.push({ name: 'None', value: 1 });
     }
 
-    // Revenue Data & Booking Trend (last 7 days for trend)
-    const last7Days = new Date();
-    last7Days.setDate(last7Days.getDate() - 7);
     const bookingsLast7 = await prisma.booking.findMany({
       where: { createdAt: { gte: last7Days } }
     });
     
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const bookingTrendData = days.map(day => ({ name: day, bookings: 0 }));
     
     bookingsLast7.forEach(b => {
@@ -123,7 +159,9 @@ export async function getDashboardData() {
         avgRating,
         totalReviews: reviews.length,
         pendingReviews,
-        pendingBookings
+        pendingBookings,
+        dailyVisitorsToday,
+        dailyPageViewsToday,
       },
       recentActivity,
       upcomingCheckIns,
@@ -132,6 +170,7 @@ export async function getDashboardData() {
         occupancyData,
         paymentMethodData,
         bookingTrendData,
+        dailyVisitorsData,
         revenueData
       }
     };

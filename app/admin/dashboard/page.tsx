@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { 
   Building2, 
   Users, 
@@ -15,16 +16,18 @@ import {
   CheckCircle,
   Clock,
   MessageSquare,
-  AlertCircle
+  AlertCircle,
+  Eye,
+  Globe,
+  Bell
 } from 'lucide-react';
 import { 
   LineChart, Line, 
   BarChart, Bar, 
   PieChart, Pie, Cell, 
+  AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
-
-// Charts Data passed directly into the components now
 
 const COLORS = ['#ea580c', '#f97316', '#fdba74', '#fed7aa'];
 const OCCUPANCY_COLORS = ['#ea580c', '#22c55e', '#ef4444'];
@@ -47,13 +50,13 @@ export default function AdminDashboard() {
   }, []);
 
   const stats = [
-    { title: 'Total Rooms', value: data?.stats?.totalRooms || '0', subtitle: 'Registered in DB', icon: Building2, change: '0%', isUp: true },
+    { title: "Visitors Today", value: data?.stats?.dailyVisitorsToday || '0', subtitle: 'Unique users visit per day', icon: Eye, change: '+12%', isUp: true },
+    { title: 'Page Views Today', value: data?.stats?.dailyPageViewsToday || '0', subtitle: 'Total traffic today', icon: Globe, change: '+18%', isUp: true },
     { title: "Active Bookings", value: data?.stats?.activeBookings || '0', subtitle: 'Confirmed reservations', icon: Activity, change: '0%', isUp: true },
     { title: "Pending Bookings", value: data?.stats?.pendingBookings || '0', subtitle: 'Awaiting confirmation', icon: CalendarClock, change: '0%', isUp: false },
-    { title: 'Pending Reviews', value: data?.stats?.pendingReviews || '0', subtitle: 'Awaiting moderation', icon: MessageSquare, change: '0%', isUp: true },
     { title: 'Revenue Today', value: `₹${data?.stats?.revenueToday || '0'}`, subtitle: 'Across all bookings', icon: IndianRupee, change: '0%', isUp: true },
     { title: 'Total Revenue', value: `₹${data?.stats?.totalRevenue || '0'}`, subtitle: 'This month', icon: TrendingUp, change: '0%', isUp: true },
-    { title: 'New Users', value: data?.stats?.newUsers || '0', subtitle: 'Registered this month', icon: Users, change: '0%', isUp: true },
+    { title: 'Total Rooms', value: data?.stats?.totalRooms || '0', subtitle: 'Registered in DB', icon: Building2, change: '0%', isUp: true },
     { title: 'Average Rating', value: `${data?.stats?.avgRating || '0.0'}/5`, subtitle: `Based on ${data?.stats?.totalReviews || '0'} reviews`, icon: Star, change: '0', isUp: true },
   ];
 
@@ -63,20 +66,17 @@ export default function AdminDashboard() {
       <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-orange-100 dark:border-gray-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-orange-50/50 to-transparent dark:from-orange-900/10">
         <div>
           <h1 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-3">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ea580c] to-[#f97316]">Jai Shri Krishna,</span> Admin
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ea580c] to-[#f97316]">Vishram Sthal</span> Admin Portal
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm font-medium">{date}</p>
         </div>
         <div className="flex flex-wrap sm:flex-nowrap gap-3 w-full md:w-auto mt-4 md:mt-0">
-          <select className="flex-1 sm:flex-none bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 text-sm font-bold text-gray-700 dark:text-gray-300 outline-none focus:border-orange-500">
-            <option>Last 7 Days</option>
-            <option>Last 30 Days</option>
-            <option>Last 90 Days</option>
-            <option>Custom Range</option>
-          </select>
-          <button className="flex-1 sm:flex-none whitespace-nowrap bg-gradient-to-r from-[#ea580c] to-[#c2410c] text-white px-6 py-2 rounded-xl text-sm font-bold shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-0.5 transition-all">
-            Download Report
-          </button>
+          <Link href="/admin/analytics" className="flex-1 sm:flex-none whitespace-nowrap bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:border-[#ea580c] hover:text-[#ea580c] transition-all flex items-center justify-center gap-2">
+            <Eye className="w-4 h-4 text-[#ea580c]" /> Visitor Analytics
+          </Link>
+          <Link href="/admin/bookings" className="flex-1 sm:flex-none whitespace-nowrap bg-gradient-to-r from-[#ea580c] to-[#c2410c] text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
+            <CalendarCheck className="w-4 h-4" /> Manage Bookings
+          </Link>
         </div>
       </div>
 
@@ -105,29 +105,55 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* Charts - Row 1 */}
+      {/* Charts - Daily Visitor Traffic & Booking Trend */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* Daily Visitor Traffic Chart */}
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 min-w-0">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Revenue Trend (This Month)</h3>
-          <div className="h-80 w-full">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <Eye className="w-5 h-5 text-[#ea580c]" /> Daily Visitors (User Visits Per Day)
+              </h3>
+              <p className="text-xs text-gray-400 mt-0.5">Unique visitor sessions tracked over last 7 days</p>
+            </div>
+            <Link href="/admin/analytics" className="text-xs font-bold text-[#ea580c] hover:underline">
+              Full Analytics →
+            </Link>
+          </div>
+          <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data?.charts?.revenueData || []}>
+              <AreaChart data={data?.charts?.dailyVisitorsData || []}>
+                <defs>
+                  <linearGradient id="visitorGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ea580c" stopOpacity={0.35}/>
+                    <stop offset="95%" stopColor="#ea580c" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
                 <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '12px', color: '#fff' }}
-                  itemStyle={{ color: '#ea580c' }}
-                />
-                <Line type="monotone" dataKey="revenue" stroke="#ea580c" strokeWidth={4} dot={{ fill: '#ea580c', strokeWidth: 2, r: 4 }} activeDot={{ r: 8 }} />
-              </LineChart>
+                <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '12px', color: '#fff' }} />
+                <Area type="monotone" dataKey="visitors" stroke="#ea580c" strokeWidth={3} fillOpacity={1} fill="url(#visitorGradient)" name="Unique Visitors" />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
+        {/* Booking Trend */}
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Booking Trend (Last 7 Days)</h3>
-          <div className="h-80 w-full">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <CalendarCheck className="w-5 h-5 text-orange-500" /> Room Booking Trend
+              </h3>
+              <p className="text-xs text-gray-400 mt-0.5">Reservations created per day over last 7 days</p>
+            </div>
+            <Link href="/admin/bookings" className="text-xs font-bold text-[#ea580c] hover:underline">
+              All Bookings →
+            </Link>
+          </div>
+          <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data?.charts?.bookingTrendData || []}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
@@ -137,14 +163,14 @@ export default function AdminDashboard() {
                   cursor={{fill: 'rgba(234, 88, 12, 0.05)'}}
                   contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '12px', color: '#fff' }}
                 />
-                <Bar dataKey="bookings" fill="#f97316" radius={[6, 6, 0, 0]} barSize={32} />
+                <Bar dataKey="bookings" fill="#f97316" radius={[8, 8, 0, 0]} barSize={32} name="Bookings Created" />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
       </div>
 
-      {/* Charts - Row 2 */}
+      {/* Distribution Charts */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 min-w-0">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Room Occupancy</h3>
@@ -164,7 +190,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Room Type Dist.</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Room Types</h3>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -200,18 +226,21 @@ export default function AdminDashboard() {
 
       {/* Tables Row */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Recent Activity */}
+        {/* Recent Room Booking Activity */}
         <div className="xl:col-span-2 bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 min-w-0">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Recent Activity</h3>
-            <a href="#" className="text-sm font-bold text-[#ea580c] hover:underline">View All</a>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <Bell className="w-5 h-5 text-[#ea580c]" /> Live Booking Notifications & Activity
+            </h3>
+            <Link href="/admin/bookings" className="text-sm font-bold text-[#ea580c] hover:underline">View All</Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left whitespace-nowrap">
               <thead className="bg-gray-50 dark:bg-[#0f172a] text-gray-500 dark:text-gray-400">
                 <tr>
                   <th className="px-4 py-3 font-bold text-xs uppercase tracking-wider rounded-l-xl">Activity</th>
-                  <th className="px-4 py-3 font-bold text-xs uppercase tracking-wider">User</th>
+                  <th className="px-4 py-3 font-bold text-xs uppercase tracking-wider">Guest</th>
+                  <th className="px-4 py-3 font-bold text-xs uppercase tracking-wider">Amount</th>
                   <th className="px-4 py-3 font-bold text-xs uppercase tracking-wider">Time</th>
                   <th className="px-4 py-3 font-bold text-xs uppercase tracking-wider rounded-r-xl">Status</th>
                 </tr>
@@ -219,18 +248,19 @@ export default function AdminDashboard() {
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                 {loading ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-gray-500">Loading...</td>
+                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">Loading activity...</td>
                   </tr>
                 ) : data?.recentActivity?.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-gray-500">No recent activity</td>
+                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">No recent room bookings</td>
                   </tr>
                 ) : (
                   data?.recentActivity?.map((act: any) => (
                     <tr key={act.id} className="hover:bg-gray-50 dark:hover:bg-[#0f172a]/50 transition-colors">
-                      <td className="px-4 py-4 text-sm font-medium text-gray-900 dark:text-gray-200">{act.activity}</td>
-                      <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{act.user}</td>
-                      <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{act.time}</td>
+                      <td className="px-4 py-4 text-sm font-bold text-gray-900 dark:text-gray-200">{act.activity}</td>
+                      <td className="px-4 py-4 text-sm text-gray-600 dark:text-gray-300 font-medium">{act.user}</td>
+                      <td className="px-4 py-4 text-sm font-bold text-[#ea580c]">₹{act.amount}</td>
+                      <td className="px-4 py-4 text-xs text-gray-500 dark:text-gray-400">{act.time}</td>
                       <td className="px-4 py-4">
                         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
                           act.status === 'Success' ? 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400' :
@@ -248,9 +278,8 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Right Column: Upcoming & Tasks */}
+        {/* Right Column: Upcoming Check-ins & Actions */}
         <div className="space-y-6">
-          {/* Upcoming Check-ins */}
           <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -275,49 +304,12 @@ export default function AdminDashboard() {
                         {booking.time}
                       </span>
                     </div>
-                    <button className="w-full py-2 bg-gradient-to-r from-[#ea580c] to-[#c2410c] text-white text-sm font-bold rounded-xl shadow-md hover:shadow-lg transition-all">
+                    <Link href="/admin/bookings" className="w-full py-2 bg-gradient-to-r from-[#ea580c] to-[#c2410c] text-white text-sm font-bold rounded-xl shadow-md hover:shadow-lg transition-all text-center">
                       View Booking
-                    </button>
+                    </Link>
                   </div>
                 ))
               )}
-            </div>
-          </div>
-
-          {/* Pending Tasks */}
-          <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-6">
-              <AlertCircle className="w-5 h-5 text-[#ea580c]" />
-              Pending Actions
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0f172a] cursor-pointer transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center text-[#ea580c]">
-                    <Clock className="w-5 h-5" />
-                  </div>
-                  <span className="font-medium text-gray-700 dark:text-gray-300">Booking Approvals</span>
-                </div>
-                <span className="w-6 h-6 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center">{data?.stats?.pendingBookings || 0}</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0f172a] cursor-pointer transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center text-[#ea580c]">
-                    <MessageSquare className="w-5 h-5" />
-                  </div>
-                  <span className="font-medium text-gray-700 dark:text-gray-300">Pending Reviews</span>
-                </div>
-                <span className="w-6 h-6 rounded-full bg-[#ea580c] text-white text-xs font-bold flex items-center justify-center">{data?.stats?.pendingReviews || 0}</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0f172a] cursor-pointer transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center text-[#ea580c]">
-                    <IndianRupee className="w-5 h-5" />
-                  </div>
-                  <span className="font-medium text-gray-700 dark:text-gray-300">Refund Requests</span>
-                </div>
-                <span className="w-6 h-6 rounded-full bg-[#ea580c] text-white text-xs font-bold flex items-center justify-center">2</span>
-              </div>
             </div>
           </div>
         </div>
