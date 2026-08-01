@@ -88,11 +88,11 @@ export default async function Home() {
           </Reveal>
 
           <Reveal delay={400}>
-            <p className="text-2xl md:text-4xl text-white font-cormorant mb-4 italic drop-shadow-lg">
-              "Where Divine Love Meets Luxury"
+            <p className="text-3xl md:text-5xl text-[#FFD700] font-bold mb-4 tracking-wider drop-shadow-[0_0_15px_rgba(255,215,0,0.5)] font-sanskrit">
+              "यतो धर्मस्ततो जयः"
             </p>
-            <p className="text-lg md:text-xl text-white/90 font-light mb-10 max-w-2xl mx-auto">
-              Experience the eternal bliss of Radha Krishna's abode at Word No. 6, Dehra Gopipur
+            <p className="text-lg md:text-xl text-white/90 font-medium mb-10 max-w-2xl mx-auto">
+              जहाँ धर्म, शांति और आनंद का संगम है — विश्राम स्थल
             </p>
           </Reveal>
 
