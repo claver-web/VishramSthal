@@ -387,17 +387,30 @@ export default async function Home() {
             <h2 className="text-4xl font-serif text-center text-[var(--color-gold)] mb-12">Blessed Location</h2>
           </Reveal>
           <div className="flex flex-col lg:flex-row gap-12 bg-gray-800 p-4 rounded-3xl shadow-xl border border-[var(--color-gold)]/30">
-            <div className="lg:w-1/2 rounded-2xl overflow-hidden h-[400px] relative bg-gray-200">
-              {/* Simulated Map */}
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1000')] bg-cover bg-center opacity-80" />
-              <div className="absolute inset-0 bg-blue-500/10 mix-blend-overlay" />
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-[var(--color-saffron)] mb-2 animate-bounce">
-                  <span className="text-2xl">🛕</span>
+            <div className="lg:w-1/2 rounded-2xl overflow-hidden h-[420px] relative bg-gray-900 border border-gray-700 shadow-inner group">
+              <iframe
+                src="https://maps.google.com/maps?q=31.8793295,76.2164309&t=&z=17&ie=UTF8&iwloc=&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen={true}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full rounded-2xl transition-all"
+              />
+              <div className="absolute bottom-4 left-4 right-4 bg-gray-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-gray-700 flex justify-between items-center shadow-2xl">
+                <div>
+                  <p className="font-bold text-white text-sm">Vishram Sthal</p>
+                  <p className="text-xs text-gray-400 mt-0.5">Word No. 6, Dehra Gopipur, Himachal Pradesh</p>
                 </div>
-                <div className="bg-gray-900 px-4 py-2 rounded-lg shadow-xl font-bold text-sm">
-                  Word No. 6, Dehra Gopipur
-                </div>
+                <a
+                  href="https://www.google.com/maps/place/%E0%A4%B6%E0%A5%8D%E0%A4%B0%E0%A5%80+%E0%A4%B0%E0%A4%BE%E0%A4%A7%E0%A5%87+%E0%A4%B5%E0%A4%BF%E0%A4%B6%E0%A5%8D%E0%A4%B0%E0%A4%BE%E0%A4%AE+%E0%A4%B8%E0%A5%8D%E0%A4%A5%E0%A4%B2%E0%A5%80/@31.8793295,76.2164309,17z"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3.5 py-2 bg-[var(--color-saffron)] text-white text-xs font-bold rounded-xl hover:bg-orange-600 transition-all shadow-md flex items-center gap-1.5"
+                >
+                  Open Maps ↗
+                </a>
               </div>
             </div>
             
