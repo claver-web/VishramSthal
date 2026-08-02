@@ -16,7 +16,7 @@ export default function BookingFlow({ room }: { room: any }) {
   const [phone, setPhone] = useState('');
   const [guests, setGuests] = useState(1);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [isBooking, setIsBooking] = useState(false);
+  const [processingMethod, setProcessingMethod] = useState<'CASH' | 'RAZORPAY' | null>(null);
 
   // Pre-fill from Clerk user
   useEffect(() => {
@@ -54,8 +54,8 @@ export default function BookingFlow({ room }: { room: any }) {
   }
 
   const handleBooking = async (paymentMethod: 'CASH' | 'RAZORPAY') => {
-    if (!isFormComplete) return;
-    setIsBooking(true);
+    if (!isFormComplete || processingMethod) return;
+    setProcessingMethod(paymentMethod);
     try {
       const res = await fetch('/api/bookings', {
         method: 'POST',
@@ -92,12 +92,12 @@ export default function BookingFlow({ room }: { room: any }) {
         router.push(`/booking/success?${queryParams.toString()}`);
       } else {
         alert('Booking failed: ' + data.error);
-        setIsBooking(false);
+        setProcessingMethod(null);
       }
     } catch (err) {
       console.error(err);
       alert('An error occurred during booking. Please try again.');
-      setIsBooking(false);
+      setProcessingMethod(null);
     }
   };
 
@@ -235,18 +235,38 @@ export default function BookingFlow({ room }: { room: any }) {
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => handleBooking('RAZORPAY')}
-                disabled={!isFormComplete || isBooking}
+                disabled={!isFormComplete || !!processingMethod}
                 className="flex-1 py-4 px-6 bg-gradient-to-r from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 border border-blue-500/30 shadow-lg shadow-blue-900/20"
               >
-                {isBooking ? 'Processing...' : '💳 Pay Now'}
+                {processingMethod === 'RAZORPAY' ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing Payment...
+                  </span>
+                ) : (
+                  '💳 Pay Now'
+                )}
               </button>
 
               <button
                 onClick={() => handleBooking('CASH')}
-                disabled={!isFormComplete || isBooking}
+                disabled={!isFormComplete || !!processingMethod}
                 className="flex-1 py-4 px-6 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg shadow-amber-900/20"
               >
-                {isBooking ? 'Processing...' : '🏨 Pay at Check-in'}
+                {processingMethod === 'CASH' ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing Reservation...
+                  </span>
+                ) : (
+                  '🏨 Pay at Check-in'
+                )}
               </button>
             </div>
           </div>
