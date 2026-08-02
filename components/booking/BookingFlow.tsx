@@ -13,6 +13,7 @@ export default function BookingFlow({ room }: { room: any }) {
   const [checkOut, setCheckOut] = useState('');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [guests, setGuests] = useState(1);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
@@ -22,11 +23,14 @@ export default function BookingFlow({ room }: { room: any }) {
     if (isLoaded && user) {
       setFullName(user.fullName || '');
       setEmail(user.primaryEmailAddress?.emailAddress || '');
+      if (user.primaryPhoneNumber?.phoneNumber) {
+        setPhone(user.primaryPhoneNumber.phoneNumber);
+      }
     }
   }, [isLoaded, user]);
 
   const hasValidDates = checkIn && checkOut && new Date(checkIn) < new Date(checkOut);
-  const isFormComplete = hasValidDates && fullName.trim() !== '' && email.trim() !== '' && guests > 0 && agreedToTerms;
+  const isFormComplete = hasValidDates && fullName.trim() !== '' && email.trim() !== '' && phone.trim() !== '' && guests > 0 && agreedToTerms;
 
   if (!isLoaded) {
     return <div className="text-amber-500 p-8 text-center animate-pulse">Loading...</div>;
@@ -61,6 +65,7 @@ export default function BookingFlow({ room }: { room: any }) {
           userId: user?.id,
           guestName: fullName,
           guestEmail: email,
+          guestPhone: phone,
           checkIn,
           checkOut,
           guests,
@@ -136,14 +141,14 @@ export default function BookingFlow({ room }: { room: any }) {
           {/* Divider */}
           <div className="border-t border-neutral-800" />
 
-          {/* Guest Info — inline fields, no separate card */}
+          {/* Guest Info — inline fields */}
           <div>
             <h2 className="text-xl text-white font-serif mb-4 flex items-center gap-3">
               <span className="w-7 h-7 rounded-full bg-amber-500 text-neutral-950 flex items-center justify-center text-sm font-bold">2</span>
               Your Details
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="sm:col-span-2 sm:col-start-1 sm:col-end-2">
+              <div className="sm:col-span-2">
                 <label className="block text-sm text-neutral-400 mb-1.5">Full Name <span className="text-red-400">*</span></label>
                 <input
                   type="text"
@@ -164,6 +169,16 @@ export default function BookingFlow({ room }: { room: any }) {
                 />
               </div>
               <div>
+                <label className="block text-sm text-neutral-400 mb-1.5">Phone Number <span className="text-red-400">*</span></label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+91 99999 99999"
+                  className={inputClass}
+                />
+              </div>
+              <div className="sm:col-span-2">
                 <label className="block text-sm text-neutral-400 mb-1.5">Number of Guests <span className="text-red-400">*</span></label>
                 <select
                   value={guests}

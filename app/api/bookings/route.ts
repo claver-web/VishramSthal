@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   try {
     const { userId: authUserId } = await auth();
     const body = await req.json();
-    const { roomId, userId, checkIn, checkOut, guests, paymentMethod } = body;
+    const { roomId, userId, checkIn, checkOut, guests, paymentMethod, guestName, guestEmail, guestPhone } = body;
 
     // Use authenticated user if available, otherwise fallback to provided (for testing/admin)
     const finalUserId = authUserId || userId;
@@ -23,11 +23,16 @@ export async function POST(req: Request) {
     if (authUserId) {
       dbUser = await prisma.user.upsert({
         where: { clerkId: authUserId },
-        update: {},
+        update: {
+          ...(guestName ? { name: guestName } : {}),
+          ...(guestEmail ? { email: guestEmail } : {}),
+          ...(guestPhone ? { phone: guestPhone } : {}),
+        },
         create: {
           clerkId: authUserId,
-          email: body.guestEmail || `user_${authUserId}@example.com`,
-          name: body.guestName || 'Guest',
+          email: guestEmail || `user_${authUserId}@example.com`,
+          name: guestName || 'Guest',
+          phone: guestPhone || null,
         }
       });
     } else {
@@ -35,6 +40,15 @@ export async function POST(req: Request) {
       dbUser = await prisma.user.findUnique({ where: { id: finalUserId } });
       if (!dbUser) {
         return NextResponse.json({ error: 'User not found in DB' }, { status: 404 });
+      }
+      if (guestPhone || guestName) {
+        dbUser = await prisma.user.update({
+          where: { id: finalUserId },
+          data: {
+            ...(guestName ? { name: guestName } : {}),
+            ...(guestPhone ? { phone: guestPhone } : {}),
+          }
+        });
       }
     }
 
@@ -72,6 +86,9 @@ export async function POST(req: Request) {
         guests: guests ? parseInt(guests.toString(), 10) : 1,
         totalPrice,
         status,
+        guestName: guestName || dbUser.name || null,
+        guestEmail: guestEmail || dbUser.email || null,
+        guestPhone: guestPhone || dbUser.phone || null,
       },
       include: {
         room: true,
