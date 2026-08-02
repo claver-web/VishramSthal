@@ -32,35 +32,7 @@ export default function AboutPage() {
               <div className="h-72 bg-gray-200 dark:bg-gray-700 rounded-3xl overflow-hidden shadow-2xl transform translate-y-6">
                  <img src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=500" alt="Room" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
               </div>
-            </div>
-          </Reveal>
         </div>
-
-        <Reveal>
-          <div className="mb-32">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Our Premium Amenities</h2>
-              <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">We've curated everything you need for a perfect stay.</p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {[
-                { icon: '📶', name: 'High-Speed WiFi' },
-                { icon: '🍽️', name: 'In-house Restaurant' },
-                { icon: '🏊‍♂️', name: 'Swimming Pool' },
-                { icon: '🚗', name: 'Valet Parking' },
-                { icon: '💆‍♀️', name: 'Spa & Wellness' },
-                { icon: '🛎️', name: '24/7 Room Service' },
-                { icon: '🏋️‍♂️', name: 'Fitness Center' },
-                { icon: '👔', name: 'Laundry Service' },
-              ].map((amenity, i) => (
-                <div key={i} className="text-center p-8 bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 hover:-translate-y-3 hover:shadow-2xl transition-all duration-300">
-                  <div className="text-5xl mb-6">{amenity.icon}</div>
-                  <h3 className="font-bold text-lg text-gray-900 dark:text-white">{amenity.name}</h3>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Reveal>
 
         <Reveal>
           <div className="mb-32 text-center">
