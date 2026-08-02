@@ -66,8 +66,9 @@ export default function AboutPage() {
             <h2 className="text-3xl md:text-4xl font-bold mb-16 text-gray-900 dark:text-white">Meet Our Team</h2>
             <div className="flex justify-center gap-12 flex-wrap">
               {[
-                { name: 'Team Member 1', role: 'Hospitality', img: '/radhe.jpg' },
-                { name: 'Team Member 2', role: 'Management', img: '/radhe1.jpg' }
+                { name: 'Shubhankur Sharma', role: 'Founder & Director', img: '/radhe.jpg' },
+                { name: 'Manoj Bhardwaj', role: 'Management & Operations', img: '/radhe2.jpg' },
+                { name: 'Acharya Deshbandhu', role: 'Spiritual Patron & Mentor', img: '/radhe3.jpeg' }
               ].map((member, i) => (
                 <div key={i} className="w-56 text-center group">
                   <div className="w-40 h-40 mx-auto bg-gray-300 dark:bg-gray-700 rounded-full mb-6 overflow-hidden shadow-xl border-4 border-amber-500/50 group-hover:scale-105 transition-transform">
