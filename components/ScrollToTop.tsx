@@ -96,10 +96,6 @@ export default function ScrollToTop() {
                         <h4 className="font-serif font-semibold text-sm text-[var(--color-gold)] leading-tight">
                           Vishram Sthal Concierge
                         </h4>
-                        <p className="text-[11px] text-emerald-400 font-medium flex items-center gap-1 mt-0.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                          Online • Instant Assistance
-                        </p>
                       </div>
                     </div>
 
