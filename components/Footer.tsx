@@ -111,6 +111,10 @@ export default function Footer() {
             <Link href="/privacy" className="text-xs text-white/70 hover:text-[var(--color-gold)] transition-colors underline">
               Privacy Policy
             </Link>
+            <span className="hidden sm:inline text-white/30">•</span>
+            <Link href="/cancellation" className="text-xs text-white/70 hover:text-[var(--color-gold)] transition-colors underline">
+              Cancellation Policy
+            </Link>
           </div>
           <p className="text-2xl font-decorative text-[var(--color-gold)] drop-shadow-sm tracking-wider">
             Jai Shri Krishna

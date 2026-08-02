@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import BookingSummary from './BookingSummary';
 import { useUser, SignInButton } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
@@ -13,6 +14,7 @@ export default function BookingFlow({ room }: { room: any }) {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [guests, setGuests] = useState(1);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
 
   // Pre-fill from Clerk user
@@ -24,7 +26,7 @@ export default function BookingFlow({ room }: { room: any }) {
   }, [isLoaded, user]);
 
   const hasValidDates = checkIn && checkOut && new Date(checkIn) < new Date(checkOut);
-  const isFormComplete = hasValidDates && fullName.trim() !== '' && email.trim() !== '' && guests > 0;
+  const isFormComplete = hasValidDates && fullName.trim() !== '' && email.trim() !== '' && guests > 0 && agreedToTerms;
 
   if (!isLoaded) {
     return <div className="text-amber-500 p-8 text-center animate-pulse">Loading...</div>;
@@ -186,8 +188,33 @@ export default function BookingFlow({ room }: { room: any }) {
               Confirm Booking
             </h2>
 
+            {/* Terms & Conditions Checkbox */}
+            <div className="mb-6 flex items-start gap-3 bg-neutral-950 p-4 rounded-xl border border-neutral-800">
+              <input
+                type="checkbox"
+                id="agreeTerms"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                className="mt-1 w-4 h-4 rounded border-neutral-700 text-amber-500 focus:ring-amber-500 accent-amber-500 cursor-pointer"
+              />
+              <label htmlFor="agreeTerms" className="text-xs sm:text-sm text-neutral-300 cursor-pointer leading-relaxed">
+                I agree to the{' '}
+                <Link href="/terms" target="_blank" className="text-amber-500 hover:text-amber-400 underline font-medium">
+                  Terms & Conditions
+                </Link>{' '}
+                and{' '}
+                <Link href="/cancellation" target="_blank" className="text-amber-500 hover:text-amber-400 underline font-medium">
+                  Cancellation Policy
+                </Link>.
+              </label>
+            </div>
+
             {!isFormComplete && (
-              <p className="text-neutral-500 text-sm mb-4">Please fill in all required fields above to proceed.</p>
+              <p className="text-neutral-500 text-sm mb-4">
+                {!agreedToTerms && hasValidDates && fullName.trim() !== '' && email.trim() !== ''
+                  ? 'Please check the box above to accept the Terms & Conditions.'
+                  : 'Please fill in all required fields above to proceed.'}
+              </p>
             )}
 
             <div className="flex flex-col sm:flex-row gap-3">
