@@ -32,6 +32,8 @@ export default function AboutPage() {
               <div className="h-72 bg-gray-200 dark:bg-gray-700 rounded-3xl overflow-hidden shadow-2xl transform translate-y-6">
                  <img src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=500" alt="Room" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
               </div>
+            </div>
+          </Reveal>
         </div>
 
         <Reveal>
