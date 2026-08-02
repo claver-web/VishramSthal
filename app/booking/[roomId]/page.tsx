@@ -35,22 +35,6 @@ export default async function BookingPage({ params }: { params: Promise<{ roomId
           Complete Your Divine Booking
         </h1>
 
-        {/* 3.3 Pre-booking Information Banner */}
-        <div className="bg-gradient-to-r from-amber-900/40 to-neutral-900 border border-amber-500/30 rounded-2xl p-4 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg shadow-amber-900/10">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-amber-500/20 rounded-full shrink-0">
-              <Sparkles className="w-6 h-6 text-amber-500" />
-            </div>
-            <div>
-              <p className="text-amber-400 font-bold text-lg">🌟 Special Divine Offer Active</p>
-              <p className="text-neutral-300 text-sm">Book 3+ nights to receive a complimentary Aarti access pass & 10% discount on your stay.</p>
-            </div>
-          </div>
-          <div className="text-sm font-bold bg-neutral-950 text-amber-500 px-4 py-2 rounded-full border border-amber-500/20 whitespace-nowrap">
-            Limited Time Only
-          </div>
-        </div>
-
         <BookingFlow room={room} />
       </div>
     </div>
