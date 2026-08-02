@@ -1,4 +1,5 @@
 import Reveal from '@/components/Reveal';
+import Image from 'next/image';
 
 export default function AboutPage() {
   return (
@@ -71,8 +72,14 @@ export default function AboutPage() {
                 { name: 'Acharya Deshbandhu', role: 'Spiritual Patron & Mentor', img: '/radhe3.jpeg' }
               ].map((member, i) => (
                 <div key={i} className="w-56 text-center group">
-                  <div className="w-40 h-40 mx-auto bg-gray-300 dark:bg-gray-700 rounded-full mb-6 overflow-hidden shadow-xl border-4 border-amber-500/50 group-hover:scale-105 transition-transform">
-                     <img src={member.img} alt={member.name} className="w-full h-full object-cover" />
+                  <div className="relative w-40 h-40 mx-auto bg-gray-300 dark:bg-gray-700 rounded-full mb-6 overflow-hidden shadow-xl border-4 border-amber-500/50 group-hover:scale-105 transition-transform">
+                    <Image
+                      src={member.img}
+                      alt={member.name}
+                      fill
+                      className="object-cover object-top"
+                      sizes="160px"
+                    />
                   </div>
                   <h4 className="font-bold text-xl text-gray-900 dark:text-white">{member.name}</h4>
                   <p className="text-sm text-orange-500 font-bold mt-1">{member.role}</p>
