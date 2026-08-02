@@ -26,11 +26,11 @@ export default function AboutPage() {
           </Reveal>
           <Reveal delay={200}>
             <div className="grid grid-cols-2 gap-6">
-              <div className="h-72 bg-gray-200 dark:bg-gray-700 rounded-3xl overflow-hidden shadow-2xl transform -translate-y-6">
-                 <img src="https://images.unsplash.com/photo-1542314831-c6a4d14d8c85?w=500" alt="Hotel" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
+              <div className="relative h-72 bg-gray-200 dark:bg-gray-700 rounded-3xl overflow-hidden shadow-2xl transform -translate-y-6">
+                 <Image src="/main.webp" alt="Vishram Sthal Main" fill className="object-cover hover:scale-110 transition-transform duration-700" sizes="300px" />
               </div>
-              <div className="h-72 bg-gray-200 dark:bg-gray-700 rounded-3xl overflow-hidden shadow-2xl transform translate-y-6">
-                 <img src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=500" alt="Room" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
+              <div className="relative h-72 bg-gray-200 dark:bg-gray-700 rounded-3xl overflow-hidden shadow-2xl transform translate-y-6">
+                 <Image src="/lamp.webp" alt="Vishram Sthal Sanctuary Lamp" fill className="object-cover hover:scale-110 transition-transform duration-700" sizes="300px" />
               </div>
             </div>
           </Reveal>
