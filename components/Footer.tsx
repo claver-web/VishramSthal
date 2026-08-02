@@ -99,9 +99,15 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-[var(--color-gold)]/20 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-white/60 font-sans">
-            © {new Date().getFullYear()} Vishram Sthal. All rights reserved.
-          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left">
+            <p className="text-sm text-white/60 font-sans">
+              © {new Date().getFullYear()} Vishram Sthal. All rights reserved.
+            </p>
+            <span className="hidden sm:inline text-white/30">•</span>
+            <Link href="/terms" className="text-xs text-white/70 hover:text-[var(--color-gold)] transition-colors underline">
+              Terms & Conditions
+            </Link>
+          </div>
           <p className="text-2xl font-decorative text-[var(--color-gold)] drop-shadow-sm tracking-wider">
             Jai Shri Krishna
           </p>
