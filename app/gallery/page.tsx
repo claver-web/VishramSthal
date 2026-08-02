@@ -1,110 +1,110 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronRight, X, ChevronLeft, Maximize2, Sparkles } from 'lucide-react';
+import { ChevronRight, X, ChevronLeft, Maximize2, Sparkles, Image as ImageIcon, Loader2 } from 'lucide-react';
 import Reveal from '@/components/Reveal';
+
+interface RoomData {
+  id: string;
+  number: string;
+  name?: string;
+  type: string;
+  price: number;
+  description?: string;
+  images?: string[];
+}
 
 interface GalleryItem {
   id: string;
   title: string;
-  category: 'rooms' | 'ambiance' | 'spiritual' | 'dining';
+  category: string;
   categoryLabel: string;
   src: string;
   description: string;
+  roomId?: string;
 }
 
-const GALLERY_ITEMS: GalleryItem[] = [
+const STATIC_PROPERTY_ITEMS: GalleryItem[] = [
   {
-    id: '1',
-    title: 'Divine Suite Bedroom',
-    category: 'rooms',
-    categoryLabel: 'Rooms & Suites',
-    src: 'https://images.unsplash.com/photo-1590490359683-658d3d23f972?q=80&w=1200',
-    description: 'Luxurious king bed with handcrafted wooden decor and warm ambient lighting.',
+    id: 'team-1',
+    title: 'Shubhankur Sharma',
+    category: 'team',
+    categoryLabel: 'Team',
+    src: '/radhe.jpg',
+    description: 'Vishram Sthal Team',
   },
   {
-    id: '2',
-    title: 'Spiritual Heritage Entrance',
-    category: 'spiritual',
-    categoryLabel: 'Temple & Divine View',
-    src: 'https://images.unsplash.com/photo-1542314831-c6a4d14d8c85?q=80&w=1200',
-    description: 'The welcoming entrance decorated with sacred motifs and lotus arrangements.',
+    id: 'team-2',
+    title: 'Manoj Bhardwaj',
+    category: 'team',
+    categoryLabel: 'Team',
+    src: '/radhe2.jpg',
+    description: 'Vishram Sthal Team',
   },
   {
-    id: '3',
-    title: 'Serene Sunset Courtyard',
-    category: 'ambiance',
-    categoryLabel: 'Ambiance & Retreat',
-    src: 'https://images.unsplash.com/photo-1571536802807-30451e3955d8?q=80&w=1200',
-    description: 'Peaceful open courtyard overlooking the Kangra hills during golden hour.',
+    id: 'team-3',
+    title: 'Acharya Deshbandhu',
+    category: 'team',
+    categoryLabel: 'Team',
+    src: '/radhe3.jpeg',
+    description: 'Vishram Sthal Team',
   },
-  {
-    id: '4',
-    title: 'Satvik Dining Pavilion',
-    category: 'dining',
-    categoryLabel: 'Dining & Hospitality',
-    src: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200',
-    description: 'Pure vegetarian Satvik dining experience prepared with devotion.',
-  },
-  {
-    id: '5',
-    title: 'Deluxe Family Sanctuary',
-    category: 'rooms',
-    categoryLabel: 'Rooms & Suites',
-    src: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=1200',
-    description: 'Spacious multi-guest suite with traditional brass finishes and plush seating.',
-  },
-  {
-    id: '6',
-    title: 'Morning Prayer & Aarti View',
-    category: 'spiritual',
-    categoryLabel: 'Temple & Divine View',
-    src: 'https://images.unsplash.com/photo-1582292866953-2708b73059da?q=80&w=1200',
-    description: 'Breathtaking sunrise views over nearby sacred shrines.',
-  },
-  {
-    id: '7',
-    title: 'Super Deluxe Balcony View',
-    category: 'rooms',
-    categoryLabel: 'Rooms & Suites',
-    src: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=1200',
-    description: 'Private balcony overlooking peaceful green gardens in Dehra Gopipur.',
-  },
-  {
-    id: '8',
-    title: 'Meditation & Relaxation Lounge',
-    category: 'ambiance',
-    categoryLabel: 'Ambiance & Retreat',
-    src: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?q=80&w=1200',
-    description: 'Quiet sanctuary reserved for guests seeking inner peace and meditation.',
-  },
-  {
-    id: '9',
-    title: 'Evening Lantern Glow',
-    category: 'ambiance',
-    categoryLabel: 'Ambiance & Retreat',
-    src: 'https://images.unsplash.com/photo-1582560475093-ba66accbc424?q=80&w=1200',
-    description: 'Warm saffron lanterns casting a serene glow across the property path.',
-  },
-];
-
-const CATEGORIES = [
-  { id: 'all', label: 'All Photos' },
-  { id: 'rooms', label: 'Rooms & Suites' },
-  { id: 'spiritual', label: 'Spiritual Views' },
-  { id: 'ambiance', label: 'Ambiance & Retreat' },
-  { id: 'dining', label: 'Satvik Dining' },
 ];
 
 export default function GalleryPage() {
+  const [items, setItems] = useState<GalleryItem[]>(STATIC_PROPERTY_ITEMS);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
+  useEffect(() => {
+    async function fetchGalleryData() {
+      try {
+        setLoading(true);
+        const res = await fetch('/api/rooms');
+        if (res.ok) {
+          const rooms: RoomData[] = await res.json();
+          const dynamicItems: GalleryItem[] = [];
+
+          rooms.forEach((room) => {
+            if (room.images && room.images.length > 0) {
+              room.images.forEach((imgUrl, imgIdx) => {
+                dynamicItems.push({
+                  id: `room-${room.id}-${imgIdx}`,
+                  title: room.name || `Room ${room.number}`,
+                  category: 'rooms',
+                  categoryLabel: `${room.type.replace('_', ' ')} Room`,
+                  src: imgUrl,
+                  description: room.description || `₹${room.price}/night - ${room.type} accommodation at Vishram Sthal.`,
+                  roomId: room.id,
+                });
+              });
+            }
+          });
+
+          setItems([...dynamicItems, ...STATIC_PROPERTY_ITEMS]);
+        }
+      } catch (err) {
+        console.error('Failed to fetch gallery rooms:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchGalleryData();
+  }, []);
+
+  const categories = [
+    { id: 'all', label: 'All Photos' },
+    { id: 'rooms', label: 'Rooms' },
+    { id: 'team', label: 'Team' },
+  ];
+
   const filteredItems = activeCategory === 'all'
-    ? GALLERY_ITEMS
-    : GALLERY_ITEMS.filter((item) => item.category === activeCategory);
+    ? items
+    : items.filter((item) => item.category === activeCategory);
 
   const handlePrev = () => {
     if (selectedIndex === null) return;
@@ -135,12 +135,12 @@ export default function GalleryPage() {
             Photo Gallery
           </h1>
           <p className="text-neutral-400 max-w-2xl mt-3 text-lg leading-relaxed">
-            Immerse yourself in the divine peace, elegant rooms, and serene surroundings of Shree Radhe Radhe Vishram Sthali.
+            Explore authentic photos of Shree Radhe Radhe Vishram Sthali rooms, sanctuary spaces, and team.
           </p>
 
           {/* Category Filter Tabs */}
           <div className="flex items-center gap-3 overflow-x-auto pt-8 pb-2 scrollbar-none">
-            {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => {
@@ -160,55 +160,68 @@ export default function GalleryPage() {
         </div>
       </div>
 
-      {/* Gallery Grid */}
+      {/* Gallery Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {filteredItems.map((item, index) => (
-            <Reveal key={item.id} delay={index * 50}>
-              <div
-                onClick={() => setSelectedIndex(index)}
-                className="group relative h-80 rounded-2xl overflow-hidden bg-neutral-900 border border-neutral-800 hover:border-amber-500/50 cursor-pointer transition-all duration-500 shadow-xl hover:shadow-[0_10px_30px_rgba(245,158,11,0.15)]"
-              >
-                <Image
-                  src={item.src}
-                  alt={item.title}
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-700"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
-                
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-neutral-400">
+            <Loader2 className="animate-spin text-amber-500 mb-4" size={36} />
+            <p className="text-sm font-medium">Loading gallery photos...</p>
+          </div>
+        ) : filteredItems.length === 0 ? (
+          <div className="text-center py-20 border border-dashed border-neutral-800 rounded-3xl bg-neutral-900/40 p-8">
+            <ImageIcon className="mx-auto text-neutral-600 mb-4" size={48} />
+            <h3 className="text-xl font-bold text-white">No photos found</h3>
+            <p className="text-neutral-400 mt-2 text-sm">No images are currently available in this category.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {filteredItems.map((item, index) => (
+              <Reveal key={item.id} delay={index * 40}>
+                <div
+                  onClick={() => setSelectedIndex(index)}
+                  className="group relative h-80 rounded-2xl overflow-hidden bg-neutral-900 border border-neutral-800 hover:border-amber-500/50 cursor-pointer transition-all duration-500 shadow-xl hover:shadow-[0_10px_30px_rgba(245,158,11,0.15)]"
+                >
+                  <Image
+                    src={item.src}
+                    alt={item.title}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                  
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
 
-                {/* Top Badge */}
-                <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 bg-neutral-950/80 backdrop-blur-md text-amber-400 border border-amber-500/30 text-xs font-semibold rounded-full">
-                    {item.categoryLabel}
-                  </span>
-                </div>
+                  {/* Top Badge */}
+                  <div className="absolute top-4 left-4">
+                    <span className="px-3 py-1 bg-neutral-950/80 backdrop-blur-md text-amber-400 border border-amber-500/30 text-xs font-semibold rounded-full">
+                      {item.categoryLabel}
+                    </span>
+                  </div>
 
-                {/* Expand Icon */}
-                <div className="absolute top-4 right-4 w-9 h-9 rounded-full bg-neutral-950/70 backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110">
-                  <Maximize2 size={16} />
-                </div>
+                  {/* Expand Icon */}
+                  <div className="absolute top-4 right-4 w-9 h-9 rounded-full bg-neutral-950/70 backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110">
+                    <Maximize2 size={16} />
+                  </div>
 
-                {/* Bottom Content */}
-                <div className="absolute bottom-0 inset-x-0 p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                  <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-neutral-300 mt-1 line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {item.description}
-                  </p>
+                  {/* Bottom Content */}
+                  <div className="absolute bottom-0 inset-x-0 p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                    <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs text-neutral-300 mt-1 line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      {item.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+              </Reveal>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Lightbox Modal */}
-      {selectedIndex !== null && (
+      {selectedIndex !== null && filteredItems[selectedIndex] && (
         <div
           className="fixed inset-0 z-50 bg-neutral-950/95 backdrop-blur-xl flex flex-col justify-between p-4 sm:p-8 animate-fadeIn"
           onClick={() => setSelectedIndex(null)}
@@ -276,6 +289,16 @@ export default function GalleryPage() {
             <p className="text-neutral-400 text-sm">
               {filteredItems[selectedIndex].description}
             </p>
+
+            {filteredItems[selectedIndex].roomId && (
+              <Link
+                href={`/rooms/${filteredItems[selectedIndex].roomId}`}
+                className="inline-block mt-3 px-5 py-2 bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold text-xs rounded-full transition-transform hover:scale-105"
+              >
+                View Room Details
+              </Link>
+            )}
+
             <p className="text-xs text-neutral-500 font-mono mt-2">
               {selectedIndex + 1} / {filteredItems.length}
             </p>
