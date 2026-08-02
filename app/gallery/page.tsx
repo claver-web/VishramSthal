@@ -6,16 +6,6 @@ import Link from 'next/link';
 import { ChevronRight, X, ChevronLeft, Maximize2, Sparkles, Image as ImageIcon, Loader2 } from 'lucide-react';
 import Reveal from '@/components/Reveal';
 
-interface RoomData {
-  id: string;
-  number: string;
-  name?: string;
-  type: string;
-  price: number;
-  description?: string;
-  images?: string[];
-}
-
 interface GalleryItem {
   id: string;
   title: string;
@@ -23,13 +13,11 @@ interface GalleryItem {
   categoryLabel: string;
   src: string;
   description: string;
-  roomId?: string;
 }
 
 export default function GalleryPage() {
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('all');
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -38,29 +26,23 @@ export default function GalleryPage() {
         setLoading(true);
         const dynamicItems: GalleryItem[] = [];
 
-        // 1. Fetch images uploaded for Rooms from DB
-        const res = await fetch('/api/rooms');
+        // 1. Fetch images uploaded specifically to Media Library via /api/media
+        const res = await fetch('/api/media');
         if (res.ok) {
-          const rooms: RoomData[] = await res.json();
-
-          rooms.forEach((room) => {
-            if (room.images && room.images.length > 0) {
-              room.images.forEach((imgUrl, imgIdx) => {
-                dynamicItems.push({
-                  id: `room-${room.id}-${imgIdx}`,
-                  title: room.name || `Room ${room.number}`,
-                  category: 'rooms',
-                  categoryLabel: `${room.type.replace('_', ' ')} Room`,
-                  src: imgUrl,
-                  description: room.description || `₹${room.price}/night accommodation at Vishram Sthal.`,
-                  roomId: room.id,
-                });
-              });
-            }
+          const mediaList: any[] = await res.json();
+          mediaList.forEach((m) => {
+            dynamicItems.push({
+              id: m.id,
+              title: m.filename ? m.filename.split('.')[0] : 'Gallery Photo',
+              category: 'gallery',
+              categoryLabel: 'Gallery Upload',
+              src: m.url,
+              description: `Uploaded on ${new Date(m.createdAt || Date.now()).toLocaleDateString()}`,
+            });
           });
         }
 
-        // 2. Fetch images uploaded directly via Admin Media Library (localStorage)
+        // 2. Local fallback if saved in browser storage
         const savedMedia = localStorage.getItem('vishram_admin_media');
         if (savedMedia) {
           try {
@@ -68,11 +50,11 @@ export default function GalleryPage() {
             adminMedia.forEach((m) => {
               dynamicItems.push({
                 id: m.id || `media-${Date.now()}-${Math.random()}`,
-                title: m.name || 'Uploaded Photo',
-                category: 'uploads',
+                title: m.name ? m.name.split('.')[0] : 'Gallery Upload',
+                category: 'gallery',
                 categoryLabel: 'Gallery Upload',
                 src: m.url,
-                description: m.date ? `Uploaded on ${m.date}` : 'Uploaded gallery image.',
+                description: m.date ? `Uploaded on ${m.date}` : 'Gallery photo',
               });
             });
           } catch (e) {
@@ -80,7 +62,7 @@ export default function GalleryPage() {
           }
         }
 
-        // Remove duplicate image sources
+        // De-duplicate by image source URL
         const uniqueItems = Array.from(new Map(dynamicItems.map(item => [item.src, item])).values());
         setItems(uniqueItems);
       } catch (err) {
@@ -93,24 +75,14 @@ export default function GalleryPage() {
     fetchGalleryData();
   }, []);
 
-  const categories = [
-    { id: 'all', label: 'All Uploads' },
-    { id: 'rooms', label: 'Room Photos' },
-    { id: 'uploads', label: 'Gallery Uploads' },
-  ];
-
-  const filteredItems = activeCategory === 'all'
-    ? items
-    : items.filter((item) => item.category === activeCategory);
-
   const handlePrev = () => {
     if (selectedIndex === null) return;
-    setSelectedIndex(selectedIndex === 0 ? filteredItems.length - 1 : selectedIndex - 1);
+    setSelectedIndex(selectedIndex === 0 ? items.length - 1 : selectedIndex - 1);
   };
 
   const handleNext = () => {
     if (selectedIndex === null) return;
-    setSelectedIndex(selectedIndex === filteredItems.length - 1 ? 0 : selectedIndex + 1);
+    setSelectedIndex(selectedIndex === items.length - 1 ? 0 : selectedIndex + 1);
   };
 
   return (
@@ -132,30 +104,8 @@ export default function GalleryPage() {
             Photo Gallery
           </h1>
           <p className="text-neutral-400 max-w-2xl mt-3 text-lg leading-relaxed">
-            Explore authentic photos uploaded for Shree Radhe Radhe Vishram Sthali.
+            Exclusively showing photos uploaded directly to the Vishram Sthal Gallery.
           </p>
-
-          {/* Category Filter Tabs */}
-          {items.length > 0 && (
-            <div className="flex items-center gap-3 overflow-x-auto pt-8 pb-2 scrollbar-none">
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => {
-                    setActiveCategory(cat.id);
-                    setSelectedIndex(null);
-                  }}
-                  className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${
-                    activeCategory === cat.id
-                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-neutral-950 font-bold shadow-[0_0_15px_rgba(245,158,11,0.4)] scale-105'
-                      : 'bg-neutral-900/80 text-neutral-400 hover:text-white border border-neutral-800 hover:border-amber-500/50'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 
@@ -164,19 +114,19 @@ export default function GalleryPage() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-neutral-400">
             <Loader2 className="animate-spin text-amber-500 mb-4" size={36} />
-            <p className="text-sm font-medium">Loading uploaded gallery photos...</p>
+            <p className="text-sm font-medium">Loading gallery photos...</p>
           </div>
-        ) : filteredItems.length === 0 ? (
+        ) : items.length === 0 ? (
           <div className="text-center py-20 border border-dashed border-neutral-800 rounded-3xl bg-neutral-900/40 p-8 max-w-md mx-auto">
             <ImageIcon className="mx-auto text-neutral-600 mb-4" size={48} />
-            <h3 className="text-xl font-bold text-white">No uploaded photos yet</h3>
+            <h3 className="text-xl font-bold text-white">No gallery photos uploaded yet</h3>
             <p className="text-neutral-400 mt-2 text-sm">
-              Photos uploaded in Admin Media or attached to Rooms will appear here.
+              Photos uploaded in Admin Media Library will appear here.
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {filteredItems.map((item, index) => (
+            {items.map((item, index) => (
               <Reveal key={item.id} delay={index * 40}>
                 <div
                   onClick={() => setSelectedIndex(index)}
@@ -222,7 +172,7 @@ export default function GalleryPage() {
       </div>
 
       {/* Lightbox Modal */}
-      {selectedIndex !== null && filteredItems[selectedIndex] && (
+      {selectedIndex !== null && items[selectedIndex] && (
         <div
           className="fixed inset-0 z-50 bg-neutral-950/95 backdrop-blur-xl flex flex-col justify-between p-4 sm:p-8 animate-fadeIn"
           onClick={() => setSelectedIndex(null)}
@@ -231,10 +181,10 @@ export default function GalleryPage() {
           <div className="flex items-center justify-between z-10" onClick={(e) => e.stopPropagation()}>
             <div>
               <span className="text-xs font-semibold text-amber-500 uppercase tracking-widest">
-                {filteredItems[selectedIndex].categoryLabel}
+                {items[selectedIndex].categoryLabel}
               </span>
               <h2 className="text-xl sm:text-2xl font-bold text-white mt-0.5">
-                {filteredItems[selectedIndex].title}
+                {items[selectedIndex].title}
               </h2>
             </div>
 
@@ -264,8 +214,8 @@ export default function GalleryPage() {
             {/* Image Container */}
             <div className="relative w-full max-w-5xl h-[65vh] sm:h-[75vh] rounded-2xl overflow-hidden shadow-2xl border border-neutral-800">
               <Image
-                src={filteredItems[selectedIndex].src}
-                alt={filteredItems[selectedIndex].title}
+                src={items[selectedIndex].src}
+                alt={items[selectedIndex].title}
                 fill
                 className="object-contain"
                 priority
@@ -288,20 +238,10 @@ export default function GalleryPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <p className="text-neutral-400 text-sm">
-              {filteredItems[selectedIndex].description}
+              {items[selectedIndex].description}
             </p>
-
-            {filteredItems[selectedIndex].roomId && (
-              <Link
-                href={`/rooms/${filteredItems[selectedIndex].roomId}`}
-                className="inline-block mt-3 px-5 py-2 bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold text-xs rounded-full transition-transform hover:scale-105"
-              >
-                View Room Details
-              </Link>
-            )}
-
             <p className="text-xs text-neutral-500 font-mono mt-2">
-              {selectedIndex + 1} / {filteredItems.length}
+              {selectedIndex + 1} / {items.length}
             </p>
           </div>
         </div>

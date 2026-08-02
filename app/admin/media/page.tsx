@@ -20,106 +20,45 @@ interface MediaItem {
   usedIn: string[];
 }
 
-const DEFAULT_MEDIA: MediaItem[] = [
-  {
-    id: 'm1',
-    name: 'Shubhankur Sharma.jpg',
-    url: '/radhe.jpg',
-    size: '252 KB',
-    dimensions: '1440 x 1800',
-    date: 'Aug 2, 2026',
-    type: 'image/jpeg',
-    usedIn: ['About Page Team']
-  },
-  {
-    id: 'm2',
-    name: 'Manoj Bhardwaj.jpg',
-    url: '/radhe2.jpg',
-    size: '124 KB',
-    dimensions: '772 x 1042',
-    date: 'Aug 2, 2026',
-    type: 'image/jpeg',
-    usedIn: ['About Page Team']
-  },
-  {
-    id: 'm3',
-    name: 'Acharya Deshbandhu.jpeg',
-    url: '/radhe3.jpeg',
-    size: '155 KB',
-    dimensions: '1200 x 1600',
-    date: 'Aug 2, 2026',
-    type: 'image/jpeg',
-    usedIn: ['About Page Team']
-  },
-  {
-    id: 'm4',
-    name: 'Logo Krishna.png',
-    url: '/logoKrishna.png',
-    size: '8.5 MB',
-    dimensions: '2000 x 2000',
-    date: 'Aug 1, 2026',
-    type: 'image/png',
-    usedIn: ['Header & Navigation']
-  }
-];
-
 export default function MediaLibraryPage() {
   const [activeTab, setActiveTab] = useState('All Media');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedFolder, setSelectedFolder] = useState<number | null>(null);
   const [selectedMedia, setSelectedMedia] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<MediaItem | null>(null);
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isUploadingZoneOpen, setIsUploadingZoneOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [mediaList, setMediaList] = useState<MediaItem[]>(DEFAULT_MEDIA);
+  const [mediaList, setMediaList] = useState<MediaItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Load rooms and persisted media from server/localStorage on mount
-  useEffect(() => {
-    async function loadMedia() {
-      try {
-        const res = await fetch('/api/rooms');
-        let roomMediaItems: MediaItem[] = [];
-        if (res.ok) {
-          const rooms = await res.json();
-          rooms.forEach((r: any) => {
-            if (r.images && r.images.length > 0) {
-              r.images.forEach((imgUrl: string, idx: number) => {
-                roomMediaItems.push({
-                  id: `room-media-${r.id}-${idx}`,
-                  name: `${r.name || 'Room ' + r.number} Photo ${idx + 1}`,
-                  url: imgUrl,
-                  size: '1.2 MB',
-                  dimensions: '1200 x 800',
-                  date: new Date(r.createdAt || Date.now()).toLocaleDateString(),
-                  type: 'image/jpeg',
-                  usedIn: [`Room ${r.number}`]
-                });
-              });
-            }
-          });
-        }
-
-        const savedLocal = localStorage.getItem('vishram_admin_media');
-        let localItems: MediaItem[] = [];
-        if (savedLocal) {
-          try { localItems = JSON.parse(savedLocal); } catch (e) {}
-        }
-
-        // Combine unique items
-        const combined = [...localItems, ...roomMediaItems, ...DEFAULT_MEDIA];
-        const unique = Array.from(new Map(combined.map(m => [m.url, m])).values());
-        setMediaList(unique);
-      } catch (err) {
-        console.error('Failed to fetch media:', err);
+  // Load media items from Database API (/api/media)
+  const fetchMedia = async () => {
+    try {
+      const res = await fetch('/api/media');
+      if (res.ok) {
+        const data = await res.json();
+        const items: MediaItem[] = data.map((m: any) => ({
+          id: m.id,
+          name: m.filename || 'Uploaded Image',
+          url: m.url,
+          size: m.size ? `${(m.size / 1024).toFixed(1)} KB` : 'Unknown',
+          dimensions: 'Original',
+          date: new Date(m.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          type: m.type || 'image/jpeg',
+          usedIn: ['Gallery']
+        }));
+        setMediaList(items);
       }
+    } catch (err) {
+      console.error('Failed to fetch media from DB:', err);
     }
+  };
 
-    loadMedia();
+  useEffect(() => {
+    fetchMedia();
   }, []);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,7 +66,6 @@ export default function MediaLibraryPage() {
 
     setIsUploading(true);
     const files = Array.from(e.target.files);
-    const newItems: MediaItem[] = [];
 
     try {
       for (const file of files) {
@@ -136,30 +74,23 @@ export default function MediaLibraryPage() {
 
         const res: any = await uploadRoomImage(formData);
         if (res.success && res.url) {
-          const newItem: MediaItem = {
-            id: `upload-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-            name: file.name,
-            url: res.url,
-            size: `${(file.size / 1024).toFixed(1)} KB`,
-            dimensions: 'Original Size',
-            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-            type: file.type || 'image/jpeg',
-            usedIn: ['Media Library']
-          };
-          newItems.push(newItem);
+          // Save to Database via API
+          await fetch('/api/media', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              url: res.url,
+              filename: file.name,
+              type: file.type || 'image/jpeg',
+              size: file.size || 0,
+            }),
+          });
         } else {
           alert(`Failed to upload ${file.name}: ${res.error || 'Unknown error'}`);
         }
       }
 
-      if (newItems.length > 0) {
-        setMediaList(prev => {
-          const updated = [...newItems, ...prev];
-          localStorage.setItem('vishram_admin_media', JSON.stringify(updated.filter(m => m.url.startsWith('data:') || m.id.startsWith('upload-'))));
-          return updated;
-        });
-        setActiveItem(newItems[0]);
-      }
+      await fetchMedia();
     } catch (err) {
       console.error(err);
       alert('Error uploading file(s).');
@@ -187,14 +118,22 @@ export default function MediaLibraryPage() {
     }
   };
 
-  const handleDeleteSelected = () => {
+  const handleDeleteItem = async (id: string) => {
+    try {
+      await fetch(`/api/media?id=${id}`, { method: 'DELETE' });
+      setMediaList(prev => prev.filter(m => m.id !== id));
+      if (activeItem?.id === id) setActiveItem(null);
+    } catch (err) {
+      console.error('Delete error:', err);
+    }
+  };
+
+  const handleDeleteSelected = async () => {
     if (selectedMedia.length === 0) return;
     if (confirm(`Are you sure you want to delete ${selectedMedia.length} item(s)?`)) {
-      setMediaList(prev => {
-        const filtered = prev.filter(m => !selectedMedia.includes(m.id));
-        localStorage.setItem('vishram_admin_media', JSON.stringify(filtered.filter(m => m.url.startsWith('data:') || m.id.startsWith('upload-'))));
-        return filtered;
-      });
+      for (const id of selectedMedia) {
+        await handleDeleteItem(id);
+      }
       setSelectedMedia([]);
       setActiveItem(null);
     }
@@ -206,7 +145,6 @@ export default function MediaLibraryPage() {
     setTimeout(() => setCopiedUrl(null), 2000);
   };
 
-  // Filter media list by tab and search query
   const filteredMedia = mediaList.filter(item => {
     const matchesTab = activeTab === 'All Media' || (activeTab === 'Images' && item.type.startsWith('image'));
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -446,10 +384,7 @@ export default function MediaLibraryPage() {
             {/* Actions */}
             <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
               <button 
-                onClick={() => {
-                  setMediaList(prev => prev.filter(m => m.id !== activeItem.id));
-                  setActiveItem(null);
-                }} 
+                onClick={() => handleDeleteItem(activeItem.id)} 
                 className="flex items-center gap-2 text-sm font-bold text-red-600 dark:text-red-400 hover:text-red-700 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
