@@ -26,35 +26,8 @@ interface GalleryItem {
   roomId?: string;
 }
 
-const STATIC_PROPERTY_ITEMS: GalleryItem[] = [
-  {
-    id: 'team-1',
-    title: 'Shubhankur Sharma',
-    category: 'team',
-    categoryLabel: 'Team',
-    src: '/radhe.jpg',
-    description: 'Vishram Sthal Team',
-  },
-  {
-    id: 'team-2',
-    title: 'Manoj Bhardwaj',
-    category: 'team',
-    categoryLabel: 'Team',
-    src: '/radhe2.jpg',
-    description: 'Vishram Sthal Team',
-  },
-  {
-    id: 'team-3',
-    title: 'Acharya Deshbandhu',
-    category: 'team',
-    categoryLabel: 'Team',
-    src: '/radhe3.jpeg',
-    description: 'Vishram Sthal Team',
-  },
-];
-
 export default function GalleryPage() {
-  const [items, setItems] = useState<GalleryItem[]>(STATIC_PROPERTY_ITEMS);
+  const [items, setItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -63,10 +36,12 @@ export default function GalleryPage() {
     async function fetchGalleryData() {
       try {
         setLoading(true);
+        const dynamicItems: GalleryItem[] = [];
+
+        // 1. Fetch images uploaded for Rooms from DB
         const res = await fetch('/api/rooms');
         if (res.ok) {
           const rooms: RoomData[] = await res.json();
-          const dynamicItems: GalleryItem[] = [];
 
           rooms.forEach((room) => {
             if (room.images && room.images.length > 0) {
@@ -77,17 +52,39 @@ export default function GalleryPage() {
                   category: 'rooms',
                   categoryLabel: `${room.type.replace('_', ' ')} Room`,
                   src: imgUrl,
-                  description: room.description || `₹${room.price}/night - ${room.type} accommodation at Vishram Sthal.`,
+                  description: room.description || `₹${room.price}/night accommodation at Vishram Sthal.`,
                   roomId: room.id,
                 });
               });
             }
           });
-
-          setItems([...dynamicItems, ...STATIC_PROPERTY_ITEMS]);
         }
+
+        // 2. Fetch images uploaded directly via Admin Media Library (localStorage)
+        const savedMedia = localStorage.getItem('vishram_admin_media');
+        if (savedMedia) {
+          try {
+            const adminMedia: any[] = JSON.parse(savedMedia);
+            adminMedia.forEach((m) => {
+              dynamicItems.push({
+                id: m.id || `media-${Date.now()}-${Math.random()}`,
+                title: m.name || 'Uploaded Photo',
+                category: 'uploads',
+                categoryLabel: 'Gallery Upload',
+                src: m.url,
+                description: m.date ? `Uploaded on ${m.date}` : 'Uploaded gallery image.',
+              });
+            });
+          } catch (e) {
+            console.error('Failed to parse saved media:', e);
+          }
+        }
+
+        // Remove duplicate image sources
+        const uniqueItems = Array.from(new Map(dynamicItems.map(item => [item.src, item])).values());
+        setItems(uniqueItems);
       } catch (err) {
-        console.error('Failed to fetch gallery rooms:', err);
+        console.error('Failed to fetch gallery images:', err);
       } finally {
         setLoading(false);
       }
@@ -97,9 +94,9 @@ export default function GalleryPage() {
   }, []);
 
   const categories = [
-    { id: 'all', label: 'All Photos' },
-    { id: 'rooms', label: 'Rooms' },
-    { id: 'team', label: 'Team' },
+    { id: 'all', label: 'All Uploads' },
+    { id: 'rooms', label: 'Room Photos' },
+    { id: 'uploads', label: 'Gallery Uploads' },
   ];
 
   const filteredItems = activeCategory === 'all'
@@ -135,28 +132,30 @@ export default function GalleryPage() {
             Photo Gallery
           </h1>
           <p className="text-neutral-400 max-w-2xl mt-3 text-lg leading-relaxed">
-            Explore authentic photos of Shree Radhe Radhe Vishram Sthali rooms, sanctuary spaces, and team.
+            Explore authentic photos uploaded for Shree Radhe Radhe Vishram Sthali.
           </p>
 
           {/* Category Filter Tabs */}
-          <div className="flex items-center gap-3 overflow-x-auto pt-8 pb-2 scrollbar-none">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => {
-                  setActiveCategory(cat.id);
-                  setSelectedIndex(null);
-                }}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${
-                  activeCategory === cat.id
-                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-neutral-950 font-bold shadow-[0_0_15px_rgba(245,158,11,0.4)] scale-105'
-                    : 'bg-neutral-900/80 text-neutral-400 hover:text-white border border-neutral-800 hover:border-amber-500/50'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
+          {items.length > 0 && (
+            <div className="flex items-center gap-3 overflow-x-auto pt-8 pb-2 scrollbar-none">
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    setActiveCategory(cat.id);
+                    setSelectedIndex(null);
+                  }}
+                  className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${
+                    activeCategory === cat.id
+                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-neutral-950 font-bold shadow-[0_0_15px_rgba(245,158,11,0.4)] scale-105'
+                      : 'bg-neutral-900/80 text-neutral-400 hover:text-white border border-neutral-800 hover:border-amber-500/50'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -165,13 +164,15 @@ export default function GalleryPage() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-neutral-400">
             <Loader2 className="animate-spin text-amber-500 mb-4" size={36} />
-            <p className="text-sm font-medium">Loading gallery photos...</p>
+            <p className="text-sm font-medium">Loading uploaded gallery photos...</p>
           </div>
         ) : filteredItems.length === 0 ? (
-          <div className="text-center py-20 border border-dashed border-neutral-800 rounded-3xl bg-neutral-900/40 p-8">
+          <div className="text-center py-20 border border-dashed border-neutral-800 rounded-3xl bg-neutral-900/40 p-8 max-w-md mx-auto">
             <ImageIcon className="mx-auto text-neutral-600 mb-4" size={48} />
-            <h3 className="text-xl font-bold text-white">No photos found</h3>
-            <p className="text-neutral-400 mt-2 text-sm">No images are currently available in this category.</p>
+            <h3 className="text-xl font-bold text-white">No uploaded photos yet</h3>
+            <p className="text-neutral-400 mt-2 text-sm">
+              Photos uploaded in Admin Media or attached to Rooms will appear here.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
