@@ -134,7 +134,7 @@ export default function MediaLibraryPage() {
         const formData = new FormData();
         formData.append('file', file);
 
-        const res = await uploadRoomImage(formData);
+        const res: any = await uploadRoomImage(formData);
         if (res.success && res.url) {
           const newItem: MediaItem = {
             id: `upload-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
