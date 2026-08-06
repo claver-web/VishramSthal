@@ -128,7 +128,7 @@ export default function ScrollToTop() {
 
                     {/* Phone Call */}
                     <a
-                      href="tel:+919815271636"
+                      href="tel:+919805271636"
                       className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-white font-medium transition-all"
                     >
                       <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-[var(--color-saffron)]/20 text-[var(--color-saffron)]">
@@ -136,7 +136,7 @@ export default function ScrollToTop() {
                       </div>
                       <div className="flex flex-col text-left">
                         <span className="text-[10px] uppercase text-white/60 font-medium">Direct Call</span>
-                        <span className="text-xs font-semibold">+91 9815271636</span>
+                        <span className="text-xs font-semibold">+91 9805271636</span>
                       </div>
                     </a>
 

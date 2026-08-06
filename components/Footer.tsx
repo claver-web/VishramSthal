@@ -71,7 +71,7 @@ export default function Footer() {
             <ul className="space-y-4 font-sans text-sm text-white/90">
               <li className="flex items-center gap-3">
                 <span className="text-[var(--color-gold)]">📞</span>
-                +91 9815271636
+                +91 9805271636
               </li>
               <li className="flex items-center gap-3">
                 <span className="text-[var(--color-gold)]">💬</span>

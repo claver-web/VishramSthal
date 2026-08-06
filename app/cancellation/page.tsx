@@ -126,7 +126,7 @@ export default function CancellationPolicyPage() {
                 <Phone className="w-5 h-5 text-amber-500 shrink-0 mt-1" />
                 <div>
                   <h4 className="text-xs uppercase font-bold text-white">Call Us</h4>
-                  <p className="text-sm text-amber-500 mt-1 font-semibold">+91 9815271636<br />+91 8988478367</p>
+                  <p className="text-sm text-amber-500 mt-1 font-semibold">+91 9805271636<br />+91 8988478367</p>
                 </div>
               </div>
 

@@ -229,7 +229,7 @@ export default function TermsPage() {
                 <ul className="list-disc list-inside space-y-1 text-neutral-300 pl-2">
                   <li>Cash payment option is available for select provisional bookings.</li>
                   <li>Room is held provisionally until 1:00 PM on the check-in date.</li>
-                  <li>You must call us at <strong className="text-amber-400">+91 9815271636 / +91 8988478367</strong> at least 2 hours before arrival to confirm.</li>
+                  <li>You must call us at <strong className="text-amber-400">+91 9805271636 / +91 8988478367</strong> at least 2 hours before arrival to confirm.</li>
                   <li>If you fail to arrive by 1:00 PM, your booking will be automatically cancelled.</li>
                   <li>Full payment in cash must be made at the reception during check-in.</li>
                 </ul>
@@ -505,7 +505,7 @@ export default function TermsPage() {
                 <Phone className="w-5 h-5 text-amber-400 shrink-0 mt-1" />
                 <div>
                   <h4 className="text-xs uppercase font-bold text-amber-200 tracking-wider">Phone</h4>
-                  <p className="text-sm text-neutral-300 mt-0.5">+91 9815271636<br />+91 8988478367</p>
+                  <p className="text-sm text-neutral-300 mt-0.5">+91 9805271636<br />+91 8988478367</p>
                 </div>
               </div>
 

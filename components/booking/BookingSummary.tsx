@@ -113,7 +113,7 @@ export default function BookingSummary({ room, checkIn, checkOut }: { room: any;
         {/* Help */}
         <div className="text-center pt-3 border-t border-neutral-800">
           <p className="text-[11px] text-neutral-500 mb-1">Need help?</p>
-          <a href="tel:+919815271636" className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-300 hover:text-amber-500 transition-colors">
+          <a href="tel:+919805271636" className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-300 hover:text-amber-500 transition-colors">
             <Phone className="w-3.5 h-3.5" /> Call Us
           </a>
           <span className="text-neutral-600 mx-1">|</span>

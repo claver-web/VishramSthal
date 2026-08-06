@@ -85,7 +85,7 @@ export default function ContactPage() {
                     <span className="text-4xl">📞</span>
                     <div>
                       <p className="font-extrabold mb-1">Phone</p>
-                      <p className="opacity-90">+91 9815271636</p>
+                      <p className="opacity-90">+91 9805271636</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-6">
