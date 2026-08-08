@@ -1,17 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  Undo2, CheckCircle, XCircle, Search, Clock, ShieldAlert 
+  Undo2, CheckCircle, XCircle, Search, Clock, ShieldAlert, Trash2
 } from 'lucide-react';
 
-const mockRefunds: any[] = [
-  { id: 'REF-100', bookingId: 'HB-1025', guest: 'Ravi Kumar', amount: 3000, reason: 'Double payment', status: 'Pending', type: 'Hotel Refund', requestedOn: '10 Aug 2026' },
-  { id: 'REF-101', bookingId: 'WB-2026-005', guest: 'Deepak & Sunita', amount: 20000, reason: 'Date change with partial refund', status: 'Approved', type: 'Wedding Refund', requestedOn: '12 Aug 2026' },
-  { id: 'REF-102', bookingId: 'HB-1028', guest: 'Alok Singh', amount: 1500, reason: 'Customer dissatisfaction', status: 'Pending', type: 'Hotel Refund', requestedOn: '15 Aug 2026' },
-];
-
 export default function RefundsPage() {
+  const [refunds, setRefunds] = useState<any[]>([]);
   const [activeRefund, setActiveRefund] = useState<any>(null);
   const [activeMode, setActiveMode] = useState('All');
 
@@ -79,14 +74,14 @@ export default function RefundsPage() {
             </select>
           </div>
           <div className="divide-y divide-gray-100 dark:divide-gray-800">
-            {mockRefunds.filter(r => activeMode === 'All' || r.type === activeMode).length === 0 && (
+            {refunds.filter(r => activeMode === 'All' || r.type === activeMode).length === 0 && (
               <div className="flex flex-col items-center justify-center py-20 text-center text-gray-500 dark:text-gray-400">
                 <Undo2 className="w-12 h-12 mb-3 text-gray-300 dark:text-gray-600" />
                 <p className="font-medium text-lg">No refund requests found.</p>
                 <p className="text-sm mt-1">Pending and processed refunds will appear here.</p>
               </div>
             )}
-            {mockRefunds.filter(r => activeMode === 'All' || r.type === activeMode).map((ref) => (
+            {refunds.filter(r => activeMode === 'All' || r.type === activeMode).map((ref) => (
               <div 
                 key={ref.id} 
                 onClick={() => setActiveRefund(ref)}
@@ -101,9 +96,21 @@ export default function RefundsPage() {
                   <p className="text-sm font-medium text-[#ea580c]">{ref.bookingId} • {ref.guest}</p>
                   <p className="text-xs text-gray-500 mt-1 truncate max-w-sm">{ref.reason}</p>
                 </div>
-                <div className="text-right">
-                  <p className="font-black text-lg text-gray-900 dark:text-white">₹{ref.amount}</p>
-                  <p className="text-xs text-gray-500 mt-1">{ref.requestedOn}</p>
+                <div className="text-right flex items-center gap-4">
+                  <div>
+                    <p className="font-black text-lg text-gray-900 dark:text-white">₹{ref.amount}</p>
+                    <p className="text-xs text-gray-500 mt-1">{ref.requestedOn}</p>
+                  </div>
+                  <button 
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      setRefunds(refunds.filter(r => r.id !== ref.id));
+                      if (activeRefund?.id === ref.id) setActiveRefund(null);
+                    }} 
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
                 </div>
               </div>
             ))}

@@ -6,39 +6,16 @@ import {
 } from 'recharts';
 import { Calendar, Download, Printer, TrendingUp, TrendingDown, IndianRupee } from 'lucide-react';
 
-const dailyRev = [
-  { name: '01 Oct', hotel: 15000, wedding: 0 }, { name: '05 Oct', hotel: 12000, wedding: 50000 }, 
-  { name: '10 Oct', hotel: 18000, wedding: 0 }, { name: '15 Oct', hotel: 14000, wedding: 150000 }, 
-  { name: '20 Oct', hotel: 22000, wedding: 0 }, { name: '25 Oct', hotel: 25000, wedding: 200000 },
-];
-
-const weeklyRev = [
-  { name: 'Week 1', hotel: 100000, wedding: 50000 },
-  { name: 'Week 2', hotel: 110000, wedding: 200000 },
-  { name: 'Week 3', hotel: 95000, wedding: 0 },
-  { name: 'Week 4', hotel: 130000, wedding: 350000 },
-];
-
-const compareRev = [
-  { name: 'Hotel', value: 435000 },
-  { name: 'Wedding', value: 600000 },
-];
-
-const venueRev = [
-  { name: 'Grand Banquet', value: 400000 },
-  { name: 'Royal Lawns', value: 150000 },
-  { name: 'Skyview Terrace', value: 50000 },
-];
-
-const methodRev = [
-  { name: 'UPI', value: 0 },
-  { name: 'Credit Card', value: 0 },
-  { name: 'Net Banking', value: 0 },
-];
+import { useState, useEffect } from 'react';
 
 const COLORS = ['#ea580c', '#f97316', '#fdba74', '#fed7aa'];
 
 export default function RevenueReportsPage() {
+  const [dailyRev, setDailyRev] = useState<any[]>([]);
+  const [weeklyRev, setWeeklyRev] = useState<any[]>([]);
+  const [compareRev, setCompareRev] = useState<any[]>([]);
+  const [venueRev, setVenueRev] = useState<any[]>([]);
+  const [methodRev, setMethodRev] = useState<any[]>([]);
   return (
     <div className="space-y-8 animate-fade-in pb-10">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -73,37 +50,37 @@ export default function RevenueReportsPage() {
           <div className="absolute -right-4 -top-4 w-24 h-24 bg-rose-500/10 rounded-full blur-xl"></div>
           <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Total Combined Revenue</p>
           <h3 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-1">
-            <IndianRupee className="w-6 h-6 text-[#ea580c]" /> 10,35,000
+            <IndianRupee className="w-6 h-6 text-[#ea580c]" /> 0
           </h3>
-          <div className="mt-4 flex items-center gap-2 text-sm font-bold text-green-600 bg-green-50 dark:bg-green-500/10 px-3 py-1 rounded-full w-fit">
-            <TrendingUp className="w-4 h-4" /> +15% vs last month
+          <div className="mt-4 flex items-center gap-2 text-sm font-bold text-gray-600 bg-gray-50 dark:bg-gray-500/10 px-3 py-1 rounded-full w-fit">
+            No data yet
           </div>
         </div>
         
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
           <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Hotel Revenue</p>
           <h3 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-1">
-            <IndianRupee className="w-6 h-6 text-[#ea580c]" /> 4,35,000
+            <IndianRupee className="w-6 h-6 text-[#ea580c]" /> 0
           </h3>
-          <div className="mt-4 flex items-center gap-2 text-sm font-bold text-green-600 bg-green-50 dark:bg-green-500/10 px-3 py-1 rounded-full w-fit">
-            <TrendingUp className="w-4 h-4" /> +5% vs last month
+          <div className="mt-4 flex items-center gap-2 text-sm font-bold text-gray-600 bg-gray-50 dark:bg-gray-500/10 px-3 py-1 rounded-full w-fit">
+            No data yet
           </div>
         </div>
 
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
           <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Wedding Revenue</p>
           <h3 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-1">
-            <IndianRupee className="w-6 h-6 text-rose-500" /> 6,00,000
+            <IndianRupee className="w-6 h-6 text-rose-500" /> 0
           </h3>
-          <div className="mt-4 flex items-center gap-2 text-sm font-bold text-green-600 bg-green-50 dark:bg-green-500/10 px-3 py-1 rounded-full w-fit">
-            <TrendingUp className="w-4 h-4" /> +22% vs last month
+          <div className="mt-4 flex items-center gap-2 text-sm font-bold text-gray-600 bg-gray-50 dark:bg-gray-500/10 px-3 py-1 rounded-full w-fit">
+            No data yet
           </div>
         </div>
 
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
           <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Projected (Month End)</p>
           <h3 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-1">
-            <IndianRupee className="w-6 h-6 text-purple-500" /> 14,50,000
+            <IndianRupee className="w-6 h-6 text-purple-500" /> 0
           </h3>
           <div className="mt-4 flex items-center gap-2 text-sm font-bold text-gray-600 bg-gray-50 dark:bg-gray-500/10 px-3 py-1 rounded-full w-fit">
             No data yet

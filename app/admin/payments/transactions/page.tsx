@@ -1,18 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Search, Filter, Download, Eye, FileText, ArrowUpRight, 
-  IndianRupee, CreditCard, CheckCircle, XCircle, X
+  IndianRupee, CreditCard, CheckCircle, XCircle, X, Trash2
 } from 'lucide-react';
 
-const mockTransactions: any[] = [
-  { id: 'TXN-001', date: '08 Aug 2026', bookingId: 'HB-1029', guest: 'John Doe', amount: 5000, method: 'UPI', status: 'Success', type: 'Hotel' },
-  { id: 'TXN-002', date: '09 Aug 2026', bookingId: 'WB-2026-001', guest: 'Rahul & Priya', amount: 100000, method: 'Net Banking', status: 'Success', type: 'Wedding' },
-  { id: 'TXN-003', date: '10 Aug 2026', bookingId: 'HB-1030', guest: 'Jane Smith', amount: 3500, method: 'Credit Card', status: 'Failed', type: 'Hotel' },
-];
-
 export default function TransactionsPage() {
+  const [transactions, setTransactions] = useState<any[]>([]);
   const [activeTxn, setActiveTxn] = useState<any>(null);
   const [activeMode, setActiveMode] = useState('All');
 
@@ -89,9 +84,9 @@ export default function TransactionsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-              {mockTransactions.length === 0 && (
+              {transactions.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
+                  <td colSpan={9} className="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
                     <div className="flex flex-col items-center justify-center">
                       <CreditCard className="w-12 h-12 mb-3 text-gray-300 dark:text-gray-600" />
                       <p className="font-medium">No transactions found.</p>
@@ -100,7 +95,7 @@ export default function TransactionsPage() {
                   </td>
                 </tr>
               )}
-              {mockTransactions.filter(t => activeMode === 'All' || t.type === activeMode).map((txn) => (
+              {transactions.filter(t => activeMode === 'All' || t.type === activeMode).map((txn) => (
                 <tr key={txn.id} className="hover:bg-orange-50/30 dark:hover:bg-[#0f172a]/50 transition-colors">
                   <td className="px-6 py-4 font-mono font-bold text-gray-900 dark:text-white">{txn.id}</td>
                   <td className="px-6 py-4">
@@ -122,7 +117,10 @@ export default function TransactionsPage() {
                     <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${getStatusColor(txn.status)}`}>{txn.status}</span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => setActiveTxn(txn)} className="p-2 text-gray-500 hover:text-[#ea580c] transition-colors"><Eye className="w-4 h-4" /></button>
+                    <div className="flex items-center justify-end gap-2">
+                      <button onClick={() => setActiveTxn(txn)} className="p-2 text-gray-500 hover:text-[#ea580c] transition-colors"><Eye className="w-4 h-4" /></button>
+                      <button onClick={() => setTransactions(transactions.filter(t => t.id !== txn.id))} className="p-2 text-gray-500 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                    </div>
                   </td>
                 </tr>
               ))}
