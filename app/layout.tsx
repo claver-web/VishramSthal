@@ -35,6 +35,10 @@ export const metadata: Metadata = {
     description: 'Experience premium comfort at Vishram Sthal in Word No. 6, Dehra Gopipur.',
     images: ['https://images.unsplash.com/photo-1542314831-c6a4d14d8c85?w=1200&h=630&fit=crop'],
   },
+  icons: {
+    icon: '/logoKrishna.png',
+    apple: '/logoKrishna.png',
+  },
 };
 
 export const viewport = {
