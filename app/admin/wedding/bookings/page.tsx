@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Search, Filter, List, Calendar as CalendarIcon, MoreVertical, 
-  ChevronDown, ArrowUpRight, ArrowDownRight, IndianRupee, MapPin
+  ChevronDown, ArrowUpRight, ArrowDownRight, IndianRupee, MapPin, Plus
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -57,6 +57,9 @@ export default function BookingsPage() {
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage all confirmed and pending event reservations</p>
         </div>
+        <Link href="/admin/wedding/bookings/add" className="flex items-center gap-2 bg-gradient-to-r from-rose-500 to-rose-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-rose-500/30 hover:-translate-y-0.5 transition-all">
+          <Plus className="w-5 h-5" /> Create Booking
+        </Link>
       </div>
 
       {/* Filters & Actions */}
