@@ -3,11 +3,11 @@ import Image from 'next/image';
 import nextDynamic from 'next/dynamic';
 import prisma from '@/lib/prisma';
 
-const Reveal = nextDynamic(() => import('@/components/Reveal'));
+import Reveal from '@/components/Reveal';
 import ModeRedirect from '@/components/ModeRedirect';
 import ModePromoBanner from '@/components/ModePromoBanner';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default async function Home() {
   // Fetch rooms from the database
@@ -50,14 +50,12 @@ export default async function Home() {
         
         {/* Layer 2: Parallax background image */}
         <Image 
-          src="https://images.unsplash.com/photo-1571536802807-30451e3955d8?q=80&w=2000"
+          src="https://images.unsplash.com/photo-1571536802807-30451e3955d8?q=60&w=1200&fm=webp"
           alt="Vishram Sthal Hero"
           fill
           priority
-          placeholder="blur"
-          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mO8/e79fwAJzAPm44z/YQAAAABJRU5ErkJggg=="
           className="object-cover object-center z-0 opacity-20"
-          sizes="100vw"
+          sizes="(max-width: 768px) 100vw, 100vw"
         />
         
         {/* Layer 3: Particles (simulated with CSS for now) */}
