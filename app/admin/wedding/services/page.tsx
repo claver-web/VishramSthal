@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Search, Plus, List, LayoutGrid, Filter, ChevronDown, 
@@ -8,6 +8,7 @@ import {
   Utensils, Flower2, Camera, Sparkles, Music, Star, Car, Briefcase
 } from 'lucide-react';
 import Image from 'next/image';
+import toast from 'react-hot-toast';
 
 const CATEGORIES = [
   { id: 'catering', label: 'Catering & Food', icon: Utensils, color: 'bg-orange-100 text-orange-600' },
@@ -20,18 +21,24 @@ const CATEGORIES = [
   { id: 'planning', label: 'Event Planning', icon: Briefcase, color: 'bg-teal-100 text-teal-600' },
 ];
 
-const MOCK_SERVICES = [
-  { id: 'WS-001', name: 'Premium Royal Catering', category: 'catering', priceRange: '₹1200 - ₹2500 per plate', status: 'Active', featured: true },
-  { id: 'WS-002', name: 'Mandap Floral Decor', category: 'decor', priceRange: '₹50,000 - ₹1,50,000', status: 'Active', featured: true },
-  { id: 'WS-003', name: 'Cinematic Wedding Film', category: 'photo', priceRange: '₹80,000 - ₹2,00,000', status: 'Active', featured: false },
-  { id: 'WS-004', name: 'Bridal HD Makeup', category: 'beauty', priceRange: '₹25,000 - ₹45,000', status: 'Inactive', featured: false },
-  { id: 'WS-005', name: 'Live Band & DJ Setup', category: 'music', priceRange: 'Contact for Price', status: 'Active', featured: false },
-  { id: 'WS-006', name: 'Pandit & Havan Setup', category: 'pooja', priceRange: '₹11,000 - ₹21,000', status: 'Active', featured: false },
-];
-
 export default function ServicesPage() {
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [search, setSearch] = useState('');
+  const [services, setServices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/wedding/services')
+      .then(res => res.json())
+      .then(data => {
+        setServices(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        toast.error('Failed to load services');
+        setLoading(false);
+      });
+  }, []);
 
   const getCategoryDetails = (catId: string) => {
     return CATEGORIES.find(c => c.id === catId) || CATEGORIES[0];
@@ -111,14 +118,21 @@ export default function ServicesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                {MOCK_SERVICES.map((service) => {
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">Loading services...</td>
+                  </tr>
+                ) : services.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">No services found.</td>
+                  </tr>
+                ) : services.map((service) => {
                   const cat = getCategoryDetails(service.category);
                   return (
                     <tr key={service.id} className="hover:bg-gray-50/50 dark:hover:bg-[#0f172a]/50 transition-colors group">
                       <td className="px-4 py-4">
                         <p className="font-bold text-gray-900 dark:text-white text-sm flex items-center gap-2">
                           {service.name}
-                          {service.featured && <span className="bg-amber-100 text-amber-700 text-[8px] uppercase font-black px-1.5 py-0.5 rounded">Featured</span>}
                         </p>
                         <p className="text-[10px] text-gray-500">{service.id}</p>
                       </td>
@@ -131,13 +145,13 @@ export default function ServicesPage() {
                         </div>
                       </td>
                       <td className="px-4 py-4">
-                        <p className="text-sm font-bold text-gray-900 dark:text-white">{service.priceRange}</p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-white">{service.priceRange || 'N/A'}</p>
                       </td>
                       <td className="px-4 py-4">
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" defaultChecked={service.status === 'Active'} />
+                          <input type="checkbox" className="sr-only peer" defaultChecked={true} />
                           <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-rose-500"></div>
-                          <span className="ml-2 text-[10px] font-bold text-gray-500">{service.status}</span>
+                          <span className="ml-2 text-[10px] font-bold text-gray-500">Active</span>
                         </label>
                       </td>
                       <td className="px-4 py-4 text-right">
@@ -154,12 +168,16 @@ export default function ServicesPage() {
           </div>
           
           <div className="p-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-sm text-gray-500">
-            <p>Showing 1 to {MOCK_SERVICES.length} of {MOCK_SERVICES.length} entries</p>
+            <p>Showing {services.length > 0 ? 1 : 0} to {services.length} of {services.length} entries</p>
           </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {MOCK_SERVICES.map((service) => {
+          {loading ? (
+             <div className="col-span-full text-center text-gray-500 py-10">Loading services...</div>
+          ) : services.length === 0 ? (
+             <div className="col-span-full text-center text-gray-500 py-10">No services found.</div>
+          ) : services.map((service) => {
             const cat = getCategoryDetails(service.category);
             return (
               <div key={service.id} className="bg-white dark:bg-[#1e293b] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group p-5">
@@ -168,7 +186,7 @@ export default function ServicesPage() {
                     <cat.icon className="w-6 h-6" />
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked={service.status === 'Active'} />
+                    <input type="checkbox" className="sr-only peer" defaultChecked={true} />
                     <div className="w-7 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-rose-500"></div>
                   </label>
                 </div>
@@ -178,7 +196,7 @@ export default function ServicesPage() {
                 
                 <div className="bg-gray-50 dark:bg-[#0f172a] p-3 rounded-xl mb-4">
                   <p className="text-[10px] text-gray-500 mb-0.5">Price Range</p>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white">{service.priceRange}</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white">{service.priceRange || 'N/A'}</p>
                 </div>
 
                 <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-800">

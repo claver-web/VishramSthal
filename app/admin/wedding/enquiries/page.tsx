@@ -1,34 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Search, Filter, List, KanbanSquare, LayoutGrid, MoreVertical, X, Phone, Mail, MessageSquare, 
   Calendar as CalendarIcon, MapPin, Clock, CheckCircle2, AlertCircle, Send,
   ChevronDown, PhoneCall, Check, Briefcase, FileText
 } from 'lucide-react';
-
-const MOCK_ENQUIRIES = [
-  { id: 'ENQ-001', couple: 'Rahul & Priya', phone: '+91 9876543210', email: 'rahul.p@example.com', date: '15 Nov 2026', guests: 500, venue: 'Grand Banquet Hall', event: 'Wedding', status: 'New', assigned: 'Unassigned', priority: 'high', enqDate: '01 Aug 2026' },
-  { id: 'ENQ-002', couple: 'Amit & Neha', phone: '+91 9988776655', email: 'neha123@example.com', date: '22 Dec 2026', guests: 300, venue: 'Royal Garden Lawns', event: 'All Events', status: 'Contacted', assigned: 'Ramesh', priority: 'medium', enqDate: '02 Aug 2026' },
-  { id: 'ENQ-003', couple: 'Vikram & Anjali', phone: '+91 9123456789', email: 'vik.anj@test.com', date: '10 Jan 2027', guests: 150, venue: 'Skyview Terrace', event: 'Engagement', status: 'Site Visit Scheduled', assigned: 'Suresh', priority: 'medium', enqDate: '05 Aug 2026' },
-  { id: 'ENQ-004', couple: 'Karan & Pooja', phone: '+91 9998887776', email: 'pooja.k@example.com', date: '05 Feb 2027', guests: 800, venue: 'Grand Banquet Hall', event: 'Reception', status: 'Proposal Sent', assigned: 'Ramesh', priority: 'high', enqDate: '06 Aug 2026' },
-  { id: 'ENQ-005', couple: 'Deepak & Sunita', phone: '+91 9879879870', email: 'deepak.s@test.com', date: '12 Mar 2027', guests: 100, venue: 'Intimate Hall', event: 'Mehendi', status: 'Lost', assigned: 'Suresh', priority: 'low', enqDate: '07 Aug 2026' },
-];
+import toast from 'react-hot-toast';
 
 const COLUMNS = [
-  { id: 'New', label: 'New', color: 'bg-blue-500' },
-  { id: 'Contacted', label: 'Contacted', color: 'bg-amber-500' },
-  { id: 'Site Visit Scheduled', label: 'Site Visit Scheduled', color: 'bg-purple-500' },
-  { id: 'Proposal Sent', label: 'Proposal Sent', color: 'bg-indigo-500' },
-  { id: 'Booked', label: 'Booked', color: 'bg-green-500' },
-  { id: 'Lost', label: 'Lost', color: 'bg-red-500' },
+  { id: 'PENDING', label: 'Pending', color: 'bg-blue-500' },
+  { id: 'CONTACTED', label: 'Contacted', color: 'bg-amber-500' },
+  { id: 'BOOKED', label: 'Booked', color: 'bg-green-500' },
+  { id: 'CANCELLED', label: 'Cancelled', color: 'bg-red-500' },
 ];
 
 export default function EnquiriesPage() {
   const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
   const [search, setSearch] = useState('');
   const [selectedEnq, setSelectedEnq] = useState<any>(null);
+  const [enquiries, setEnquiries] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/wedding/enquiries')
+      .then(res => res.json())
+      .then(data => {
+        setEnquiries(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        toast.error('Failed to load enquiries');
+        setLoading(false);
+      });
+  }, []);
 
   const getStatusStyle = (status: string) => {
     const col = COLUMNS.find(c => c.id === status);
@@ -101,41 +107,54 @@ export default function EnquiriesPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                  {MOCK_ENQUIRIES.map((enq) => (
-                    <tr key={enq.id} className="hover:bg-gray-50/50 dark:hover:bg-[#0f172a]/50 transition-colors group cursor-pointer" onClick={() => setSelectedEnq(enq)}>
-                      <td className="px-4 py-4">
-                        <p className="font-bold text-gray-900 dark:text-white text-sm">{enq.id}</p>
-                        <p className="text-[10px] text-gray-500">{enq.enqDate}</p>
-                      </td>
-                      <td className="px-4 py-4">
-                        <p className="font-bold text-rose-600 dark:text-rose-400 text-sm">{enq.couple}</p>
-                      </td>
-                      <td className="px-4 py-4">
-                        <p className="text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1.5 mb-1"><Phone className="w-3 h-3 text-gray-400" /> {enq.phone}</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1.5"><Mail className="w-3 h-3 text-gray-400" /> {enq.email}</p>
-                      </td>
-                      <td className="px-4 py-4">
-                        <p className="text-sm font-bold text-gray-900 dark:text-white mb-0.5">{enq.date} <span className="text-xs font-normal text-gray-500">({enq.guests} Guests)</span></p>
-                        <p className="text-xs text-gray-500">{enq.event} @ {enq.venue}</p>
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusStyle(enq.status)}`}>
-                          {enq.status}
-                        </span>
-                        <p className="text-[10px] text-gray-400 mt-1">Assigned: {enq.assigned}</p>
-                      </td>
-                      <td className="px-4 py-4 text-right">
-                        <button className="p-1.5 text-gray-400 hover:text-rose-500 transition-colors"><MoreVertical className="w-4 h-4" /></button>
-                      </td>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-8 text-center text-gray-500">Loading enquiries...</td>
                     </tr>
-                  ))}
+                  ) : enquiries.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-8 text-center text-gray-500">No enquiries found.</td>
+                    </tr>
+                  ) : enquiries.map((enq) => {
+                    const couple = `${enq.brideName || 'Client'} & ${enq.groomName || 'Client'}`;
+                    const dateStr = enq.weddingDate ? new Date(enq.weddingDate).toLocaleDateString() : 'TBD';
+                    const enqDateStr = new Date(enq.createdAt).toLocaleDateString();
+                    return (
+                      <tr key={enq.id} className="hover:bg-gray-50/50 dark:hover:bg-[#0f172a]/50 transition-colors group cursor-pointer" onClick={() => setSelectedEnq(enq)}>
+                        <td className="px-4 py-4">
+                          <p className="font-bold text-gray-900 dark:text-white text-sm">{enq.id}</p>
+                          <p className="text-[10px] text-gray-500">{enqDateStr}</p>
+                        </td>
+                        <td className="px-4 py-4">
+                          <p className="font-bold text-rose-600 dark:text-rose-400 text-sm">{couple}</p>
+                        </td>
+                        <td className="px-4 py-4">
+                          <p className="text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1.5 mb-1"><Phone className="w-3 h-3 text-gray-400" /> {enq.phone}</p>
+                          {enq.email && <p className="text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1.5"><Mail className="w-3 h-3 text-gray-400" /> {enq.email}</p>}
+                        </td>
+                        <td className="px-4 py-4">
+                          <p className="text-sm font-bold text-gray-900 dark:text-white mb-0.5">{dateStr} <span className="text-xs font-normal text-gray-500">({enq.guestCount || 0} Guests)</span></p>
+                          <p className="text-xs text-gray-500">{enq.eventTypes?.join(', ')} @ {enq.venuePreference || 'Any'}</p>
+                        </td>
+                        <td className="px-4 py-4">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusStyle(enq.status)}`}>
+                            {enq.status}
+                          </span>
+                          <p className="text-[10px] text-gray-400 mt-1">Assigned: Unassigned</p>
+                        </td>
+                        <td className="px-4 py-4 text-right">
+                          <button className="p-1.5 text-gray-400 hover:text-rose-500 transition-colors"><MoreVertical className="w-4 h-4" /></button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
             
             {/* Pagination */}
             <div className="p-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-sm text-gray-500 shrink-0">
-              <p>Showing 1 to 5 of 5 entries</p>
+              <p>Showing {enquiries.length > 0 ? 1 : 0} to {enquiries.length} of {enquiries.length} entries</p>
               <div className="flex gap-1">
                 <button className="px-3 py-1 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#0f172a] disabled:opacity-50" disabled>Prev</button>
                 <button className="px-3 py-1 rounded-lg bg-rose-500 text-white font-medium">1</button>
@@ -149,12 +168,12 @@ export default function EnquiriesPage() {
         {viewMode === 'kanban' && (
           <div className={`flex-1 flex gap-4 overflow-x-auto pb-4 custom-scrollbar transition-all ${selectedEnq ? 'mr-96' : ''}`}>
             {COLUMNS.map(col => {
-              const columnEnqs = MOCK_ENQUIRIES.filter(e => e.status === col.id);
+              const columnEnqs = enquiries.filter(e => e.status === col.id);
               return (
                 <div key={col.id} className="w-72 shrink-0 bg-gray-50 dark:bg-[#0f172a] rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col max-h-full">
                   <div className="p-3 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center sticky top-0 bg-gray-50 dark:bg-[#0f172a] rounded-t-2xl z-10">
                     <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                      <span className={`w-2.5 h-2.5 rounded-full ${col.color}`}></span>
+                      <span className={`w-2.5 h-2.5 rounded-full ${col.color.split(' ')[0]}`}></span>
                       {col.label}
                     </h3>
                     <span className="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -163,36 +182,38 @@ export default function EnquiriesPage() {
                   </div>
                   
                   <div className="p-2 space-y-3 overflow-y-auto custom-scrollbar flex-1">
-                    {columnEnqs.map(enq => (
-                      <div 
-                        key={enq.id} 
-                        onClick={() => setSelectedEnq(enq)}
-                        className="bg-white dark:bg-[#1e293b] p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer hover:border-rose-500/50 hover:shadow-md transition-all group"
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="text-[10px] font-bold text-gray-400 bg-gray-50 dark:bg-gray-800 px-1.5 py-0.5 rounded">{enq.id}</span>
-                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                            enq.priority === 'high' ? 'bg-red-50 text-red-600' : 
-                            enq.priority === 'medium' ? 'bg-amber-50 text-amber-600' : 'bg-gray-50 text-gray-600'
-                          }`}>
-                            {enq.priority}
-                          </span>
-                        </div>
-                        <h4 className="font-bold text-rose-600 dark:text-rose-400 text-sm mb-1">{enq.couple}</h4>
-                        <div className="text-[10px] text-gray-500 space-y-1">
-                          <p className="flex items-center gap-1.5"><CalendarIcon className="w-3 h-3" /> {enq.date} ({enq.guests} pax)</p>
-                          <p className="flex items-center gap-1.5 truncate"><MapPin className="w-3 h-3" /> {enq.venue}</p>
-                        </div>
-                        <div className="mt-3 pt-2 border-t border-gray-50 dark:border-gray-800 flex justify-between items-center">
-                          <div className="flex -space-x-1">
-                            <div className="w-5 h-5 rounded-full bg-blue-500 border border-white text-[8px] flex items-center justify-center text-white font-bold" title={enq.assigned}>
-                              {enq.assigned.charAt(0)}
-                            </div>
+                    {columnEnqs.map(enq => {
+                      const couple = `${enq.brideName || 'Client'} & ${enq.groomName || 'Client'}`;
+                      const dateStr = enq.weddingDate ? new Date(enq.weddingDate).toLocaleDateString() : 'TBD';
+                      const enqDateStr = new Date(enq.createdAt).toLocaleDateString();
+                      return (
+                        <div 
+                          key={enq.id} 
+                          onClick={() => setSelectedEnq(enq)}
+                          className="bg-white dark:bg-[#1e293b] p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer hover:border-rose-500/50 hover:shadow-md transition-all group"
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="text-[10px] font-bold text-gray-400 bg-gray-50 dark:bg-gray-800 px-1.5 py-0.5 rounded">{enq.id}</span>
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-50 text-gray-600`}>
+                              Medium
+                            </span>
                           </div>
-                          <span className="text-[10px] text-gray-400">{enq.enqDate}</span>
+                          <h4 className="font-bold text-rose-600 dark:text-rose-400 text-sm mb-1">{couple}</h4>
+                          <div className="text-[10px] text-gray-500 space-y-1">
+                            <p className="flex items-center gap-1.5"><CalendarIcon className="w-3 h-3" /> {dateStr} ({enq.guestCount || 0} pax)</p>
+                            <p className="flex items-center gap-1.5 truncate"><MapPin className="w-3 h-3" /> {enq.venuePreference || 'Any'}</p>
+                          </div>
+                          <div className="mt-3 pt-2 border-t border-gray-50 dark:border-gray-800 flex justify-between items-center">
+                            <div className="flex -space-x-1">
+                              <div className="w-5 h-5 rounded-full bg-blue-500 border border-white text-[8px] flex items-center justify-center text-white font-bold" title="Unassigned">
+                                U
+                              </div>
+                            </div>
+                            <span className="text-[10px] text-gray-400">{enqDateStr}</span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               );
@@ -206,7 +227,7 @@ export default function EnquiriesPage() {
             {/* Panel Header */}
             <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-[#0f172a]">
               <div>
-                <h2 className="text-lg font-black text-rose-600 dark:text-rose-400">{selectedEnq.couple}</h2>
+                <h2 className="text-lg font-black text-rose-600 dark:text-rose-400">{selectedEnq.brideName} & {selectedEnq.groomName}</h2>
                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{selectedEnq.id}</p>
               </div>
               <button 
@@ -240,19 +261,19 @@ export default function EnquiriesPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-[10px] text-gray-500">Date</p>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">{selectedEnq.date}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{selectedEnq.weddingDate ? new Date(selectedEnq.weddingDate).toLocaleDateString() : 'TBD'}</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500">Guest Count</p>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">{selectedEnq.guests}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{selectedEnq.guestCount || 0}</p>
                     </div>
                     <div className="col-span-2">
                       <p className="text-[10px] text-gray-500">Venue Preference</p>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">{selectedEnq.venue}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{selectedEnq.venuePreference || 'Any'}</p>
                     </div>
                     <div className="col-span-2">
                       <p className="text-[10px] text-gray-500">Event Type</p>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">{selectedEnq.event}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{selectedEnq.eventTypes?.join(', ') || 'N/A'}</p>
                     </div>
                   </div>
                 </div>
@@ -307,7 +328,7 @@ export default function EnquiriesPage() {
                       <span className="absolute -left-4 top-1 w-2.5 h-2.5 rounded-full bg-gray-300 ring-4 ring-white dark:ring-[#1e293b]"></span>
                       <p className="text-xs font-bold text-gray-900 dark:text-white">Enquiry Received</p>
                       <p className="text-xs text-gray-500 mt-1">Via Website Form</p>
-                      <p className="text-[10px] text-gray-400 mt-1">{selectedEnq.enqDate} • System</p>
+                      <p className="text-[10px] text-gray-400 mt-1">{new Date(selectedEnq.createdAt).toLocaleDateString()} • System</p>
                     </div>
 
                   </div>

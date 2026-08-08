@@ -1,23 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Search, Filter, List, Calendar as CalendarIcon, MoreVertical, 
   ChevronDown, ArrowUpRight, ArrowDownRight, IndianRupee, MapPin
 } from 'lucide-react';
-
-const MOCK_BOOKINGS = [
-  { id: 'WB-2026-001', couple: 'Rahul & Priya', venue: 'Grand Banquet Hall', date: '15 Nov 2026', type: 'Wedding', guests: 500, total: 450000, advance: 100000, balance: 350000, payStatus: 'Partial', status: 'Confirmed', bookedOn: '05 Aug 2026' },
-  { id: 'WB-2026-002', couple: 'Amit & Neha', venue: 'Royal Garden Lawns', date: '22 Dec 2026', type: 'All Events', guests: 800, total: 1250000, advance: 1250000, balance: 0, payStatus: 'Paid', status: 'Confirmed', bookedOn: '10 Aug 2026' },
-  { id: 'WB-2026-003', couple: 'Vikram & Anjali', venue: 'Skyview Terrace', date: '10 Jan 2027', type: 'Engagement', guests: 150, total: 180000, advance: 50000, balance: 130000, payStatus: 'Partial', status: 'Pending', bookedOn: '12 Aug 2026' },
-  { id: 'WB-2026-004', couple: 'Karan & Pooja', venue: 'Grand Banquet Hall', date: '05 Feb 2027', type: 'Reception', guests: 600, total: 550000, advance: 0, balance: 550000, payStatus: 'Pending', status: 'Pending', bookedOn: '15 Aug 2026' },
-  { id: 'WB-2026-005', couple: 'Deepak & Sunita', venue: 'Intimate Hall', date: '12 Mar 2027', type: 'Mehendi', guests: 100, total: 80000, advance: 20000, balance: 60000, payStatus: 'Refunded', status: 'Cancelled', bookedOn: '20 Aug 2026' },
-];
+import toast from 'react-hot-toast';
 
 export default function BookingsPage() {
   const [viewMode, setViewMode] = useState<'table' | 'calendar'>('table');
   const [search, setSearch] = useState('');
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/wedding/bookings')
+      .then(res => res.json())
+      .then(data => {
+        setBookings(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        toast.error('Failed to load bookings');
+        setLoading(false);
+      });
+  }, []);
 
   const getStatusStyle = (status: string) => {
     switch(status) {
@@ -101,45 +109,60 @@ export default function BookingsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                {MOCK_BOOKINGS.map((booking) => (
-                  <tr key={booking.id} className="hover:bg-gray-50/50 dark:hover:bg-[#0f172a]/50 transition-colors group">
-                    <td className="px-4 py-4">
-                      <Link href={`/admin/wedding/bookings/${booking.id}`} className="font-bold text-rose-600 dark:text-rose-400 text-sm hover:underline">{booking.id}</Link>
-                      <p className="text-[10px] text-gray-500">Booked: {booking.bookedOn}</p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="font-bold text-gray-900 dark:text-white text-sm">{booking.couple}</p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white mb-0.5">{booking.date} <span className="text-xs font-normal text-gray-500">({booking.guests} Guests)</span></p>
-                      <p className="text-xs text-gray-500 flex items-center gap-1"><MapPin className="w-3 h-3"/> {booking.venue} - {booking.type}</p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">₹{booking.total.toLocaleString()}</p>
-                      <div className="flex items-center gap-2">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${getPayStatusStyle(booking.payStatus)}`}>
-                          {booking.payStatus}
-                        </span>
-                        {booking.balance > 0 && <span className="text-[10px] text-red-500 font-bold">Due: ₹{booking.balance.toLocaleString()}</span>}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusStyle(booking.status)}`}>
-                        <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-                        {booking.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 text-right">
-                      <Link href={`/admin/wedding/bookings/${booking.id}`} className="px-3 py-1.5 bg-gray-100 dark:bg-[#0f172a] hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-bold transition-colors">Manage</Link>
-                    </td>
+                {loading ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-gray-500">Loading bookings...</td>
                   </tr>
-                ))}
+                ) : bookings.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-gray-500">No bookings found.</td>
+                  </tr>
+                ) : bookings.map((booking) => {
+                  const couple = `${booking.brideName || 'Client'} & ${booking.groomName || 'Client'}`;
+                  const balance = (booking.totalAmount || 0) - (booking.advancePaid || 0);
+                  const payStatus = balance <= 0 ? 'Paid' : (booking.advancePaid > 0 ? 'Partial' : 'Pending');
+                  const status = booking.status.charAt(0).toUpperCase() + booking.status.slice(1).toLowerCase();
+                  
+                  return (
+                    <tr key={booking.id} className="hover:bg-gray-50/50 dark:hover:bg-[#0f172a]/50 transition-colors group">
+                      <td className="px-4 py-4">
+                        <Link href={`/admin/wedding/bookings/${booking.id}`} className="font-bold text-rose-600 dark:text-rose-400 text-sm hover:underline">{booking.id}</Link>
+                        <p className="text-[10px] text-gray-500">Booked: {new Date(booking.createdAt).toLocaleDateString()}</p>
+                      </td>
+                      <td className="px-4 py-4">
+                        <p className="font-bold text-gray-900 dark:text-white text-sm">{couple}</p>
+                      </td>
+                      <td className="px-4 py-4">
+                        <p className="text-sm font-bold text-gray-900 dark:text-white mb-0.5">{new Date(booking.eventDate).toLocaleDateString()} <span className="text-xs font-normal text-gray-500">({booking.guestCount} Guests)</span></p>
+                        <p className="text-xs text-gray-500 flex items-center gap-1"><MapPin className="w-3 h-3"/> {booking.venue?.name || 'Venue'} - Wedding</p>
+                      </td>
+                      <td className="px-4 py-4">
+                        <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">₹{(booking.totalAmount || 0).toLocaleString()}</p>
+                        <div className="flex items-center gap-2">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${getPayStatusStyle(payStatus)}`}>
+                            {payStatus}
+                          </span>
+                          {balance > 0 && <span className="text-[10px] text-red-500 font-bold">Due: ₹{balance.toLocaleString()}</span>}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusStyle(status)}`}>
+                          <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+                          {status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <Link href={`/admin/wedding/bookings/${booking.id}`} className="px-3 py-1.5 bg-gray-100 dark:bg-[#0f172a] hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-bold transition-colors">Manage</Link>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
           
           <div className="p-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-sm text-gray-500">
-            <p>Showing 1 to 5 of 5 entries</p>
+            <p>Showing {bookings.length > 0 ? 1 : 0} to {bookings.length} of {bookings.length} entries</p>
             <div className="flex gap-1">
               <button className="px-3 py-1 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#0f172a] disabled:opacity-50" disabled>Prev</button>
               <button className="px-3 py-1 rounded-lg bg-rose-500 text-white font-medium">1</button>
