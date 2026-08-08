@@ -64,18 +64,18 @@ export default function AdminDashboard() {
   ];
 
   const weddingStats = [
-    { title: "Total Venues", value: '3', subtitle: 'Available for booking', icon: Building2, change: '0%', isUp: true },
-    { title: "Active Wedding Bookings", value: '12', subtitle: 'Upcoming weddings', icon: CalendarCheck, change: '+20%', isUp: true },
-    { title: "New Enquiries", value: '25', subtitle: 'This week', icon: MessageSquare, change: '+15%', isUp: true },
-    { title: 'Upcoming Events', value: '4', subtitle: 'This month', icon: CalendarClock, change: '+1', isUp: true },
-    { title: 'Wedding Revenue (Month)', value: `₹4,50,000`, subtitle: 'This month', icon: IndianRupee, change: '+25%', isUp: true },
-    { title: 'Total Wedding Revenue', value: `₹12,00,000`, subtitle: 'All time', icon: TrendingUp, change: '+10%', isUp: true },
-    { title: 'Average Event Size', value: `450`, subtitle: 'Guests per event', icon: Users, change: '+5%', isUp: true },
-    { title: 'Enquiry Conversion', value: `28%`, subtitle: 'To confirmed bookings', icon: CheckCircle, change: '+5%', isUp: true },
+    { title: "Total Venues", value: data?.stats?.weddingVenuesCount || '0', subtitle: 'Available for booking', icon: Building2, change: '0%', isUp: true },
+    { title: "Active Wedding Bookings", value: data?.stats?.activeWeddingBookings || '0', subtitle: 'Confirmed weddings', icon: CalendarCheck, change: '+20%', isUp: true },
+    { title: "New Enquiries", value: data?.stats?.newWeddingEnquiries || '0', subtitle: 'This week', icon: MessageSquare, change: '+15%', isUp: true },
+    { title: 'Upcoming Events', value: data?.stats?.upcomingWeddingEvents || '0', subtitle: 'This month', icon: CalendarClock, change: '+1', isUp: true },
+    { title: 'Wedding Revenue (Month)', value: `₹${(data?.stats?.weddingRevenueMonth || 0).toLocaleString()}`, subtitle: 'This month', icon: IndianRupee, change: '+25%', isUp: true },
+    { title: 'Total Wedding Revenue', value: `₹${(data?.stats?.totalWeddingRevenue || 0).toLocaleString()}`, subtitle: 'All time', icon: TrendingUp, change: '+10%', isUp: true },
+    { title: 'Average Event Size', value: data?.stats?.averageEventSize || '0', subtitle: 'Guests per event', icon: Users, change: '+5%', isUp: true },
+    { title: 'Enquiry Conversion', value: `${data?.stats?.enquiryConversion || 0}%`, subtitle: 'To confirmed bookings', icon: CheckCircle, change: '+5%', isUp: true },
   ];
 
   const commonStats = [
-    { title: 'Total Revenue (Combined)', value: `₹${(parseInt(data?.stats?.totalRevenue || '0') + 450000).toString()}`, subtitle: 'This month', icon: IndianRupee, change: '+18%', isUp: true },
+    { title: 'Total Revenue (Combined)', value: `₹${(parseInt(data?.stats?.totalRevenue || '0') + parseInt(data?.stats?.totalWeddingRevenue || '0')).toLocaleString()}`, subtitle: 'This month', icon: IndianRupee, change: '+18%', isUp: true },
     { title: "New Guests (Overall)", value: data?.stats?.dailyVisitorsToday || '0', subtitle: 'Across all modes', icon: Users, change: '+12%', isUp: true },
     { title: 'Active Offers', value: '4', subtitle: 'Hotel & Wedding', icon: Globe, change: '0', isUp: true },
     { title: 'Overall Rating', value: `${data?.stats?.avgRating || '4.8'}/5`, subtitle: `Combined reviews`, icon: Star, change: '0', isUp: true },
@@ -133,15 +133,7 @@ export default function AdminDashboard() {
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Overall Revenue Trend (Hotel vs Wedding)</h3>
         <div className="h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={[
-              { name: 'Mon', hotel: 12000, wedding: 0 },
-              { name: 'Tue', hotel: 15000, wedding: 50000 },
-              { name: 'Wed', hotel: 8000, wedding: 0 },
-              { name: 'Thu', hotel: 22000, wedding: 0 },
-              { name: 'Fri', hotel: 35000, wedding: 120000 },
-              { name: 'Sat', hotel: 45000, wedding: 200000 },
-              { name: 'Sun', hotel: 30000, wedding: 80000 },
-            ]}>
+            <ComposedChart data={data?.charts?.overallRevenueTrend || []}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
               <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
               <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
@@ -232,12 +224,7 @@ export default function AdminDashboard() {
           </div>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart layout="vertical" data={[
-                { name: 'Total Enquiries', value: 120 },
-                { name: 'Contacted', value: 85 },
-                { name: 'Site Visit', value: 45 },
-                { name: 'Booked', value: 25 },
-              ]}>
+              <BarChart layout="vertical" data={data?.charts?.enquiryFunnel || []}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.1} horizontal={false} />
                 <XAxis type="number" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis dataKey="name" type="category" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} width={100} />
@@ -260,16 +247,10 @@ export default function AdminDashboard() {
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={[
-                  { name: 'Weddings', value: 65 },
-                  { name: 'Receptions', value: 20 },
-                  { name: 'Pre-wedding', value: 10 },
-                  { name: 'Corporate', value: 5 },
-                ]} innerRadius={80} outerRadius={110} paddingAngle={5} dataKey="value">
-                  <Cell fill="#f43f5e" />
-                  <Cell fill="#fb7185" />
-                  <Cell fill="#fda4af" />
-                  <Cell fill="#ffe4e6" />
+                <Pie data={data?.charts?.weddingEventDistribution || []} innerRadius={80} outerRadius={110} paddingAngle={5} dataKey="value">
+                  {data?.charts?.weddingEventDistribution?.map((entry: any, index: number) => (
+                    <Cell key={`cell-${index}`} fill={['#f43f5e', '#fb7185', '#fda4af', '#ffe4e6'][index % 4]} />
+                  ))}
                 </Pie>
                 <Tooltip contentStyle={{ borderRadius: '12px' }} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />

@@ -149,6 +149,52 @@ export async function getDashboardData() {
       { name: 'Week 4', revenue: totalRevenue * 0.35 },
     ];
 
+    const weddingVenuesCount = await prisma.weddingVenue.count();
+    const activeWeddingBookings = await prisma.weddingBooking.count({ where: { status: 'CONFIRMED' } });
+    
+    const newWeddingEnquiries = await prisma.weddingEnquiry.count({ where: { createdAt: { gte: last7Days } } });
+    const upcomingWeddingEvents = await prisma.weddingBooking.count({ where: { eventDate: { gte: startOfMonth }, status: 'CONFIRMED' } });
+    
+    const weddingBookingsThisMonth = await prisma.weddingBooking.findMany({ where: { createdAt: { gte: startOfMonth } } });
+    const weddingRevenueMonth = weddingBookingsThisMonth.reduce((acc, b) => acc + b.totalAmount, 0);
+    
+    const allWeddingBookings = await prisma.weddingBooking.findMany();
+    const totalWeddingRevenue = allWeddingBookings.reduce((acc, b) => acc + b.totalAmount, 0);
+    
+    const averageEventSize = allWeddingBookings.length ? Math.round(allWeddingBookings.reduce((acc, b) => acc + b.guestCount, 0) / allWeddingBookings.length) : 0;
+    
+    const allEnquiries = await prisma.weddingEnquiry.findMany();
+    const enquiryFunnel = [
+      { name: 'Total Enquiries', value: allEnquiries.length },
+      { name: 'Pending', value: allEnquiries.filter(e => e.status === 'PENDING').length },
+      { name: 'Contacted', value: allEnquiries.filter(e => e.status === 'CONTACTED').length },
+      { name: 'Booked', value: allEnquiries.filter(e => e.status === 'BOOKED').length },
+    ];
+    
+    const enquiryConversion = allEnquiries.length ? Math.round((enquiryFunnel[3].value / allEnquiries.length) * 100) : 0;
+
+    const eventTypesCount: any = {};
+    allEnquiries.forEach(e => {
+      e.eventTypes.forEach(t => {
+        eventTypesCount[t] = (eventTypesCount[t] || 0) + 1;
+      });
+    });
+    const weddingEventDistribution = Object.keys(eventTypesCount).map(k => ({ name: k, value: eventTypesCount[k] }));
+
+    const overallRevenueTrend = days.map(day => ({ name: day, hotel: 0, wedding: 0 }));
+    bookingsLast7.forEach(b => {
+      const dayName = days[b.createdAt.getDay()];
+      const dayData = overallRevenueTrend.find(d => d.name === dayName);
+      if (dayData) dayData.hotel += b.totalPrice;
+    });
+    
+    const weddingBookingsLast7 = await prisma.weddingBooking.findMany({ where: { createdAt: { gte: last7Days } } });
+    weddingBookingsLast7.forEach(b => {
+      const dayName = days[b.createdAt.getDay()];
+      const dayData = overallRevenueTrend.find(d => d.name === dayName);
+      if (dayData) dayData.wedding += b.totalAmount;
+    });
+
     return {
       stats: {
         totalRooms,
@@ -162,6 +208,14 @@ export async function getDashboardData() {
         pendingBookings,
         dailyVisitorsToday,
         dailyPageViewsToday,
+        weddingVenuesCount,
+        activeWeddingBookings,
+        newWeddingEnquiries,
+        upcomingWeddingEvents,
+        weddingRevenueMonth,
+        totalWeddingRevenue,
+        averageEventSize,
+        enquiryConversion
       },
       recentActivity,
       upcomingCheckIns,
@@ -171,7 +225,10 @@ export async function getDashboardData() {
         paymentMethodData,
         bookingTrendData,
         dailyVisitorsData,
-        revenueData
+        revenueData,
+        enquiryFunnel,
+        weddingEventDistribution,
+        overallRevenueTrend
       }
     };
 
