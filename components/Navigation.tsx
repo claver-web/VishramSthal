@@ -6,14 +6,10 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { UserButton, SignInButton, useUser } from '@clerk/nextjs';
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
-
-const NAV_LINKS = [
-  { name: 'Home', href: '/' },
-  { name: 'Rooms', href: '/rooms' },
-  { name: 'About', href: '/about' },
-  { name: 'Gallery', href: '/gallery' },
-  { name: 'Contact', href: '/contact' },
-];
+import { useModeStore } from '@/store/modeStore';
+import { modeConfigs } from '@/config/modeConfig';
+import ModeSwitcher from './ModeSwitcher';
+import { Heart } from 'lucide-react';
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -21,20 +17,23 @@ export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  const { mode } = useModeStore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
     
-    // Transparent at top (scrollY < 100)
     if (latest > 100) {
       setIsScrolled(true);
     } else {
       setIsScrolled(false);
     }
 
-    // Hide navbar when scrolling down (after 300px), show when scrolling up
     if (latest > 300 && latest > previous && !isMobileMenuOpen) {
       setIsHidden(true);
     } else {
@@ -42,7 +41,6 @@ export default function Navigation() {
     }
   });
 
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -56,10 +54,50 @@ export default function Navigation() {
 
   if (pathname?.startsWith('/admin')) return null;
 
-  const activeNavLinks = [...NAV_LINKS];
+  // Render a minimal invisible nav while mounting to prevent hydration mismatch layout shifts
+  if (!mounted) {
+    return <div className="fixed top-0 left-0 w-full h-20 bg-transparent z-50 pointer-events-none" />;
+  }
+
+  const config = modeConfigs[mode];
+  const isHotel = mode === 'hotel';
+
+  const hotelLinks = [
+    { name: 'Home', href: '/' },
+    { name: 'Rooms', href: '/rooms' },
+    { name: 'About', href: '/about' },
+    { name: 'Gallery', href: '/gallery' },
+    { name: 'Contact', href: '/contact' },
+  ];
+  
+  const weddingLinks = [
+    { name: 'Home', href: '/wedding' },
+    { name: 'Venues', href: '/wedding/venues' },
+    { name: 'Services', href: '/wedding/services' },
+    { name: 'Gallery', href: '/wedding/gallery' },
+    { name: 'Contact', href: '/wedding/contact' },
+  ];
+
+  const activeNavLinks = isHotel ? [...hotelLinks] : [...weddingLinks];
+  
   if (isSignedIn) {
     activeNavLinks.push({ name: 'My Bookings', href: '/bookings' });
   }
+
+  const textPrimary = isHotel ? 'text-orange-500' : 'text-rose-600';
+  const textActive = isHotel ? 'text-orange-400' : 'text-rose-400';
+  const hoverText = isHotel ? 'hover:text-orange-400' : 'hover:text-rose-400';
+  const bgPrimary = isHotel ? 'bg-orange-500' : 'bg-rose-600';
+  const hoverBg = isHotel ? 'hover:bg-orange-500' : 'hover:bg-rose-600';
+  const fromGradient = isHotel ? 'from-orange-400' : 'from-rose-500';
+  const toGradient = isHotel ? 'to-orange-500' : 'to-rose-600';
+  const borderPrimary = isHotel ? 'border-orange-500/50' : 'border-rose-500/50';
+  const borderNav = isHotel ? 'border-orange-500/20' : 'border-rose-500/20';
+  const shadowHoverBtn = isHotel ? 'hover:shadow-[0_0_15px_rgba(249,115,22,0.3)]' : 'hover:shadow-[0_0_15px_rgba(225,29,72,0.3)]';
+  const shadowLogo = isHotel ? 'rgba(249,115,22,0.6)' : 'rgba(225,29,72,0.6)';
+  const shadowLogoDim = isHotel ? 'rgba(249,115,22,0.2)' : 'rgba(225,29,72,0.2)';
+  const bgNavScrolled = isHotel ? 'bg-[#0f0f1a]/85' : 'bg-[#1a0a0a]/85';
+  const bgMobilePanel = isHotel ? 'bg-[#0f0f1a]/95' : 'bg-[#1a0a0a]/95';
 
   return (
     <>
@@ -72,32 +110,39 @@ export default function Navigation() {
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className={`fixed top-0 left-0 w-full z-50 transition-colors duration-300 ${
           isScrolled
-            ? 'bg-[#1a1a2e]/85 backdrop-blur-xl border-b border-amber-500/20 shadow-[0_4px_30px_rgba(0,0,0,0.3)] py-3'
+            ? `${bgNavScrolled} backdrop-blur-xl border-b ${borderNav} shadow-[0_4px_30px_rgba(0,0,0,0.3)] py-3`
             : 'bg-transparent py-5'
         }`}
       >
         <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
           
           {/* Logo Section */}
-          <Link href="/" className="group flex items-center gap-3 transition-transform hover:scale-105">
+          <Link href={isHotel ? "/" : "/wedding"} className="group flex items-center gap-3 transition-transform hover:scale-105">
             <motion.div
               animate={{
                 boxShadow: [
-                  '0 0 10px rgba(245,158,11,0.2)',
-                  '0 0 20px rgba(245,158,11,0.6)',
-                  '0 0 10px rgba(245,158,11,0.2)',
+                  `0 0 10px ${shadowLogoDim}`,
+                  `0 0 20px ${shadowLogo}`,
+                  `0 0 10px ${shadowLogoDim}`,
                 ],
               }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              className="w-14 h-14 flex items-center justify-center shrink-0 relative rounded-full overflow-hidden"
+              className="w-14 h-14 flex items-center justify-center shrink-0 relative rounded-full overflow-hidden bg-black/20 backdrop-blur-sm border border-white/10"
             >
-              <Image src="/logoKrishna.png" alt="Vishram Sthal Logo" fill className="object-cover" />
+              {isHotel ? (
+                <Image src="/logoKrishna.png" alt="Vishram Sthal Logo" fill className="object-cover" />
+              ) : (
+                <div className="flex flex-col items-center justify-center w-full h-full text-rose-500">
+                  <Heart size={24} className="fill-rose-500/20" />
+                  <span className="text-[10px] font-bold absolute">SMP</span>
+                </div>
+              )}
             </motion.div>
-            <div className="flex flex-col">
-              <span className="font-serif text-xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent">
-                Vishram Sthal
+            <div className="flex flex-col hidden sm:flex">
+              <span className={`font-serif text-xl font-bold bg-gradient-to-r ${fromGradient} ${toGradient} bg-clip-text text-transparent whitespace-nowrap`}>
+                {config.name}
               </span>
-              <span className="text-xs text-amber-500/80 uppercase tracking-widest font-medium">
+              <span className={`text-xs ${isHotel ? 'text-orange-500/80' : 'text-rose-500/80'} uppercase tracking-widest font-medium`}>
                 Dehra Gopipur
               </span>
             </div>
@@ -106,71 +151,75 @@ export default function Navigation() {
           {/* Desktop Links */}
           <div className="hidden lg:flex items-center gap-8">
             {activeNavLinks.map((link) => {
-              const isActive = pathname === link.href || (pathname === '/' && link.href === '/');
+              const isActive = pathname === link.href || (pathname === '/' && link.href === '/') || (pathname === '/wedding' && link.href === '/wedding');
               
               return (
                 <Link
                   key={link.name}
                   href={link.href}
                   className={`relative font-medium transition-colors text-sm uppercase tracking-wider group py-1 ${
-                    isActive ? 'text-amber-400' : 'text-gray-300 hover:text-amber-400'
+                    isActive ? textActive : `text-gray-300 ${hoverText}`
                   }`}
                 >
                   {link.name}
-                  <span className={`absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-amber-400 to-orange-500 transition-transform origin-left duration-300 ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
+                  <span className={`absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r ${fromGradient} ${toGradient} transition-transform origin-left duration-300 ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
                 </Link>
               );
             })}
           </div>
 
-          {/* CTA & User */}
-          <div className="hidden lg:flex items-center gap-6">
+          {/* CTA & User & Switcher */}
+          <div className="hidden lg:flex items-center gap-4">
+            <ModeSwitcher />
+            
             {isSignedIn ? (
               <UserButton />
             ) : (
               <SignInButton mode="modal">
-                <button className="px-5 py-2 border border-amber-500/50 rounded-full text-sm font-medium text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-[0_0_10px_rgba(249,115,22,0.1)] hover:shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+                <button className={`px-5 py-2 border ${borderPrimary} rounded-full text-sm font-medium ${textPrimary} hover:text-white ${hoverBg} transition-all shadow-sm ${shadowHoverBtn}`}>
                   Sign In
                 </button>
               </SignInButton>
             )}
-            
 
           </div>
 
-          {/* Mobile Toggle */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden relative z-50 p-2 text-amber-500 focus:outline-none"
-            aria-label="Toggle menu"
-          >
-            <motion.div
-              animate={isMobileMenuOpen ? 'open' : 'closed'}
-              className="w-6 h-5 flex flex-col justify-between"
+          {/* Mobile Toggle & Menu Button */}
+          <div className="flex items-center gap-3 lg:hidden">
+            <ModeSwitcher />
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className={`relative z-50 p-2 ${textPrimary} focus:outline-none`}
+              aria-label="Toggle menu"
             >
-              <motion.span
-                variants={{
-                  closed: { rotate: 0, y: 0 },
-                  open: { rotate: 45, y: 9 },
-                }}
-                className="w-full h-0.5 bg-current origin-left transition-all"
-              />
-              <motion.span
-                variants={{
-                  closed: { opacity: 1 },
-                  open: { opacity: 0 },
-                }}
-                className="w-full h-0.5 bg-current transition-all"
-              />
-              <motion.span
-                variants={{
-                  closed: { rotate: 0, y: 0 },
-                  open: { rotate: -45, y: -9 },
-                }}
-                className="w-full h-0.5 bg-current origin-left transition-all"
-              />
-            </motion.div>
-          </button>
+              <motion.div
+                animate={isMobileMenuOpen ? 'open' : 'closed'}
+                className="w-6 h-5 flex flex-col justify-between"
+              >
+                <motion.span
+                  variants={{
+                    closed: { rotate: 0, y: 0 },
+                    open: { rotate: 45, y: 9 },
+                  }}
+                  className="w-full h-0.5 bg-current origin-left transition-all"
+                />
+                <motion.span
+                  variants={{
+                    closed: { opacity: 1 },
+                    open: { opacity: 0 },
+                  }}
+                  className="w-full h-0.5 bg-current transition-all"
+                />
+                <motion.span
+                  variants={{
+                    closed: { rotate: 0, y: 0 },
+                    open: { rotate: -45, y: -9 },
+                  }}
+                  className="w-full h-0.5 bg-current origin-left transition-all"
+                />
+              </motion.div>
+            </button>
+          </div>
         </div>
       </motion.nav>
 
@@ -189,7 +238,7 @@ export default function Navigation() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="absolute right-0 top-0 bottom-0 w-3/4 max-w-sm bg-[#1a1a2e]/95 backdrop-blur-xl border-l border-amber-500/20 shadow-2xl p-6 flex flex-col"
+              className={`absolute right-0 top-0 bottom-0 w-3/4 max-w-sm ${bgMobilePanel} backdrop-blur-xl border-l ${borderNav} shadow-2xl p-6 flex flex-col`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex flex-col mt-24 gap-6">
@@ -206,7 +255,7 @@ export default function Navigation() {
                         href={link.href}
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={`text-xl font-medium block ${
-                          isActive ? 'text-amber-400' : 'text-gray-300 hover:text-amber-400'
+                          isActive ? textActive : `text-gray-300 ${hoverText}`
                         }`}
                       >
                         {link.name}
@@ -220,7 +269,7 @@ export default function Navigation() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="mt-auto flex flex-col gap-6 border-t border-amber-500/20 pt-6 pb-8"
+                className={`mt-auto flex flex-col gap-6 border-t ${borderNav} pt-6 pb-8`}
               >
                 {isSignedIn ? (
                   <div className="flex items-center gap-4">
@@ -229,12 +278,11 @@ export default function Navigation() {
                   </div>
                 ) : (
                   <SignInButton mode="modal">
-                    <button className="w-full py-2 border border-amber-500/50 rounded-full text-center text-lg font-medium text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-[0_0_10px_rgba(249,115,22,0.1)]">
+                    <button className={`w-full py-2 border ${borderPrimary} rounded-full text-center text-lg font-medium ${textPrimary} hover:text-white ${hoverBg} transition-all shadow-sm ${shadowHoverBtn}`}>
                       Sign In
                     </button>
                   </SignInButton>
                 )}
-                
 
               </motion.div>
             </motion.div>

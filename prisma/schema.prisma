@@ -155,3 +155,95 @@ model VisitorLog {
   sessionId String?
   createdAt DateTime @default(now())
 }
+
+model WeddingVenue {
+  id              String           @id @default(cuid())
+  name            String           @unique
+  type            WeddingVenueType
+  capacity        Int
+  priceStarting   Float
+  description     String?
+  images          String[]
+  amenities       String[]
+  isAvailable     Boolean          @default(true)
+  acAvailable     Boolean          @default(true)
+  parkingCapacity Int              @default(0)
+  roomsAvailable  Int              @default(0)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  bookings        WeddingBooking[]
+}
+
+enum WeddingVenueType {
+  BANQUET
+  LAWN
+  TERRACE
+  GARDEN
+  HALL
+}
+
+model WeddingEnquiry {
+  id              String         @id @default(cuid())
+  brideName       String?
+  groomName       String?
+  phone           String
+  email           String?
+  weddingDate     DateTime?
+  guestCount      Int?
+  venuePreference String?
+  eventTypes      String[]
+  message         String?
+  status          EnquiryStatus  @default(PENDING)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+enum EnquiryStatus {
+  PENDING
+  CONTACTED
+  BOOKED
+  CANCELLED
+}
+
+model WeddingBooking {
+  id                  String               @id @default(cuid())
+  venueId             String
+  userId              String?
+  brideName           String?
+  groomName           String?
+  phone               String
+  email               String?
+  eventDate           DateTime
+  guestCount          Int
+  totalAmount         Float
+  advancePaid         Float                @default(0)
+  status              WeddingBookingStatus @default(PENDING)
+  paymentMethod       PaymentMethod        @default(ONLINE)
+  specialRequirements String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  venue               WeddingVenue         @relation(fields: [venueId], references: [id])
+}
+
+enum WeddingBookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentMethod {
+  ONLINE
+  CASH
+}
+
+model WeddingService {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  priceRange  String?
+  images      String[]
+  category    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

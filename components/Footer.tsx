@@ -2,14 +2,32 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useModeStore } from '@/store/modeStore';
 
 export default function Footer() {
   const pathname = usePathname();
 
+  const { mode, setMode } = useModeStore();
+  const router = useRouter();
+  const isHotel = mode === 'hotel';
+
   if (pathname?.startsWith('/admin')) return null;
+
+  const handleModeSwitch = () => {
+    const newMode = isHotel ? 'wedding' : 'hotel';
+    setMode(newMode);
+    setTimeout(() => {
+      if (newMode === 'wedding') {
+        router.push('/wedding');
+      } else {
+        router.push('/');
+      }
+    }, 100);
+  };
+
   return (
-    <footer className="relative bg-[var(--color-maroon)] text-[#fef3c7] pt-16 pb-8 overflow-hidden transition-colors duration-300 mt-auto border-t-[8px] border-[var(--color-gold)]">
+    <footer className={`relative ${isHotel ? 'bg-[var(--color-maroon)] text-[#fef3c7] border-[var(--color-gold)]' : 'bg-rose-950 text-rose-100 border-amber-500'} pt-16 pb-8 overflow-hidden transition-colors duration-300 mt-auto border-t-[8px]`}>
       {/* Decorative Top Border (Temple Arch Pattern) */}
       <div className="absolute top-0 left-0 w-full h-8 flex overflow-hidden opacity-30">
         {Array.from({ length: 20 }).map((_, i) => (
@@ -39,56 +57,68 @@ export default function Footer() {
 
           {/* Column 2: Quick Links */}
           <div>
-            <h3 className="text-xl font-serif text-[var(--color-gold)] mb-6 border-b border-[var(--color-gold)]/30 pb-2 inline-block">Quick Links</h3>
+            <h3 className={`text-xl font-serif ${isHotel ? 'text-[var(--color-gold)] border-[var(--color-gold)]/30' : 'text-amber-400 border-amber-400/30'} mb-6 border-b pb-2 inline-block`}>Quick Links</h3>
             <ul className="space-y-3 font-sans text-sm">
-              {['Home', 'Rooms', 'About', 'Contact', 'Gallery', 'Bookings'].map((link) => (
-                <li key={link}>
-                  <Link href={link === 'Home' ? '/' : `/${link.toLowerCase()}`} className="flex items-center gap-2 hover:text-[var(--color-gold)] transition-colors group">
-                    <span className="text-[var(--color-saffron)] text-[10px] group-hover:scale-125 transition-transform">🪷</span>
-                    {link}
-                  </Link>
-                </li>
-              ))}
+              {isHotel ? (
+                ['Home', 'Rooms', 'About', 'Contact', 'Gallery', 'Bookings'].map((link) => (
+                  <li key={link}>
+                    <Link href={link === 'Home' ? '/' : `/${link.toLowerCase()}`} className="flex items-center gap-2 hover:text-[var(--color-gold)] transition-colors group">
+                      <span className="text-[var(--color-saffron)] text-[10px] group-hover:scale-125 transition-transform">🪷</span>
+                      {link}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                ['Home', 'Venues', 'Services', 'Gallery', 'Contact'].map((link) => (
+                  <li key={link}>
+                    <Link href={link === 'Home' ? '/wedding' : `/wedding/${link.toLowerCase()}`} className="flex items-center gap-2 hover:text-amber-400 transition-colors group">
+                      <span className="text-rose-400 text-[10px] group-hover:scale-125 transition-transform">💍</span>
+                      {link}
+                    </Link>
+                  </li>
+                ))
+              )}
             </ul>
           </div>
 
-          {/* Column 3: Divine Services */}
+          {/* Column 3: Cross Promo */}
           <div>
-            <h3 className="text-xl font-serif text-[var(--color-gold)] mb-6 border-b border-[var(--color-gold)]/30 pb-2 inline-block">Divine Services</h3>
-            <ul className="space-y-3 font-sans text-sm text-white/80">
-              {['24/7 Room Service', 'Spiritual Activities', 'Temple Visits', 'Satvik Dining', 'Meditation Sessions'].map((service) => (
-                <li key={service} className="flex items-center gap-2">
-                  <span className="text-[var(--color-gold)] text-[10px]">✨</span>
-                  {service}
-                </li>
-              ))}
-            </ul>
+            <h3 className={`text-xl font-serif ${isHotel ? 'text-[var(--color-gold)] border-[var(--color-gold)]/30' : 'text-amber-400 border-amber-400/30'} mb-6 border-b pb-2 inline-block`}>Explore More</h3>
+            
+            <div className={`p-4 rounded-xl border ${isHotel ? 'bg-black/20 border-white/10' : 'bg-rose-900/40 border-rose-800'}`}>
+              <h4 className="font-bold text-white mb-2">{isHotel ? "Planning a Wedding?" : "Need Hotel Rooms?"}</h4>
+              <p className="text-xs mb-4 text-white/70">
+                {isHotel ? "Discover our luxurious wedding venues and packages." : "Book premium rooms for a comfortable stay."}
+              </p>
+              <button onClick={handleModeSwitch} className={`text-xs font-bold px-4 py-2 rounded-lg transition-colors w-full ${isHotel ? 'bg-[var(--color-saffron)] text-white hover:bg-[var(--color-gold)] hover:text-black' : 'bg-rose-600 text-white hover:bg-rose-500'}`}>
+                {isHotel ? "Switch to Wedding Mode" : "Switch to Hotel Mode"}
+              </button>
+            </div>
           </div>
 
           {/* Column 4: Contact */}
           <div>
-            <h3 className="text-xl font-serif text-[var(--color-gold)] mb-6 border-b border-[var(--color-gold)]/30 pb-2 inline-block">Contact Us</h3>
+            <h3 className={`text-xl font-serif ${isHotel ? 'text-[var(--color-gold)] border-[var(--color-gold)]/30' : 'text-amber-400 border-amber-400/30'} mb-6 border-b pb-2 inline-block`}>Contact Us</h3>
             <ul className="space-y-4 font-sans text-sm text-white/90">
               <li className="flex items-center gap-3">
-                <span className="text-[var(--color-gold)]">📞</span>
-                +91 9805271636
+                <span className={isHotel ? "text-[var(--color-gold)]" : "text-amber-400"}>📞</span>
+                +91 9805271636 {isHotel ? "" : "(Wedding Enquiries)"}
               </li>
               <li className="flex items-center gap-3">
-                <span className="text-[var(--color-gold)]">💬</span>
-                <a href="https://wa.me/918988478367" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--color-gold)] transition-colors">WhatsApp: +91 8988478367</a>
+                <span className={isHotel ? "text-[var(--color-gold)]" : "text-amber-400"}>💬</span>
+                <a href="https://wa.me/919805271636" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isHotel ? 'hover:text-[var(--color-gold)]' : 'hover:text-amber-400'}`}>WhatsApp: +91 9805271636</a>
               </li>
               <li className="flex items-center gap-3">
-                <span className="text-[var(--color-gold)]">✉️</span>
-                reservations@vishramsthal.com
+                <span className={isHotel ? "text-[var(--color-gold)]" : "text-amber-400"}>✉️</span>
+                {isHotel ? "reservations@vishramsthal.com" : "weddings@vishramsthal.com"}
               </li>
             </ul>
             
             <div className="mt-8">
-              <h4 className="text-sm font-serif text-[var(--color-gold)] mb-3">Connect With Us</h4>
               <div className="flex gap-4">
                 {['Facebook', 'Instagram', 'Twitter'].map((social) => (
-                  <a key={social} href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[var(--color-gold)] hover:text-[var(--color-midnight)] transition-all transform hover:-translate-y-1 border border-[var(--color-gold)]/30" title={social}>
-                    🪔
+                  <a key={social} href="#" className={`w-10 h-10 rounded-full bg-white/10 flex items-center justify-center transition-all transform hover:-translate-y-1 border ${isHotel ? 'hover:bg-[var(--color-gold)] hover:text-[var(--color-midnight)] border-[var(--color-gold)]/30' : 'hover:bg-amber-400 hover:text-rose-950 border-amber-400/30'}`} title={social}>
+                    {isHotel ? '🪔' : '💍'}
                   </a>
                 ))}
               </div>

@@ -75,19 +75,25 @@
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
-:root {
-  --background: #0f0f1a;
+:root, [data-mode="hotel"] {
+  --primary: #f97316;
+  --secondary: #fbbf24;
+  --bg: #0f0f1a;
+  --card-bg: #1a1a2e;
+  --text: #f3f4f6;
+  --accent: #f59e0b;
+  
+  --background: var(--bg);
   --background-secondary: #1a1a2e;
   --background-tertiary: #16213e;
   --surface: #1f2937;
   
-  --text-primary: #f3f4f6;
+  --text-primary: var(--text);
   --text-secondary: #d1d5db;
   --text-muted: #9ca3af;
   --text-heading: #ffffff;
   
-  --foreground: #f3f4f6;
-  --card-bg: #1a1a2e;
+  --foreground: var(--text);
   
   --border-default: #374151;
   --border-accent: rgba(251, 191, 36, 0.2);
@@ -98,6 +104,34 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
   --glow-gold: 0 0 15px rgba(251, 191, 36, 0.4);
   --glow-saffron: 0 0 20px rgba(249, 115, 22, 0.5);
+}
+
+[data-mode="wedding"] {
+  --primary: #e11d48;
+  --secondary: #fbbf24;
+  --bg: #1a0a0f;
+  --card-bg: #2a0a15;
+  --text: #fdf2f8;
+  --accent: #fb7185;
+  
+  --background: var(--bg);
+  --background-secondary: #2a0a15;
+  --background-tertiary: #3e0a1a;
+  --surface: #4c0519;
+  
+  --text-primary: var(--text);
+  --text-secondary: #fbcfe8;
+  --text-muted: #f472b6;
+  --text-heading: #ffffff;
+  
+  --foreground: var(--text);
+  
+  --border-default: #4c0519;
+  --border-accent: rgba(251, 191, 36, 0.2);
+  --border-card: rgba(225, 29, 72, 0.1);
+  
+  --glow-gold: 0 0 15px rgba(251, 191, 36, 0.4);
+  --glow-saffron: 0 0 20px rgba(225, 29, 72, 0.5);
 }
 
 body {

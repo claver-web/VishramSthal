@@ -4,6 +4,8 @@ import nextDynamic from 'next/dynamic';
 import prisma from '@/lib/prisma';
 
 const Reveal = nextDynamic(() => import('@/components/Reveal'));
+import ModeRedirect from '@/components/ModeRedirect';
+import ModePromoBanner from '@/components/ModePromoBanner';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,6 +42,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col min-h-screen font-sans bg-mandala-pattern">
+      <ModeRedirect />
       {/* 1. HERO SECTION REDESIGN */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         {/* Layer 1: Soft gradient */}
@@ -379,6 +382,9 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* CROSS PROMOTION BANNER */}
+      <ModePromoBanner />
 
       {/* 7. LOCATION SECTION */}
       <section className="py-24 bg-gray-900 border-t border-[var(--border-color)]">

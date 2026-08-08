@@ -1,4 +1,4 @@
-import { PrismaClient, RoomType } from '@prisma/client';
+import { PrismaClient, RoomType, WeddingVenueType } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -67,6 +67,56 @@ async function main() {
   }
   
   console.log('Rooms seeded successfully.');
+
+  // 3. Create Wedding Venues
+  const weddingVenues = [
+    {
+      name: "Grand Banquet Hall",
+      type: WeddingVenueType.BANQUET,
+      capacity: 500,
+      priceStarting: 200000,
+      description: "Luxurious indoor setup with crystal chandeliers.",
+      images: ["https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=800"],
+      amenities: ["Central AC", "Stage setup", "Bridal rooms", "Parking"],
+    },
+    {
+      name: "Garden Lawns",
+      type: WeddingVenueType.LAWN,
+      capacity: 300,
+      priceStarting: 150000,
+      description: "Spacious outdoor lawns surrounded by greenery.",
+      images: ["https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800"],
+      amenities: ["Open sky", "Fairy lights", "Valet parking", "Dining area"],
+    },
+    {
+      name: "Terrace Venue",
+      type: WeddingVenueType.TERRACE,
+      capacity: 200,
+      priceStarting: 100000,
+      description: "Stunning semi-open area with sunset views.",
+      images: ["https://images.unsplash.com/photo-1469371670807-013ccf25f16a?q=80&w=800"],
+      amenities: ["Panoramic views", "Lounge seating", "Covered dining", "Bar setup"],
+    },
+    {
+      name: "Intimate Hall",
+      type: WeddingVenueType.HALL,
+      capacity: 100,
+      priceStarting: 50000,
+      description: "Cozy space for pre-wedding ceremonies.",
+      images: ["https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=800"],
+      amenities: ["AC", "Audio setup", "Intimate lighting", "Dining"],
+    }
+  ];
+
+  for (const venue of weddingVenues) {
+    await prisma.weddingVenue.upsert({
+      where: { name: venue.name },
+      update: {},
+      create: venue,
+    });
+  }
+  
+  console.log('Wedding venues seeded successfully.');
 }
 
 main()
