@@ -1,33 +1,64 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Search, Plus, Filter, LayoutGrid, List, MoreVertical, 
   Edit, Trash2, Eye, Copy, Building2, ChevronDown, CheckCircle2
 } from 'lucide-react';
 import Image from 'next/image';
-
-const MOCK_VENUES = [
-  { id: 1, name: 'Grand Banquet Hall', type: 'Banquet Hall', capacity: 500, price: 150000, bookings: 45, status: 'Active', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=300' },
-  { id: 2, name: 'Royal Garden Lawns', type: 'Lawn', capacity: 1000, price: 250000, bookings: 32, status: 'Active', image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=300' },
-  { id: 3, name: 'Skyview Terrace', type: 'Terrace', capacity: 200, price: 80000, bookings: 12, status: 'Maintenance', image: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=300' },
-  { id: 4, name: 'Intimate Hall', type: 'Hall', capacity: 100, price: 40000, bookings: 65, status: 'Inactive', image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=300' },
-];
+import toast from 'react-hot-toast';
 
 export default function VenuesPage() {
   const [view, setView] = useState<'table' | 'grid'>('table');
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<number[]>([]);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [venues, setVenues] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const toggleSelect = (id: number) => {
+  const fetchVenues = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/wedding/venues');
+      if (res.ok) {
+        const data = await res.json();
+        setVenues(data);
+      }
+    } catch (e) {
+      toast.error('Failed to load venues');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVenues();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this venue?')) return;
+    try {
+      const res = await fetch(`/api/wedding/venues/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        toast.success('Venue deleted successfully');
+        fetchVenues();
+        setSelected(selected.filter(i => i !== id));
+      } else {
+        toast.error('Failed to delete venue');
+      }
+    } catch (e) {
+      toast.error('Error deleting venue');
+    }
+  };
+
+  const toggleSelect = (id: string) => {
     if (selected.includes(id)) setSelected(selected.filter(i => i !== id));
     else setSelected([...selected, id]);
   };
 
   const toggleAll = () => {
-    if (selected.length === MOCK_VENUES.length) setSelected([]);
-    else setSelected(MOCK_VENUES.map(v => v.id));
+    if (selected.length === venues.length) setSelected([]);
+    else setSelected(venues.map(v => v.id));
   };
 
   const getStatusColor = (status: string) => {
@@ -106,7 +137,7 @@ export default function VenuesPage() {
             <table className="w-full text-left whitespace-nowrap">
               <thead className="bg-gray-50 dark:bg-[#0f172a] text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">
                 <tr>
-                  <th className="px-4 py-4 w-12"><input type="checkbox" onChange={toggleAll} checked={selected.length === MOCK_VENUES.length} className="rounded border-gray-300 text-rose-500 focus:ring-rose-500" /></th>
+                  <th className="px-4 py-4 w-12"><input type="checkbox" onChange={toggleAll} checked={venues.length > 0 && selected.length === venues.length} className="rounded border-gray-300 text-rose-500 focus:ring-rose-500" /></th>
                   <th className="px-4 py-4 font-bold text-xs uppercase tracking-wider">Venue</th>
                   <th className="px-4 py-4 font-bold text-xs uppercase tracking-wider">Type</th>
                   <th className="px-4 py-4 font-bold text-xs uppercase tracking-wider">Capacity</th>
@@ -117,12 +148,20 @@ export default function VenuesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                {MOCK_VENUES.map((venue) => (
+                {loading ? (
+                  <tr>
+                    <td colSpan={8} className="px-4 py-8 text-center text-gray-500">Loading venues...</td>
+                  </tr>
+                ) : venues.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="px-4 py-8 text-center text-gray-500">No venues found.</td>
+                  </tr>
+                ) : venues.map((venue) => (
                   <tr key={venue.id} className="hover:bg-gray-50/50 dark:hover:bg-[#0f172a]/50 transition-colors group">
                     <td className="px-4 py-4"><input type="checkbox" checked={selected.includes(venue.id)} onChange={() => toggleSelect(venue.id)} className="rounded border-gray-300 text-rose-500 focus:ring-rose-500" /></td>
                     <td className="px-4 py-4 flex items-center gap-3">
                       <div className="w-12 h-12 rounded-xl relative overflow-hidden bg-gray-100 shrink-0">
-                        <Image src={venue.image} alt={venue.name} fill className="object-cover" />
+                        <Image src={venue.images?.[0] || 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=300'} alt={venue.name} fill className="object-cover" />
                       </div>
                       <div>
                         <p className="font-bold text-gray-900 dark:text-white text-sm">{venue.name}</p>
@@ -131,20 +170,19 @@ export default function VenuesPage() {
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-600 dark:text-gray-300 font-medium">{venue.type}</td>
                     <td className="px-4 py-4 text-sm text-gray-600 dark:text-gray-300 font-medium">{venue.capacity} guests</td>
-                    <td className="px-4 py-4 text-sm font-bold text-gray-900 dark:text-white">₹{venue.price.toLocaleString()}</td>
-                    <td className="px-4 py-4 text-sm text-gray-600 dark:text-gray-300 font-medium">{venue.bookings}</td>
+                    <td className="px-4 py-4 text-sm font-bold text-gray-900 dark:text-white">₹{(venue.priceStarting || 0).toLocaleString()}</td>
+                    <td className="px-4 py-4 text-sm text-gray-600 dark:text-gray-300 font-medium">{venue.bookings?.length || 0}</td>
                     <td className="px-4 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusColor(venue.status)}`}>
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusColor(venue.isAvailable ? 'Active' : 'Inactive')}`}>
                         <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-                        {venue.status}
+                        {venue.isAvailable ? 'Active' : 'Inactive'}
                       </span>
                     </td>
                     <td className="px-4 py-4 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-1.5 text-gray-400 hover:text-rose-500 transition-colors"><Eye className="w-4 h-4" /></button>
-                        <button className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"><Edit className="w-4 h-4" /></button>
-                        <button className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"><Copy className="w-4 h-4" /></button>
-                        <button className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                        <Link href={`/wedding/venues/${venue.id}`} className="p-1.5 text-gray-400 hover:text-rose-500 transition-colors" target="_blank"><Eye className="w-4 h-4" /></Link>
+                        <Link href={`/admin/wedding/venues/${venue.id}`} className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"><Edit className="w-4 h-4" /></Link>
+                        <button onClick={() => handleDelete(venue.id)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     </td>
                   </tr>
@@ -155,7 +193,7 @@ export default function VenuesPage() {
           
           {/* Pagination */}
           <div className="p-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-sm text-gray-500">
-            <p>Showing 1 to {MOCK_VENUES.length} of {MOCK_VENUES.length} entries</p>
+            <p>Showing {venues.length > 0 ? 1 : 0} to {venues.length} of {venues.length} entries</p>
             <div className="flex gap-1">
               <button className="px-3 py-1 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#0f172a] disabled:opacity-50" disabled>Prev</button>
               <button className="px-3 py-1 rounded-lg bg-rose-500 text-white font-medium">1</button>
@@ -165,14 +203,18 @@ export default function VenuesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {MOCK_VENUES.map((venue) => (
+          {loading ? (
+             <div className="col-span-full text-center text-gray-500 py-10">Loading venues...</div>
+          ) : venues.length === 0 ? (
+             <div className="col-span-full text-center text-gray-500 py-10">No venues found.</div>
+          ) : venues.map((venue) => (
             <div key={venue.id} className="bg-white dark:bg-[#1e293b] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group">
               <div className="h-48 relative bg-gray-100">
-                <Image src={venue.image} alt={venue.name} fill className="object-cover" />
+                <Image src={venue.images?.[0] || 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=300'} alt={venue.name} fill className="object-cover" />
                 <div className="absolute top-3 right-3">
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm backdrop-blur-md ${getStatusColor(venue.status)} bg-white/90`}>
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm backdrop-blur-md ${getStatusColor(venue.isAvailable ? 'Active' : 'Inactive')} bg-white/90`}>
                     <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-                    {venue.status}
+                    {venue.isAvailable ? 'Active' : 'Inactive'}
                   </span>
                 </div>
                 <div className="absolute top-3 left-3">
@@ -193,18 +235,19 @@ export default function VenuesPage() {
                   </div>
                   <div className="bg-gray-50 dark:bg-[#0f172a] p-2 rounded-xl text-center">
                     <p className="text-[10px] text-gray-500 mb-0.5">Bookings</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">{venue.bookings}</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white">{venue.bookings?.length || 0}</p>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-800">
                   <div>
                     <p className="text-[10px] text-gray-500">Starting Price</p>
-                    <p className="text-lg font-black text-rose-500">₹{venue.price.toLocaleString()}</p>
+                    <p className="text-lg font-black text-rose-500">₹{(venue.priceStarting || 0).toLocaleString()}</p>
                   </div>
                   <div className="flex gap-1">
-                    <button className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors"><Edit className="w-4 h-4" /></button>
-                    <button className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
+                    <Link href={`/wedding/venues/${venue.id}`} className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors" target="_blank"><Eye className="w-4 h-4" /></Link>
+                    <Link href={`/admin/wedding/venues/${venue.id}`} className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors"><Edit className="w-4 h-4" /></Link>
+                    <button onClick={() => handleDelete(venue.id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
                   </div>
                 </div>
               </div>
