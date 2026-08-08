@@ -5,10 +5,15 @@ import {
   Undo2, CheckCircle, XCircle, Search, Clock, ShieldAlert 
 } from 'lucide-react';
 
-const mockRefunds: any[] = [];
+const mockRefunds: any[] = [
+  { id: 'REF-100', bookingId: 'HB-1025', guest: 'Ravi Kumar', amount: 3000, reason: 'Double payment', status: 'Pending', type: 'Hotel Refund', requestedOn: '10 Aug 2026' },
+  { id: 'REF-101', bookingId: 'WB-2026-005', guest: 'Deepak & Sunita', amount: 20000, reason: 'Date change with partial refund', status: 'Approved', type: 'Wedding Refund', requestedOn: '12 Aug 2026' },
+  { id: 'REF-102', bookingId: 'HB-1028', guest: 'Alok Singh', amount: 1500, reason: 'Customer dissatisfaction', status: 'Pending', type: 'Hotel Refund', requestedOn: '15 Aug 2026' },
+];
 
 export default function RefundsPage() {
   const [activeRefund, setActiveRefund] = useState<any>(null);
+  const [activeMode, setActiveMode] = useState('All');
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -58,21 +63,30 @@ export default function RefundsPage() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* List */}
         <div className="flex-1 bg-white dark:bg-[#1e293b] rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
-          <div className="p-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-[#0f172a]">
-            <div className="relative w-full md:max-w-md">
+          <div className="p-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-[#0f172a] flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1 md:max-w-md">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input type="text" placeholder="Search Refund ID, Booking ID..." className="w-full pl-10 pr-4 py-2 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:border-[#ea580c] outline-none dark:text-white" />
             </div>
+            <select 
+              value={activeMode}
+              onChange={(e) => setActiveMode(e.target.value)}
+              className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 text-sm font-bold text-gray-700 dark:text-gray-300 outline-none"
+            >
+              <option value="All">All Refunds</option>
+              <option value="Hotel Refund">Hotel Refunds Only</option>
+              <option value="Wedding Refund">Wedding Refunds Only</option>
+            </select>
           </div>
           <div className="divide-y divide-gray-100 dark:divide-gray-800">
-            {mockRefunds.length === 0 && (
+            {mockRefunds.filter(r => activeMode === 'All' || r.type === activeMode).length === 0 && (
               <div className="flex flex-col items-center justify-center py-20 text-center text-gray-500 dark:text-gray-400">
                 <Undo2 className="w-12 h-12 mb-3 text-gray-300 dark:text-gray-600" />
                 <p className="font-medium text-lg">No refund requests found.</p>
                 <p className="text-sm mt-1">Pending and processed refunds will appear here.</p>
               </div>
             )}
-            {mockRefunds.map((ref) => (
+            {mockRefunds.filter(r => activeMode === 'All' || r.type === activeMode).map((ref) => (
               <div 
                 key={ref.id} 
                 onClick={() => setActiveRefund(ref)}
@@ -82,7 +96,7 @@ export default function RefundsPage() {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-bold text-gray-900 dark:text-white">{ref.id}</span>
                     <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${getStatusColor(ref.status)}`}>{ref.status}</span>
-                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20">{ref.type}</span>
+                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${ref.type === 'Hotel Refund' ? 'bg-orange-50 text-orange-600 dark:bg-orange-500/10' : 'bg-rose-50 text-rose-600 dark:bg-rose-500/10'}`}>{ref.type}</span>
                   </div>
                   <p className="text-sm font-medium text-[#ea580c]">{ref.bookingId} • {ref.guest}</p>
                   <p className="text-xs text-gray-500 mt-1 truncate max-w-sm">{ref.reason}</p>

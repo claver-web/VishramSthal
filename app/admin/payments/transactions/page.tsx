@@ -6,10 +6,15 @@ import {
   IndianRupee, CreditCard, CheckCircle, XCircle, X
 } from 'lucide-react';
 
-const mockTransactions: any[] = [];
+const mockTransactions: any[] = [
+  { id: 'TXN-001', date: '08 Aug 2026', bookingId: 'HB-1029', guest: 'John Doe', amount: 5000, method: 'UPI', status: 'Success', type: 'Hotel' },
+  { id: 'TXN-002', date: '09 Aug 2026', bookingId: 'WB-2026-001', guest: 'Rahul & Priya', amount: 100000, method: 'Net Banking', status: 'Success', type: 'Wedding' },
+  { id: 'TXN-003', date: '10 Aug 2026', bookingId: 'HB-1030', guest: 'Jane Smith', amount: 3500, method: 'Credit Card', status: 'Failed', type: 'Hotel' },
+];
 
 export default function TransactionsPage() {
   const [activeTxn, setActiveTxn] = useState<any>(null);
+  const [activeMode, setActiveMode] = useState('All');
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -43,6 +48,15 @@ export default function TransactionsPage() {
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input type="text" placeholder="Search TXN ID, Booking ID, or Guest..." className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:border-[#ea580c] outline-none dark:text-white" />
           </div>
+          <select 
+            value={activeMode}
+            onChange={(e) => setActiveMode(e.target.value)}
+            className="bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 outline-none"
+          >
+            <option value="All">All Transactions</option>
+            <option value="Hotel">Hotel Only</option>
+            <option value="Wedding">Wedding Only</option>
+          </select>
           <select className="bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 outline-none">
             <option>All Methods</option>
             <option>UPI</option>
@@ -64,6 +78,7 @@ export default function TransactionsPage() {
             <thead className="bg-gray-50 dark:bg-[#0f172a] text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">
               <tr>
                 <th className="px-6 py-4">Transaction ID</th>
+                <th className="px-6 py-4">Type</th>
                 <th className="px-6 py-4">Date</th>
                 <th className="px-6 py-4">Booking ID</th>
                 <th className="px-6 py-4">Guest</th>
@@ -85,13 +100,18 @@ export default function TransactionsPage() {
                   </td>
                 </tr>
               )}
-              {mockTransactions.map((txn) => (
+              {mockTransactions.filter(t => activeMode === 'All' || t.type === activeMode).map((txn) => (
                 <tr key={txn.id} className="hover:bg-orange-50/30 dark:hover:bg-[#0f172a]/50 transition-colors">
                   <td className="px-6 py-4 font-mono font-bold text-gray-900 dark:text-white">{txn.id}</td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${txn.type === 'Hotel' ? 'bg-orange-100 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400'}`}>
+                      {txn.type}
+                    </span>
+                  </td>
                   <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{txn.date}</td>
                   <td className="px-6 py-4 font-mono text-[#ea580c] hover:underline cursor-pointer">{txn.bookingId}</td>
                   <td className="px-6 py-4 font-bold text-gray-700 dark:text-gray-300">{txn.guest}</td>
-                  <td className="px-6 py-4 font-black text-gray-900 dark:text-white">₹{txn.amount}</td>
+                  <td className="px-6 py-4 font-black text-gray-900 dark:text-white">₹{txn.amount.toLocaleString()}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       {getMethodIcon(txn.method)}
@@ -123,7 +143,7 @@ export default function TransactionsPage() {
             <div className="p-6 space-y-6">
               <div className="text-center pb-6 border-b border-gray-100 dark:border-gray-800">
                 <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Total Amount</p>
-                <p className="text-4xl font-black text-[#ea580c]">₹{activeTxn.amount}</p>
+                <p className={`text-4xl font-black ${activeTxn.type === 'Hotel' ? 'text-[#ea580c]' : 'text-rose-500'}`}>₹{activeTxn.amount.toLocaleString()}</p>
                 <div className="mt-4 flex justify-center">
                   <span className={`px-3 py-1 text-sm font-bold rounded-full flex items-center gap-1.5 ${getStatusColor(activeTxn.status)}`}>
                     {activeTxn.status === 'Success' ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}

@@ -5,10 +5,16 @@ import {
   Tag, Plus, Calendar, Users, Edit, Trash2, Power, MoreVertical, X, Upload
 } from 'lucide-react';
 
-const mockOffers: any[] = [];
+const mockOffers: any[] = [
+  { id: 'OFF-1', title: 'Diwali Special', type: 'Both', value: '20%', valid: 'Oct 20 - Nov 5', target: 'All Rooms & Venues', usage: 45, status: 'Active', featured: true },
+  { id: 'OFF-2', title: 'Summer Stay', type: 'Hotel', value: '₹1000', valid: 'May 1 - Jun 30', target: 'Deluxe & Suite', usage: 120, status: 'Inactive', featured: false },
+  { id: 'OFF-3', title: 'Monsoon Weddings', type: 'Wedding', value: '15%', valid: 'Jul 1 - Sep 30', target: 'Grand Banquet', usage: 12, status: 'Active', featured: true },
+];
 
 export default function OffersPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('All');
+  const [formType, setFormType] = useState('Both');
 
   const renderOfferForm = () => {
     if (!isFormOpen) return null;
@@ -69,13 +75,43 @@ export default function OffersPage() {
             {/* Applicability */}
             <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Applicable Rooms</label>
-                <select className="w-full p-3 bg-gray-50 dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold outline-none dark:text-white">
-                  <option>All Rooms</option>
-                  <option>Standard Room Only</option>
-                  <option>Deluxe & Suite Only</option>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Applicable To</label>
+                <select 
+                  value={formType}
+                  onChange={(e) => setFormType(e.target.value)}
+                  className="w-full p-3 bg-gray-50 dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold outline-none dark:text-white"
+                >
+                  <option value="Both">Both (Hotel & Wedding)</option>
+                  <option value="Hotel">Hotel Only</option>
+                  <option value="Wedding">Wedding Only</option>
                 </select>
               </div>
+
+              {(formType === 'Hotel' || formType === 'Both') && (
+                <div>
+                  <label className="block text-xs font-bold text-[#ea580c] uppercase tracking-wider mb-2">Applicable Rooms</label>
+                  <select className="w-full p-3 bg-gray-50 dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold outline-none dark:text-white" multiple size={3}>
+                    <option>Standard Room</option>
+                    <option>Deluxe Room</option>
+                    <option>Premium Suite</option>
+                  </select>
+                  <p className="text-[10px] text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
+                </div>
+              )}
+
+              {(formType === 'Wedding' || formType === 'Both') && (
+                <div>
+                  <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-2">Applicable Venues & Services</label>
+                  <select className="w-full p-3 bg-gray-50 dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold outline-none dark:text-white" multiple size={4}>
+                    <option>Venue: Grand Banquet</option>
+                    <option>Venue: Royal Lawns</option>
+                    <option>Service: Premium Catering</option>
+                    <option>Service: Floral Decor</option>
+                  </select>
+                  <p className="text-[10px] text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Usage Limit</label>
@@ -118,9 +154,21 @@ export default function OffersPage() {
           <h1 className="text-3xl font-black text-gray-900 dark:text-white">Active Offers</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">Manage promotional campaigns and discounts.</p>
         </div>
-        <button onClick={() => setIsFormOpen(true)} className="flex items-center gap-2 bg-gradient-to-r from-[#ea580c] to-[#c2410c] text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-orange-500/30 hover:-translate-y-0.5 transition-all">
-          <Plus className="w-5 h-5" /> Create Offer
-        </button>
+        <div className="flex items-center gap-4">
+          <select 
+            value={activeFilter}
+            onChange={(e) => setActiveFilter(e.target.value)}
+            className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 outline-none shadow-sm"
+          >
+            <option value="All">All Promos</option>
+            <option value="Hotel">Hotel Only</option>
+            <option value="Wedding">Wedding Only</option>
+            <option value="Both">Universal (Both)</option>
+          </select>
+          <button onClick={() => setIsFormOpen(true)} className="flex items-center gap-2 bg-gradient-to-r from-[#ea580c] to-[#c2410c] text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-orange-500/30 hover:-translate-y-0.5 transition-all">
+            <Plus className="w-5 h-5" /> Create Offer
+          </button>
+        </div>
       </div>
 
       {mockOffers.length === 0 ? (
@@ -136,31 +184,43 @@ export default function OffersPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockOffers.map((offer) => (
-            <div key={offer.id} className={`bg-white dark:bg-[#1e293b] rounded-3xl p-6 shadow-sm border-2 ${offer.status === 'Active' ? 'border-[#ea580c]/50 relative overflow-hidden' : 'border-gray-100 dark:border-gray-800 opacity-70'}`}>
+          {mockOffers.filter(o => activeFilter === 'All' || o.type === activeFilter).map((offer) => {
+            let colorClass = 'border-[#ea580c]/50 text-[#ea580c] bg-orange-100 dark:bg-orange-900/30';
+            let labelColor = 'bg-[#ea580c] text-white';
+            if (offer.type === 'Wedding') {
+              colorClass = 'border-rose-500/50 text-rose-500 bg-rose-100 dark:bg-rose-900/30';
+              labelColor = 'bg-rose-500 text-white';
+            } else if (offer.type === 'Both') {
+              colorClass = 'border-yellow-500/50 text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30';
+              labelColor = 'bg-yellow-500 text-white';
+            }
+            
+            return (
+            <div key={offer.id} className={`bg-white dark:bg-[#1e293b] rounded-3xl p-6 shadow-sm border-2 ${offer.status === 'Active' ? colorClass.split(' ')[0] + ' relative overflow-hidden' : 'border-gray-100 dark:border-gray-800 opacity-70 relative overflow-hidden'}`}>
               {offer.featured && (
-                <div className="absolute -right-8 top-6 bg-[#ea580c] text-white text-[10px] font-black uppercase tracking-widest px-10 py-1 rotate-45 shadow-md">Featured</div>
+                <div className={`absolute -right-8 top-6 ${labelColor} text-[10px] font-black uppercase tracking-widest px-10 py-1 rotate-45 shadow-md`}>Featured</div>
               )}
               
               <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-orange-100 text-[#ea580c] dark:bg-orange-900/30 flex items-center justify-center">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${colorClass.split(' ').slice(1).join(' ')}`}>
                   <Tag className="w-6 h-6" />
                 </div>
                 <div className="flex items-center gap-2">
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${labelColor}`}>{offer.type}</span>
                   <button className="p-2 text-gray-400 hover:text-blue-500 transition-colors"><Edit className="w-4 h-4" /></button>
                   <button className={`p-2 transition-colors ${offer.status === 'Active' ? 'text-green-500' : 'text-gray-400'}`}><Power className="w-4 h-4" /></button>
                 </div>
               </div>
 
               <h3 className="font-black text-xl text-gray-900 dark:text-white mb-1">{offer.title}</h3>
-              <p className="text-3xl font-black text-[#ea580c] mb-6">{offer.value} <span className="text-sm text-gray-500 font-medium">OFF</span></p>
+              <p className={`text-3xl font-black mb-6 ${colorClass.split(' ')[1]}`}>{offer.value} <span className="text-sm text-gray-500 font-medium">OFF</span></p>
 
               <div className="space-y-3 pt-4 border-t border-gray-100 dark:border-gray-800">
                 <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
                   <Calendar className="w-4 h-4 text-gray-400" /> <span className="font-medium">{offer.valid}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-                  <Tag className="w-4 h-4 text-gray-400" /> <span className="font-medium truncate">{offer.rooms}</span>
+                  <Tag className="w-4 h-4 text-gray-400 flex-shrink-0" /> <span className="font-medium truncate">{offer.target}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
                   <Users className="w-4 h-4 text-gray-400" /> <span className="font-medium">{offer.usage} redemptions</span>
@@ -171,7 +231,8 @@ export default function OffersPage() {
                 <div className="mt-4 inline-block bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs font-bold px-3 py-1 rounded-full">Inactive</div>
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

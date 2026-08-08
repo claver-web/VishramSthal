@@ -34,12 +34,20 @@ export default function GeneralSettingsPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Hotel Name</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Hotel Brand Name</label>
                 <input type="text" defaultValue="Vishram Sthal" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold outline-none focus:border-[#ea580c] dark:text-white" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Tagline</label>
+                <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-2">Wedding Brand Name</label>
+                <input type="text" defaultValue="Shani Marriage Palace" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-rose-200 dark:border-rose-900/40 rounded-xl text-sm font-bold outline-none focus:border-rose-500 dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Hotel Tagline</label>
                 <input type="text" defaultValue="Your Spiritual Retreat" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#ea580c] dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-2">Wedding Tagline</label>
+                <input type="text" defaultValue="The Perfect Beginning" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-rose-200 dark:border-rose-900/40 rounded-xl text-sm outline-none focus:border-rose-500 dark:text-white" />
               </div>
               <div className="md:col-span-2">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2"><MapPin className="w-4 h-4" /> Physical Address</label>
@@ -79,13 +87,31 @@ export default function GeneralSettingsPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2"><Phone className="w-4 h-4" /> Display Phone</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2"><Phone className="w-4 h-4" /> Hotel Phone</label>
                 <input type="text" defaultValue="+91 98765 43210" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#ea580c] dark:text-white" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2"><Mail className="w-4 h-4" /> Display Email</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2"><Mail className="w-4 h-4" /> Hotel Email</label>
                 <input type="email" defaultValue="info@vishramsthal.com" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#ea580c] dark:text-white" />
               </div>
+              
+              <div className="md:col-span-2 my-2 border-t border-gray-100 dark:border-gray-800"></div>
+              
+              <div>
+                <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-2 flex items-center gap-2"><Phone className="w-4 h-4" /> Wedding Enquiries Phone</label>
+                <input type="text" defaultValue="+91 98765 55555" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-rose-200 dark:border-rose-900/40 rounded-xl text-sm outline-none focus:border-rose-500 dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-2 flex items-center gap-2"><Mail className="w-4 h-4" /> Wedding Enquiries Email</label>
+                <input type="email" defaultValue="weddings@vishramsthal.com" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-rose-200 dark:border-rose-900/40 rounded-xl text-sm outline-none focus:border-rose-500 dark:text-white" />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-2">Dedicated Wedding Coordinator</label>
+                <input type="text" defaultValue="Priya Sharma - Lead Planner" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-rose-200 dark:border-rose-900/40 rounded-xl text-sm outline-none focus:border-rose-500 dark:text-white" />
+              </div>
+
+              <div className="md:col-span-2 my-2 border-t border-gray-100 dark:border-gray-800"></div>
+
               <div className="md:col-span-2">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Contact Form Recipient Email</label>
                 <input type="email" defaultValue="admin@vishramsthal.com" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#ea580c] dark:text-white" />
@@ -163,6 +189,7 @@ export default function GeneralSettingsPage() {
               <LinkIcon className="w-5 h-5 text-[#ea580c]" /> Social Links
             </h3>
             <div className="space-y-4">
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider">Hotel Social Media</label>
               <div className="flex relative">
                 <div className="absolute left-0 top-0 bottom-0 w-12 flex items-center justify-center bg-gray-100 dark:bg-[#0f172a] border-r border-gray-200 dark:border-gray-700 rounded-l-xl"><Camera className="w-4 h-4 text-gray-500" /></div>
                 <input type="text" placeholder="Instagram URL" className="w-full pl-14 pr-4 py-3 bg-gray-50 dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#ea580c] dark:text-white" />
@@ -170,6 +197,16 @@ export default function GeneralSettingsPage() {
               <div className="flex relative">
                 <div className="absolute left-0 top-0 bottom-0 w-12 flex items-center justify-center bg-gray-100 dark:bg-[#0f172a] border-r border-gray-200 dark:border-gray-700 rounded-l-xl"><Globe className="w-4 h-4 text-gray-500" /></div>
                 <input type="text" placeholder="Facebook URL" className="w-full pl-14 pr-4 py-3 bg-gray-50 dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#ea580c] dark:text-white" />
+              </div>
+              
+              <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">Wedding Social Media</label>
+              <div className="flex relative">
+                <div className="absolute left-0 top-0 bottom-0 w-12 flex items-center justify-center bg-rose-50 dark:bg-rose-900/20 border-r border-rose-200 dark:border-rose-900/40 rounded-l-xl"><Camera className="w-4 h-4 text-rose-500" /></div>
+                <input type="text" placeholder="Wedding Instagram URL" className="w-full pl-14 pr-4 py-3 bg-gray-50 dark:bg-[#1e293b] border border-rose-200 dark:border-rose-900/40 rounded-xl text-sm outline-none focus:border-rose-500 dark:text-white" />
+              </div>
+              <div className="flex relative">
+                <div className="absolute left-0 top-0 bottom-0 w-12 flex items-center justify-center bg-rose-50 dark:bg-rose-900/20 border-r border-rose-200 dark:border-rose-900/40 rounded-l-xl"><Globe className="w-4 h-4 text-rose-500" /></div>
+                <input type="text" placeholder="Wedding Facebook URL" className="w-full pl-14 pr-4 py-3 bg-gray-50 dark:bg-[#1e293b] border border-rose-200 dark:border-rose-900/40 rounded-xl text-sm outline-none focus:border-rose-500 dark:text-white" />
               </div>
             </div>
           </div>

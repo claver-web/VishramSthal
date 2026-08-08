@@ -6,11 +6,17 @@ import {
 } from 'lucide-react';
 
 const templates = [
-  { id: 't1', name: 'Booking Confirmation', type: 'Transactional' },
-  { id: 't2', name: 'Payment Receipt', type: 'Transactional' },
-  { id: 't3', name: 'Check-in Reminder', type: 'Automated' },
-  { id: 't4', name: 'Review Request', type: 'Automated' },
-  { id: 't5', name: 'Offer Announcement', type: 'Marketing' },
+  { id: 't1', name: 'Hotel Booking Confirmation', type: 'Transactional' },
+  { id: 't2', name: 'Hotel Payment Receipt', type: 'Transactional' },
+  { id: 't3', name: 'Hotel Check-in Reminder', type: 'Automated' },
+  { id: 't4', name: 'Hotel Review Request', type: 'Automated' },
+  { id: 'w1', name: 'Wedding Enquiry Confirmation', type: 'Transactional - Wedding' },
+  { id: 'w2', name: 'Wedding Enquiry Notification', type: 'Admin Alert' },
+  { id: 'w3', name: 'Wedding Booking Confirmation', type: 'Transactional - Wedding' },
+  { id: 'w4', name: 'Wedding Payment Receipt', type: 'Transactional - Wedding' },
+  { id: 'w5', name: 'Wedding Event Reminder', type: 'Automated - Wedding' },
+  { id: 'w6', name: 'Wedding Review Request', type: 'Automated - Wedding' },
+  { id: 'w7', name: 'Wedding Quote/Proposal', type: 'Sales - Wedding' },
 ];
 
 export default function EmailTemplatesPage() {
@@ -65,9 +71,16 @@ export default function EmailTemplatesPage() {
             {/* Dynamic Variables Bar */}
             <div>
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1"><Tag className="w-3 h-3" /> Available Variables</label>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mb-3">
+                <span className="text-xs font-bold text-gray-400 w-full mb-1">Hotel Variables:</span>
                 {['{guest_name}', '{booking_id}', '{room_name}', '{check_in}', '{check_out}', '{amount}'].map(v => (
-                  <span key={v} className="text-[10px] font-mono bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 px-2 py-1 rounded cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-500/20">{v}</span>
+                  <span key={v} className="text-[10px] font-mono bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 border border-orange-200 dark:border-orange-500/30 px-2 py-1 rounded cursor-pointer hover:bg-orange-100">{v}</span>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <span className="text-xs font-bold text-gray-400 w-full mb-1">Wedding Variables:</span>
+                {['{bride_name}', '{groom_name}', '{wedding_date}', '{venue_name}', '{event_type}', '{guest_count}', '{package_name}', '{total_amount}'].map(v => (
+                  <span key={v} className="text-[10px] font-mono bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 px-2 py-1 rounded cursor-pointer hover:bg-rose-100">{v}</span>
                 ))}
               </div>
             </div>

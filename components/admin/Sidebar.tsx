@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { useAdminModeStore } from '@/store/adminModeStore';
 import { 
   Home, 
   Building2, 
@@ -38,34 +39,16 @@ import {
   Key 
 } from 'lucide-react';
 
-const menuGroups = [
+const commonMenuGroupsStart = [
   {
     title: 'Overview',
     items: [
       { name: 'Dashboard Overview', icon: Home, href: '/admin/dashboard' },
     ]
-  },
-  {
-    title: 'Property',
-    items: [
-      { name: 'All Rooms', icon: Building2, href: '/admin/rooms' },
-      { name: 'Add New Room', icon: Bed, href: '/admin/rooms/add' },
-      { name: 'Room Categories', icon: List, href: '/admin/rooms/categories' },
-    ]
-  },
-  {
-    title: 'Media',
-    items: [
-      { name: 'Media Library', icon: ImageIcon, href: '/admin/media' },
-    ]
-  },
-  {
-    title: 'Reservations',
-    items: [
-      { name: 'All Bookings', icon: Calendar, href: '/admin/bookings' },
-      { name: 'Calendar View', icon: Calendar, href: '/admin/bookings/calendar' },
-    ]
-  },
+  }
+];
+
+const commonMenuGroupsEnd = [
   {
     title: 'Finance',
     items: [
@@ -122,8 +105,74 @@ const menuGroups = [
   }
 ];
 
+const hotelMenuGroups = [
+  {
+    title: 'Property',
+    items: [
+      { name: 'All Rooms', icon: Building2, href: '/admin/rooms' },
+      { name: 'Add New Room', icon: Bed, href: '/admin/rooms/add' },
+      { name: 'Room Categories', icon: List, href: '/admin/rooms/categories' },
+    ]
+  },
+  {
+    title: 'Media',
+    items: [
+      { name: 'Media Library', icon: ImageIcon, href: '/admin/media' },
+    ]
+  },
+  {
+    title: 'Reservations',
+    items: [
+      { name: 'All Bookings', icon: Calendar, href: '/admin/bookings' },
+      { name: 'Calendar View', icon: Calendar, href: '/admin/bookings/calendar' },
+    ]
+  }
+];
+
+const weddingMenuGroups = [
+  {
+    title: 'Venue Management',
+    items: [
+      { name: 'All Venues', icon: Building2, href: '/admin/wedding/venues' },
+      { name: 'Add New Venue', icon: Building2, href: '/admin/wedding/venues/add' },
+      { name: 'Venue Categories', icon: List, href: '/admin/wedding/venues/categories' },
+    ]
+  },
+  {
+    title: 'Wedding Enquiries',
+    items: [
+      { name: 'All Enquiries', icon: MessageSquare, href: '/admin/wedding/enquiries' },
+    ]
+  },
+  {
+    title: 'Wedding Bookings',
+    items: [
+      { name: 'All Bookings', icon: Calendar, href: '/admin/wedding/bookings' },
+    ]
+  },
+  {
+    title: 'Services',
+    items: [
+      { name: 'Services Management', icon: Box, href: '/admin/wedding/services' },
+    ]
+  },
+  {
+    title: 'Wedding Media',
+    items: [
+      { name: 'Event Photos & Videos', icon: ImageIcon, href: '/admin/wedding/media' },
+    ]
+  }
+];
+
 export default function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: boolean) => void }) {
   const pathname = usePathname();
+  const { adminMode } = useAdminModeStore();
+  
+  const currentMenuGroups = [
+    ...commonMenuGroupsStart,
+    ...(adminMode === 'wedding' ? weddingMenuGroups : hotelMenuGroups),
+    ...commonMenuGroupsEnd
+  ];
 
   return (
     <>
@@ -158,7 +207,7 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsO
         </div>
 
         <div className="p-3 space-y-6">
-          {menuGroups.map((group, idx) => (
+          {currentMenuGroups.map((group, idx) => (
             <div key={idx}>
               <h3 className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
                 {group.title}
@@ -173,7 +222,9 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsO
                       className={`
                         flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all duration-200
                         ${isActive 
-                          ? 'bg-gradient-to-r from-[#ea580c] to-[#c2410c] text-white shadow-md shadow-orange-500/20' 
+                          ? adminMode === 'hotel'
+                            ? 'bg-gradient-to-r from-[#ea580c] to-[#c2410c] text-white shadow-md shadow-orange-500/20'
+                            : 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-md shadow-rose-500/20'
                           : 'hover:bg-[#1e293b] hover:text-white'}
                       `}
                     >

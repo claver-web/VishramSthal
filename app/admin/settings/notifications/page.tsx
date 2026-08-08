@@ -48,8 +48,8 @@ export default function NotificationSettingsPage() {
             {/* Item */}
             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#0f172a] rounded-xl border border-gray-100 dark:border-gray-800">
               <div>
-                <p className="font-bold text-gray-900 dark:text-white text-sm">Booking Cancellation</p>
-                <p className="text-xs text-gray-500 mt-0.5">Alert when a booking is cancelled.</p>
+                <p className="font-bold text-gray-900 dark:text-white text-sm">Hotel Booking Cancellation</p>
+                <p className="text-xs text-gray-500 mt-0.5">Alert when a hotel booking is cancelled.</p>
               </div>
               <div className="flex gap-2">
                 <label className="flex flex-col items-center gap-1 cursor-pointer">
@@ -58,6 +58,96 @@ export default function NotificationSettingsPage() {
                 </label>
                 <label className="flex flex-col items-center gap-1 cursor-pointer">
                   <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-[#ea580c] focus:ring-[#ea580c]" />
+                  <span className="text-[10px] font-bold text-gray-400"><Smartphone className="w-3 h-3" /></span>
+                </label>
+              </div>
+            </div>
+
+            <div className="my-2 border-t border-gray-200 dark:border-gray-800"></div>
+
+            {/* Wedding Alerts */}
+            <h4 className="text-xs font-bold text-rose-500 uppercase tracking-wider mb-2">Wedding Alerts</h4>
+            
+            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#0f172a] rounded-xl border border-rose-100 dark:border-rose-900/30">
+              <div>
+                <p className="font-bold text-gray-900 dark:text-white text-sm">New Wedding Enquiry</p>
+                <p className="text-xs text-gray-500 mt-0.5">Alert when a new enquiry is submitted.</p>
+              </div>
+              <div className="flex gap-2">
+                <label className="flex flex-col items-center gap-1 cursor-pointer">
+                  <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-rose-500 focus:ring-rose-500" />
+                  <span className="text-[10px] font-bold text-gray-400"><Mail className="w-3 h-3" /></span>
+                </label>
+                <label className="flex flex-col items-center gap-1 cursor-pointer">
+                  <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-rose-500 focus:ring-rose-500" />
+                  <span className="text-[10px] font-bold text-gray-400"><Smartphone className="w-3 h-3" /></span>
+                </label>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#0f172a] rounded-xl border border-rose-100 dark:border-rose-900/30">
+              <div>
+                <p className="font-bold text-gray-900 dark:text-white text-sm">Wedding Booking Confirmed</p>
+                <p className="text-xs text-gray-500 mt-0.5">Alert when a wedding booking is paid/confirmed.</p>
+              </div>
+              <div className="flex gap-2">
+                <label className="flex flex-col items-center gap-1 cursor-pointer">
+                  <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-rose-500 focus:ring-rose-500" />
+                  <span className="text-[10px] font-bold text-gray-400"><Mail className="w-3 h-3" /></span>
+                </label>
+                <label className="flex flex-col items-center gap-1 cursor-pointer">
+                  <input type="checkbox" className="w-4 h-4 rounded text-rose-500 focus:ring-rose-500" />
+                  <span className="text-[10px] font-bold text-gray-400"><Smartphone className="w-3 h-3" /></span>
+                </label>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#0f172a] rounded-xl border border-rose-100 dark:border-rose-900/30">
+              <div>
+                <p className="font-bold text-gray-900 dark:text-white text-sm">Wedding Payment Received</p>
+                <p className="text-xs text-gray-500 mt-0.5">Notification on partial or full payment.</p>
+              </div>
+              <div className="flex gap-2">
+                <label className="flex flex-col items-center gap-1 cursor-pointer">
+                  <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-rose-500 focus:ring-rose-500" />
+                  <span className="text-[10px] font-bold text-gray-400"><Mail className="w-3 h-3" /></span>
+                </label>
+                <label className="flex flex-col items-center gap-1 cursor-pointer">
+                  <input type="checkbox" className="w-4 h-4 rounded text-rose-500 focus:ring-rose-500" />
+                  <span className="text-[10px] font-bold text-gray-400"><Smartphone className="w-3 h-3" /></span>
+                </label>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#0f172a] rounded-xl border border-rose-100 dark:border-rose-900/30">
+              <div>
+                <p className="font-bold text-gray-900 dark:text-white text-sm">Upcoming Wedding Reminder</p>
+                <p className="text-xs text-gray-500 mt-0.5">Alert for upcoming wedding events (tomorrow, this week).</p>
+              </div>
+              <div className="flex gap-2">
+                <label className="flex flex-col items-center gap-1 cursor-pointer">
+                  <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-rose-500 focus:ring-rose-500" />
+                  <span className="text-[10px] font-bold text-gray-400"><Mail className="w-3 h-3" /></span>
+                </label>
+                <label className="flex flex-col items-center gap-1 cursor-pointer">
+                  <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-rose-500 focus:ring-rose-500" />
+                  <span className="text-[10px] font-bold text-gray-400"><Smartphone className="w-3 h-3" /></span>
+                </label>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#0f172a] rounded-xl border border-rose-100 dark:border-rose-900/30">
+              <div>
+                <p className="font-bold text-gray-900 dark:text-white text-sm">Wedding Enquiry Follow-up</p>
+                <p className="text-xs text-gray-500 mt-0.5">Reminder to follow up on pending leads.</p>
+              </div>
+              <div className="flex gap-2">
+                <label className="flex flex-col items-center gap-1 cursor-pointer">
+                  <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-rose-500 focus:ring-rose-500" />
+                  <span className="text-[10px] font-bold text-gray-400"><Mail className="w-3 h-3" /></span>
+                </label>
+                <label className="flex flex-col items-center gap-1 cursor-pointer">
+                  <input type="checkbox" className="w-4 h-4 rounded text-rose-500 focus:ring-rose-500" />
                   <span className="text-[10px] font-bold text-gray-400"><Smartphone className="w-3 h-3" /></span>
                 </label>
               </div>

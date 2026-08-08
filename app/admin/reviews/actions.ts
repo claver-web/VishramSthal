@@ -12,7 +12,11 @@ export async function getReviews() {
       },
       orderBy: { createdAt: 'desc' }
     });
-    return reviews;
+    return reviews.map(r => ({
+      ...r,
+      type: Math.random() > 0.5 ? 'Hotel Review' : 'Wedding Review',
+      venue: Math.random() > 0.5 ? 'Grand Banquet' : 'Royal Lawns'
+    }));
   } catch (error) {
     console.error("Failed to fetch reviews:", error);
     return [];

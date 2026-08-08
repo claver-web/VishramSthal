@@ -7,23 +7,27 @@ import {
 import { Calendar, Download, Printer, TrendingUp, TrendingDown, IndianRupee } from 'lucide-react';
 
 const dailyRev = [
-  { name: '01 Oct', revenue: 0 }, { name: '05 Oct', revenue: 0 }, 
-  { name: '10 Oct', revenue: 0 }, { name: '15 Oct', revenue: 0 }, 
-  { name: '20 Oct', revenue: 0 }, { name: '25 Oct', revenue: 0 },
+  { name: '01 Oct', hotel: 15000, wedding: 0 }, { name: '05 Oct', hotel: 12000, wedding: 50000 }, 
+  { name: '10 Oct', hotel: 18000, wedding: 0 }, { name: '15 Oct', hotel: 14000, wedding: 150000 }, 
+  { name: '20 Oct', hotel: 22000, wedding: 0 }, { name: '25 Oct', hotel: 25000, wedding: 200000 },
 ];
 
 const weeklyRev = [
-  { name: 'Week 1', revenue: 0 },
-  { name: 'Week 2', revenue: 0 },
-  { name: 'Week 3', revenue: 0 },
-  { name: 'Week 4', revenue: 0 },
+  { name: 'Week 1', hotel: 100000, wedding: 50000 },
+  { name: 'Week 2', hotel: 110000, wedding: 200000 },
+  { name: 'Week 3', hotel: 95000, wedding: 0 },
+  { name: 'Week 4', hotel: 130000, wedding: 350000 },
 ];
 
-const roomRev = [
-  { name: 'Standard', value: 0 },
-  { name: 'Deluxe', value: 0 },
-  { name: 'Suite', value: 0 },
-  { name: 'Premium', value: 0 },
+const compareRev = [
+  { name: 'Hotel', value: 435000 },
+  { name: 'Wedding', value: 600000 },
+];
+
+const venueRev = [
+  { name: 'Grand Banquet', value: 400000 },
+  { name: 'Royal Lawns', value: 150000 },
+  { name: 'Skyview Terrace', value: 50000 },
 ];
 
 const methodRev = [
@@ -43,12 +47,17 @@ export default function RevenueReportsPage() {
           <p className="text-gray-500 dark:text-gray-400 mt-1">Financial performance and projections.</p>
         </div>
         <div className="flex items-center gap-3">
+          <select className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 px-4 py-2.5 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-300 outline-none">
+            <option>All Revenues (Combined)</option>
+            <option>Hotel Revenue Only</option>
+            <option>Wedding Revenue Only</option>
+          </select>
           <div className="flex items-center gap-2 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 px-4 py-2.5 rounded-xl">
             <Calendar className="w-4 h-4 text-gray-400" />
             <select className="bg-transparent text-sm font-bold text-gray-700 dark:text-gray-300 outline-none">
-              <option>October 2023</option>
-              <option>September 2023</option>
-              <option>August 2023</option>
+              <option>October 2026</option>
+              <option>September 2026</option>
+              <option>August 2026</option>
             </select>
           </div>
           <button className="p-2.5 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-xl text-gray-600 dark:text-gray-300 hover:text-[#ea580c] transition-colors"><Printer className="w-5 h-5" /></button>
@@ -61,40 +70,40 @@ export default function RevenueReportsPage() {
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden">
-          <div className="absolute -right-4 -top-4 w-24 h-24 bg-orange-500/10 rounded-full blur-xl"></div>
-          <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Total Revenue</p>
+          <div className="absolute -right-4 -top-4 w-24 h-24 bg-rose-500/10 rounded-full blur-xl"></div>
+          <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Total Combined Revenue</p>
           <h3 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-1">
-            <IndianRupee className="w-6 h-6 text-[#ea580c]" /> 0
+            <IndianRupee className="w-6 h-6 text-[#ea580c]" /> 10,35,000
           </h3>
-          <div className="mt-4 flex items-center gap-2 text-sm font-bold text-gray-600 bg-gray-50 dark:bg-gray-500/10 px-3 py-1 rounded-full w-fit">
-            <TrendingUp className="w-4 h-4" /> 0% vs last month
+          <div className="mt-4 flex items-center gap-2 text-sm font-bold text-green-600 bg-green-50 dark:bg-green-500/10 px-3 py-1 rounded-full w-fit">
+            <TrendingUp className="w-4 h-4" /> +15% vs last month
           </div>
         </div>
         
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
-          <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Avg. Daily Rev.</p>
+          <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Hotel Revenue</p>
           <h3 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-1">
-            <IndianRupee className="w-6 h-6 text-[#ea580c]" /> 0
+            <IndianRupee className="w-6 h-6 text-[#ea580c]" /> 4,35,000
           </h3>
-          <div className="mt-4 flex items-center gap-2 text-sm font-bold text-gray-600 bg-gray-50 dark:bg-gray-500/10 px-3 py-1 rounded-full w-fit">
-            <TrendingUp className="w-4 h-4" /> 0% vs last month
+          <div className="mt-4 flex items-center gap-2 text-sm font-bold text-green-600 bg-green-50 dark:bg-green-500/10 px-3 py-1 rounded-full w-fit">
+            <TrendingUp className="w-4 h-4" /> +5% vs last month
           </div>
         </div>
 
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
-          <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Rev. Per Available Room</p>
+          <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Wedding Revenue</p>
           <h3 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-1">
-            <IndianRupee className="w-6 h-6 text-[#ea580c]" /> 0
+            <IndianRupee className="w-6 h-6 text-rose-500" /> 6,00,000
           </h3>
-          <div className="mt-4 flex items-center gap-2 text-sm font-bold text-gray-600 bg-gray-50 dark:bg-gray-500/10 px-3 py-1 rounded-full w-fit">
-            <TrendingDown className="w-4 h-4" /> 0% vs last month
+          <div className="mt-4 flex items-center gap-2 text-sm font-bold text-green-600 bg-green-50 dark:bg-green-500/10 px-3 py-1 rounded-full w-fit">
+            <TrendingUp className="w-4 h-4" /> +22% vs last month
           </div>
         </div>
 
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
           <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Projected (Month End)</p>
           <h3 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-1">
-            <IndianRupee className="w-6 h-6 text-[#ea580c]" /> 0
+            <IndianRupee className="w-6 h-6 text-purple-500" /> 14,50,000
           </h3>
           <div className="mt-4 flex items-center gap-2 text-sm font-bold text-gray-600 bg-gray-50 dark:bg-gray-500/10 px-3 py-1 rounded-full w-fit">
             No data yet
@@ -113,14 +122,15 @@ export default function RevenueReportsPage() {
                 <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} tickFormatter={val => `₹${val/1000}k`} />
                 <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '12px', color: '#fff' }} />
-                <Line type="monotone" dataKey="revenue" stroke="#ea580c" strokeWidth={4} dot={{ fill: '#ea580c', r: 4 }} activeDot={{ r: 8 }} />
+                <Line type="monotone" dataKey="hotel" stroke="#ea580c" strokeWidth={4} name="Hotel Revenue" />
+                <Line type="monotone" dataKey="wedding" stroke="#f43f5e" strokeWidth={4} name="Wedding Revenue" />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
         
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Weekly Performance</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Weekly Performance (Stacked)</h3>
           <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={weeklyRev}>
@@ -128,24 +138,45 @@ export default function RevenueReportsPage() {
                 <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} tickFormatter={val => `₹${val/1000}k`} />
                 <Tooltip cursor={{fill: 'rgba(234, 88, 12, 0.05)'}} contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '12px', color: '#fff' }} />
-                <Bar dataKey="revenue" fill="#f97316" radius={[6, 6, 0, 0]} barSize={40} />
+                <Legend />
+                <Bar dataKey="hotel" stackId="a" fill="#ea580c" name="Hotel Revenue" />
+                <Bar dataKey="wedding" stackId="a" fill="#f43f5e" name="Wedding Revenue" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col md:flex-row items-center">
-          <div className="flex-1">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Revenue by Room Type</h3>
-            <p className="text-sm text-gray-500 mb-6">Deluxe rooms generate the majority of income.</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col items-center">
+          <div className="w-full">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Revenue Split (Hotel vs Wedding)</h3>
+            <p className="text-sm text-gray-500 mb-6">Weddings account for a large portion of overall revenue.</p>
           </div>
           <div className="h-48 w-48">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={roomRev} innerRadius={40} outerRadius={70} paddingAngle={5} dataKey="value">
-                  {roomRev.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                <Pie data={compareRev} innerRadius={40} outerRadius={70} paddingAngle={5} dataKey="value">
+                  <Cell fill="#ea580c" />
+                  <Cell fill="#f43f5e" />
+                </Pie>
+                <Tooltip contentStyle={{ borderRadius: '12px' }} formatter={(val: any) => `₹${Number(val).toLocaleString()}`} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col items-center">
+          <div className="w-full">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Wedding Revenue by Venue</h3>
+            <p className="text-sm text-gray-500 mb-6">Grand Banquet is the highest earner this month.</p>
+          </div>
+          <div className="h-48 w-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={venueRev} innerRadius={40} outerRadius={70} paddingAngle={5} dataKey="value">
+                  {venueRev.map((entry, index) => <Cell key={`cell-${index}`} fill={['#f43f5e', '#fb7185', '#fda4af'][index % 3]} />)}
                 </Pie>
                 <Tooltip contentStyle={{ borderRadius: '12px' }} />
               </PieChart>

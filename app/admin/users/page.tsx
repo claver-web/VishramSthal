@@ -11,6 +11,7 @@ export default function UsersPage() {
   const [activeUser, setActiveUser] = useState<any>(null);
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeType, setActiveType] = useState('All');
 
   useEffect(() => {
     import('./actions').then(({ getUsers }) => {
@@ -65,12 +66,16 @@ export default function UsersPage() {
               <div className="bg-gray-50 dark:bg-[#0f172a] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-4">
                 <h3 className="text-xs font-bold text-[#ea580c] uppercase tracking-wider">Guest Analytics</h3>
                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-3">
-                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400"><Calendar className="w-4 h-4" /> Total Bookings</div>
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400"><Calendar className="w-4 h-4" /> Hotel Bookings</div>
                   <span className="font-black text-gray-900 dark:text-white">{activeUser.bookings}</span>
                 </div>
                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-3">
-                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400"><IndianRupee className="w-4 h-4" /> Total Spent</div>
-                  <span className="font-black text-[#ea580c]">₹{activeUser.spent}</span>
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400"><Star className="w-4 h-4 text-rose-500" /> Wedding Events</div>
+                  <span className="font-black text-rose-500">{activeUser.weddingEvents}</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-3">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400"><IndianRupee className="w-4 h-4" /> Total Combined Spend</div>
+                  <span className="font-black text-[#ea580c]">₹{(activeUser.spent + activeUser.weddingSpent).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-3">
                   <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400"><Clock className="w-4 h-4" /> Avg. Stay</div>
@@ -96,33 +101,35 @@ export default function UsersPage() {
                   <h3 className="text-sm font-bold text-gray-900 dark:text-white">Recent Bookings</h3>
                 </div>
                 <div className="p-4 space-y-4 bg-white dark:bg-[#1e293b]">
+                  {activeUser.weddingEvents > 0 && (
+                    <div className="flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-[#0f172a] rounded-xl transition-colors border border-rose-100 dark:border-rose-900/30">
+                      <div>
+                        <p className="font-bold text-rose-500 flex items-center gap-2">💍 WB-2026</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white mt-0.5">Grand Banquet Wedding</p>
+                        <p className="text-xs text-gray-500 mt-1">15 Nov 2026</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-black text-gray-900 dark:text-white">₹{activeUser.weddingSpent.toLocaleString()}</p>
+                        <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400">Confirmed</span>
+                      </div>
+                    </div>
+                  )}
                   {activeUser.bookings > 0 ? (
                     <>
                       <div className="flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-[#0f172a] rounded-xl transition-colors border border-gray-100 dark:border-gray-800">
                         <div>
-                          <p className="font-bold text-[#ea580c]">BKG-1001</p>
+                          <p className="font-bold text-[#ea580c] flex items-center gap-2">🏨 BKG-1001</p>
                           <p className="text-sm font-medium text-gray-900 dark:text-white mt-0.5">Deluxe Temple View</p>
-                          <p className="text-xs text-gray-500 mt-1">25 Oct - 28 Oct 2023</p>
+                          <p className="text-xs text-gray-500 mt-1">25 Oct - 28 Oct</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-black text-gray-900 dark:text-white">₹13,500</p>
-                          <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400">Completed</span>
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-[#0f172a] rounded-xl transition-colors border border-gray-100 dark:border-gray-800">
-                        <div>
-                          <p className="font-bold text-[#ea580c]">BKG-0842</p>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">Standard Room</p>
-                          <p className="text-xs text-gray-500 mt-1">12 Aug - 14 Aug 2023</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-black text-gray-900 dark:text-white">₹5,000</p>
+                          <p className="font-black text-gray-900 dark:text-white">₹{activeUser.spent.toLocaleString()}</p>
                           <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400">Completed</span>
                         </div>
                       </div>
                     </>
                   ) : (
-                    <div className="text-center py-6 text-gray-500 dark:text-gray-400 text-sm">No bookings found for this user.</div>
+                    !activeUser.weddingEvents && <div className="text-center py-6 text-gray-500 dark:text-gray-400 text-sm">No bookings found for this user.</div>
                   )}
                 </div>
               </div>
@@ -134,19 +141,20 @@ export default function UsersPage() {
                 <div className="p-4 space-y-4 bg-white dark:bg-[#1e293b]">
                   <div className="flex gap-4 relative">
                     <div className="w-px h-full bg-gray-200 dark:bg-gray-700 absolute left-4 top-4"></div>
+                    <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 flex items-center justify-center flex-shrink-0 relative z-10"><Star className="w-4 h-4" /></div>
+                    <div className="pb-4">
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">Wedding Enquiry Submitted</p>
+                      <p className="text-xs text-gray-500 mt-1">Requested a quote for Grand Banquet (250 guests).</p>
+                      <p className="text-xs text-gray-400 mt-1">Just now</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4 relative">
+                    <div className="w-px h-full bg-gray-200 dark:bg-gray-700 absolute left-4 top-4"></div>
                     <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 flex items-center justify-center flex-shrink-0 relative z-10"><MessageSquare className="w-4 h-4" /></div>
                     <div className="pb-4">
                       <p className="text-sm font-bold text-gray-900 dark:text-white">Submitted a 5-star review</p>
                       <p className="text-xs text-gray-500 mt-1">"Beautiful experience, loved the temple view."</p>
                       <p className="text-xs text-gray-400 mt-1">28 Oct 2023, 10:00 AM</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-4 relative">
-                    <div className="w-px h-full bg-gray-200 dark:bg-gray-700 absolute left-4 top-4"></div>
-                    <div className="w-8 h-8 rounded-full bg-green-100 text-green-600 dark:bg-green-500/10 dark:text-green-400 flex items-center justify-center flex-shrink-0 relative z-10"><CheckCircle className="w-4 h-4" /></div>
-                    <div className="pb-4">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white">Checked out</p>
-                      <p className="text-xs text-gray-400 mt-1">28 Oct 2023, 09:30 AM</p>
                     </div>
                   </div>
                   <div className="flex gap-4 relative">
@@ -185,11 +193,15 @@ export default function UsersPage() {
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input type="text" placeholder="Search by name, email, phone..." className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:border-[#ea580c] outline-none dark:text-white" />
           </div>
-          <select className="bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 outline-none">
-            <option>All Statuses</option>
-            <option>Active</option>
-            <option>Inactive</option>
-            <option>Banned</option>
+          <select 
+            value={activeType}
+            onChange={(e) => setActiveType(e.target.value)}
+            className="bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 outline-none"
+          >
+            <option value="All">All Types</option>
+            <option value="Hotel Guest">Hotel Guests</option>
+            <option value="Wedding Client">Wedding Clients</option>
+            <option value="Both">Both (Hotel + Wedding)</option>
           </select>
           <button className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
             <Filter className="w-4 h-4" /> More Filters
@@ -203,9 +215,10 @@ export default function UsersPage() {
             <thead className="bg-gray-50 dark:bg-[#0f172a] text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider">
               <tr>
                 <th className="px-6 py-4">Guest</th>
+                <th className="px-6 py-4">Type</th>
                 <th className="px-6 py-4">Contact</th>
                 <th className="px-6 py-4">Registered Date</th>
-                <th className="px-6 py-4">Bookings</th>
+                <th className="px-6 py-4">Bookings/Events</th>
                 <th className="px-6 py-4">Total Spent</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4 text-right">Actions</th>
@@ -226,7 +239,7 @@ export default function UsersPage() {
                     </div>
                   </td>
                 </tr>
-              ) : users.map((user) => (
+              ) : users.filter(u => activeType === 'All' || u.type === activeType).map((user) => (
                 <tr key={user.id} className="hover:bg-orange-50/30 dark:hover:bg-[#0f172a]/50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -240,15 +253,23 @@ export default function UsersPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
+                    <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${user.type === 'Hotel Guest' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' : user.type === 'Wedding Client' ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400' : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'}`}>
+                      {user.type}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{user.email}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{user.phone}</p>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{user.joined}</td>
                   <td className="px-6 py-4">
-                    <span className="bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full text-sm font-bold text-gray-700 dark:text-gray-300">{user.bookings}</span>
+                    <div className="flex gap-2 text-xs font-bold text-gray-500">
+                      <span>🏨 {user.bookings}</span>
+                      <span>💒 {user.weddingEvents}</span>
+                    </div>
                   </td>
                   <td className="px-6 py-4 font-black text-[#ea580c]">
-                    ₹{user.spent}
+                    ₹{(user.spent + user.weddingSpent).toLocaleString()}
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${getStatusColor(user.status)}`}>{user.status}</span>

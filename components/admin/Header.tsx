@@ -5,9 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
   Menu, Search, Bell, Moon, Sun, ExternalLink, ChevronDown, 
-  User, Settings, LogOut, Clock, Eye, CalendarCheck, CheckCircle2, AlertCircle, RefreshCw 
+  User, Settings, LogOut, Clock, Eye, CalendarCheck, CheckCircle2, AlertCircle, RefreshCw, Heart, Bed
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import { useAdminModeStore } from '@/store/adminModeStore';
 
 interface NotificationItem {
   id: string;
@@ -26,6 +27,8 @@ export default function Header({ toggleSidebar }: { toggleSidebar: () => void })
   const [isDark, setIsDark] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  
+  const { adminMode, setAdminMode } = useAdminModeStore();
   
   // Real notifications state
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -115,6 +118,32 @@ export default function Header({ toggleSidebar }: { toggleSidebar: () => void })
 
       {/* Right Section */}
       <div className="flex items-center gap-3 lg:gap-5">
+        
+        {/* Admin Mode Switcher */}
+        <div className="hidden sm:flex items-center p-1 bg-gray-100 dark:bg-[#1e293b] rounded-full border border-gray-200 dark:border-gray-800 relative transition-all">
+          <button
+            onClick={() => setAdminMode('hotel')}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all z-10 ${
+              adminMode === 'hotel' 
+                ? 'bg-[#ea580c] text-white shadow-md' 
+                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+            }`}
+          >
+            <Bed className="w-3.5 h-3.5" />
+            Hotel
+          </button>
+          <button
+            onClick={() => setAdminMode('wedding')}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all z-10 ${
+              adminMode === 'wedding' 
+                ? 'bg-rose-500 text-white shadow-md' 
+                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+            }`}
+          >
+            <Heart className="w-3.5 h-3.5" />
+            Wedding
+          </button>
+        </div>
         
         {/* Live Daily Visitors Badge */}
         <Link 

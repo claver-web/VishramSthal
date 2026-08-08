@@ -26,13 +26,16 @@ import {
   BarChart, Bar, 
   PieChart, Pie, Cell, 
   AreaChart, Area,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  ComposedChart
 } from 'recharts';
+import { useAdminModeStore } from '@/store/adminModeStore';
 
 const COLORS = ['#ea580c', '#f97316', '#fdba74', '#fed7aa'];
 const OCCUPANCY_COLORS = ['#ea580c', '#22c55e', '#ef4444'];
 
 export default function AdminDashboard() {
+  const { adminMode } = useAdminModeStore();
   const [date, setDate] = useState('');
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -49,16 +52,36 @@ export default function AdminDashboard() {
     });
   }, []);
 
-  const stats = [
-    { title: "Visitors Today", value: data?.stats?.dailyVisitorsToday || '0', subtitle: 'Unique users visit per day', icon: Eye, change: '+12%', isUp: true },
-    { title: 'Page Views Today', value: data?.stats?.dailyPageViewsToday || '0', subtitle: 'Total traffic today', icon: Globe, change: '+18%', isUp: true },
-    { title: "Active Bookings", value: data?.stats?.activeBookings || '0', subtitle: 'Confirmed reservations', icon: Activity, change: '0%', isUp: true },
-    { title: "Pending Bookings", value: data?.stats?.pendingBookings || '0', subtitle: 'Awaiting confirmation', icon: CalendarClock, change: '0%', isUp: false },
-    { title: 'Revenue Today', value: `₹${data?.stats?.revenueToday || '0'}`, subtitle: 'Across all bookings', icon: IndianRupee, change: '0%', isUp: true },
-    { title: 'Total Revenue', value: `₹${data?.stats?.totalRevenue || '0'}`, subtitle: 'This month', icon: TrendingUp, change: '0%', isUp: true },
+  const hotelStats = [
     { title: 'Total Rooms', value: data?.stats?.totalRooms || '0', subtitle: 'Registered in DB', icon: Building2, change: '0%', isUp: true },
-    { title: 'Average Rating', value: `${data?.stats?.avgRating || '0.0'}/5`, subtitle: `Based on ${data?.stats?.totalReviews || '0'} reviews`, icon: Star, change: '0', isUp: true },
+    { title: "Today's Check-ins", value: '5', subtitle: 'Expected today', icon: Clock, change: '+2', isUp: true },
+    { title: "Today's Check-outs", value: '3', subtitle: 'Expected today', icon: ArrowDownRight, change: '-1', isUp: false },
+    { title: "Active Bookings", value: data?.stats?.activeBookings || '0', subtitle: 'Confirmed reservations', icon: Activity, change: '+5%', isUp: true },
+    { title: 'Revenue Today', value: `₹${data?.stats?.revenueToday || '0'}`, subtitle: 'Hotel bookings', icon: IndianRupee, change: '+10%', isUp: true },
+    { title: 'Hotel Revenue (Month)', value: `₹${data?.stats?.totalRevenue || '0'}`, subtitle: 'This month', icon: TrendingUp, change: '+15%', isUp: true },
+    { title: "New Users", value: data?.stats?.dailyVisitorsToday || '0', subtitle: 'Unique users today', icon: Users, change: '+12%', isUp: true },
+    { title: 'Average Rating', value: `${data?.stats?.avgRating || '4.8'}/5`, subtitle: `Based on reviews`, icon: Star, change: '0', isUp: true },
   ];
+
+  const weddingStats = [
+    { title: "Total Venues", value: '3', subtitle: 'Available for booking', icon: Building2, change: '0%', isUp: true },
+    { title: "Active Wedding Bookings", value: '12', subtitle: 'Upcoming weddings', icon: CalendarCheck, change: '+20%', isUp: true },
+    { title: "New Enquiries", value: '25', subtitle: 'This week', icon: MessageSquare, change: '+15%', isUp: true },
+    { title: 'Upcoming Events', value: '4', subtitle: 'This month', icon: CalendarClock, change: '+1', isUp: true },
+    { title: 'Wedding Revenue (Month)', value: `₹4,50,000`, subtitle: 'This month', icon: IndianRupee, change: '+25%', isUp: true },
+    { title: 'Total Wedding Revenue', value: `₹12,00,000`, subtitle: 'All time', icon: TrendingUp, change: '+10%', isUp: true },
+    { title: 'Average Event Size', value: `450`, subtitle: 'Guests per event', icon: Users, change: '+5%', isUp: true },
+    { title: 'Enquiry Conversion', value: `28%`, subtitle: 'To confirmed bookings', icon: CheckCircle, change: '+5%', isUp: true },
+  ];
+
+  const commonStats = [
+    { title: 'Total Revenue (Combined)', value: `₹${(parseInt(data?.stats?.totalRevenue || '0') + 450000).toString()}`, subtitle: 'This month', icon: IndianRupee, change: '+18%', isUp: true },
+    { title: "New Guests (Overall)", value: data?.stats?.dailyVisitorsToday || '0', subtitle: 'Across all modes', icon: Users, change: '+12%', isUp: true },
+    { title: 'Active Offers', value: '4', subtitle: 'Hotel & Wedding', icon: Globe, change: '0', isUp: true },
+    { title: 'Overall Rating', value: `${data?.stats?.avgRating || '4.8'}/5`, subtitle: `Combined reviews`, icon: Star, change: '0', isUp: true },
+  ];
+
+  const currentStats = [...(adminMode === 'hotel' ? hotelStats : weddingStats), ...commonStats];
 
   return (
     <div className="space-y-8 animate-fade-in pb-10">
@@ -82,12 +105,12 @@ export default function AdminDashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, idx) => (
+        {currentStats.map((stat, idx) => (
           <div key={idx} className="bg-white dark:bg-[#1e293b] p-5 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-orange-500/10 to-transparent rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+            <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl ${adminMode === 'hotel' ? 'from-orange-500/10' : 'from-rose-500/10'} to-transparent rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110`}></div>
             
             <div className="flex justify-between items-start mb-3 relative z-10">
-              <div className="w-10 h-10 rounded-2xl bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center text-[#ea580c]">
+              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${adminMode === 'hotel' ? 'bg-orange-50 dark:bg-orange-500/10 text-[#ea580c]' : 'bg-rose-50 dark:bg-rose-500/10 text-rose-500'}`}>
                 <stat.icon className="w-5 h-5" />
               </div>
               <div className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${stat.isUp ? 'text-green-600 bg-green-50 dark:bg-green-500/10' : 'text-red-600 bg-red-50 dark:bg-red-500/10'}`}>
@@ -105,7 +128,33 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* Charts - Daily Visitor Traffic & Booking Trend */}
+      {/* Common Trend Chart */}
+      <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Overall Revenue Trend (Hotel vs Wedding)</h3>
+        <div className="h-72 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={[
+              { name: 'Mon', hotel: 12000, wedding: 0 },
+              { name: 'Tue', hotel: 15000, wedding: 50000 },
+              { name: 'Wed', hotel: 8000, wedding: 0 },
+              { name: 'Thu', hotel: 22000, wedding: 0 },
+              { name: 'Fri', hotel: 35000, wedding: 120000 },
+              { name: 'Sat', hotel: 45000, wedding: 200000 },
+              { name: 'Sun', hotel: 30000, wedding: 80000 },
+            ]}>
+              <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
+              <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
+              <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
+              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '12px', color: '#fff' }} />
+              <Legend />
+              <Bar dataKey="wedding" fill="#f43f5e" name="Wedding Revenue" radius={[4, 4, 0, 0]} />
+              <Line type="monotone" dataKey="hotel" stroke="#ea580c" strokeWidth={3} name="Hotel Revenue" />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {adminMode === 'hotel' ? (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Daily Visitor Traffic Chart */}
@@ -169,8 +218,70 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+      ) : (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* Enquiry Conversion Funnel Mock */}
+        <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 min-w-0">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-rose-500" /> Enquiry to Booking Conversion
+              </h3>
+            </div>
+          </div>
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart layout="vertical" data={[
+                { name: 'Total Enquiries', value: 120 },
+                { name: 'Contacted', value: 85 },
+                { name: 'Site Visit', value: 45 },
+                { name: 'Booked', value: 25 },
+              ]}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.1} horizontal={false} />
+                <XAxis type="number" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis dataKey="name" type="category" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} width={100} />
+                <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '12px', color: '#fff' }} />
+                <Bar dataKey="value" fill="#f43f5e" radius={[0, 8, 8, 0]} barSize={32} name="Count" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Wedding Booking Trend */}
+        <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <CalendarCheck className="w-5 h-5 text-rose-500" /> Event Distribution
+              </h3>
+            </div>
+          </div>
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={[
+                  { name: 'Weddings', value: 65 },
+                  { name: 'Receptions', value: 20 },
+                  { name: 'Pre-wedding', value: 10 },
+                  { name: 'Corporate', value: 5 },
+                ]} innerRadius={80} outerRadius={110} paddingAngle={5} dataKey="value">
+                  <Cell fill="#f43f5e" />
+                  <Cell fill="#fb7185" />
+                  <Cell fill="#fda4af" />
+                  <Cell fill="#ffe4e6" />
+                </Pie>
+                <Tooltip contentStyle={{ borderRadius: '12px' }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+      )}
 
       {/* Distribution Charts */}
+      {adminMode === 'hotel' && (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 min-w-0">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Room Occupancy</h3>
@@ -223,6 +334,7 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Tables Row */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">

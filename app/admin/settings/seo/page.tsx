@@ -59,9 +59,42 @@ export default function SEOSettingsPage() {
           
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Homepage Meta Title</label>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Hotel Homepage Meta Title</label>
               <input type="text" defaultValue="Vishram Sthal - Your Spiritual Retreat" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold outline-none focus:border-[#ea580c] dark:text-white" />
               <p className="text-xs text-gray-500 mt-1">Leave empty to use global template</p>
+            </div>
+            
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Hotel Homepage Meta Description</label>
+              <textarea rows={3} defaultValue="Book your stay at Vishram Sthal. Enjoy luxurious accommodations with breathtaking spiritual views." className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#ea580c] dark:text-white"></textarea>
+            </div>
+
+            <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+              <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-2">Wedding Homepage Meta Title</label>
+              <input type="text" defaultValue="Shani Marriage Palace - The Perfect Beginning" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-rose-200 dark:border-rose-900/40 rounded-xl text-sm font-bold outline-none focus:border-rose-500 dark:text-white" />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-2">Wedding Homepage Meta Description</label>
+              <textarea rows={3} defaultValue="Celebrate your special day at Shani Marriage Palace. We offer premium venues, catering, and decor for unforgettable weddings." className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-rose-200 dark:border-rose-900/40 rounded-xl text-sm outline-none focus:border-rose-500 dark:text-white"></textarea>
+            </div>
+            
+            <div>
+              <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-2">Wedding Venues Meta Title Template</label>
+              <input type="text" defaultValue="{venue_name} - Wedding Venue | Shani Marriage Palace" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-rose-200 dark:border-rose-900/40 rounded-xl text-sm font-mono outline-none focus:border-rose-500 dark:text-white" />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-2">Wedding Specific Keywords</label>
+              <input type="text" defaultValue="wedding venue, marriage palace, banquet hall, destination wedding" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-rose-200 dark:border-rose-900/40 rounded-xl text-sm outline-none focus:border-rose-500 dark:text-white" />
+            </div>
+            
+            <div>
+              <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-3">Wedding Open Graph Image</label>
+              <div className="border-2 border-dashed border-rose-200 dark:border-rose-900/40 rounded-xl p-8 flex flex-col items-center justify-center hover:border-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all cursor-pointer">
+                <Upload className="w-8 h-8 text-rose-400 mb-2" />
+                <span className="text-sm font-bold text-rose-600 dark:text-rose-400">Upload Wedding OG Image (1200x630px)</span>
+              </div>
             </div>
             
             <div>
@@ -103,9 +136,15 @@ export default function SEOSettingsPage() {
             
             <div>
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Structured Data (Schema JSON-LD)</label>
-              <div className="p-4 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl">
-                <p className="text-sm font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2"><LayoutTemplate className="w-4 h-4" /> Hotel Schema generated automatically</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">The system automatically injects standard LocalBusiness and Hotel schema tags on relevant pages based on General Settings.</p>
+              <div className="p-4 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl space-y-4">
+                <div>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2"><LayoutTemplate className="w-4 h-4 text-[#ea580c]" /> Hotel Schema</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Automatically injects standard LocalBusiness and Hotel schema tags.</p>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2"><LayoutTemplate className="w-4 h-4 text-rose-500" /> Wedding Schema</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Automatically injects EventVenue and Event schema tags on wedding-related pages.</p>
+                </div>
               </div>
             </div>
 

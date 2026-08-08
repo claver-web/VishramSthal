@@ -63,6 +63,28 @@ export default function AdminProfilePage() {
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Phone Number</label>
                   <input type="text" defaultValue="+91 9805271636" className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold outline-none focus:border-[#ea580c] dark:text-white" />
                 </div>
+                
+                <div className="md:col-span-2 pt-4 border-t border-gray-100 dark:border-gray-800 mt-2">
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">System Role</label>
+                  <select className="w-full p-3 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold outline-none focus:border-[#ea580c] dark:text-white">
+                    <option value="admin">Super Admin (Both Modes)</option>
+                    <option value="hotel_manager">Hotel Manager</option>
+                    <option value="wedding_manager">Wedding Manager</option>
+                    <option value="staff">Limited Staff</option>
+                  </select>
+                  <p className="text-xs text-gray-500 mt-2 font-medium">Determines access to Hotel vs Wedding management dashboards.</p>
+                </div>
+                
+                <div className="md:col-span-2 flex items-center justify-between p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 rounded-xl mt-2">
+                  <div>
+                    <h4 className="font-bold text-rose-500 text-sm">Wedding Leads Assignment</h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Allow this account to be tagged in wedding enquiries and bookings.</p>
+                  </div>
+                  <label className="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" defaultChecked className="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-rose-500 translate-x-5 transition-transform" />
+                    <span className="toggle-label block overflow-hidden h-5 rounded-full bg-rose-500 cursor-pointer"></span>
+                  </label>
+                </div>
               </div>
             </div>
             

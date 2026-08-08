@@ -27,7 +27,11 @@ export async function getUsers() {
         status: 'Active',
         bookings: totalBookings,
         spent: totalSpent,
-        loyaltyTier: totalStays >= 5 ? 'Gold' : totalStays >= 2 ? 'Silver' : 'Bronze'
+        loyaltyTier: totalStays >= 5 ? 'Gold' : totalStays >= 2 ? 'Silver' : 'Bronze',
+        // Mock wedding data
+        type: Math.random() > 0.6 ? 'Both' : (Math.random() > 0.5 ? 'Hotel Guest' : 'Wedding Client'),
+        weddingEvents: Math.floor(Math.random() * 3),
+        weddingSpent: Math.floor(Math.random() * 500000),
       };
     });
   } catch (error) {

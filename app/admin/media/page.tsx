@@ -23,7 +23,10 @@ interface MediaItem {
 export default function MediaLibraryPage() {
   const [activeTab, setActiveTab] = useState('All Media');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [selectedFolder, setSelectedFolder] = useState<number | null>(null);
+  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
+    'wedding': true
+  });
   const [selectedMedia, setSelectedMedia] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<MediaItem | null>(null);
   const [isUploadingZoneOpen, setIsUploadingZoneOpen] = useState(false);
@@ -139,6 +142,10 @@ export default function MediaLibraryPage() {
     }
   };
 
+  const toggleFolder = (folderId: string) => {
+    setExpandedFolders(prev => ({ ...prev, [folderId]: !prev[folderId] }));
+  };
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedUrl(text);
@@ -176,7 +183,7 @@ export default function MediaLibraryPage() {
           </button>
         </div>
         
-        <div className="p-4 flex-1 overflow-y-auto">
+        <div className="p-4 flex-1 overflow-y-auto custom-scrollbar">
           <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 px-2">Folders</h3>
           <ul className="space-y-1">
             <li>
@@ -190,6 +197,43 @@ export default function MediaLibraryPage() {
                 </div>
                 <span className="text-xs bg-gray-100 dark:bg-[#0f172a] px-2 py-0.5 rounded-full">{mediaList.length}</span>
               </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => setSelectedFolder('hotel')}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${selectedFolder === 'hotel' ? 'bg-orange-50 dark:bg-orange-500/10 text-[#ea580c]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#0f172a]'}`}
+              >
+                <div className="flex items-center gap-3">
+                  <Folder className="w-4 h-4 text-gray-400" />
+                  Hotel Media
+                </div>
+              </button>
+            </li>
+            <li>
+              <div className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#0f172a] cursor-pointer" onClick={() => toggleFolder('wedding')}>
+                <div className="flex items-center gap-3">
+                  <Folder className="w-4 h-4 text-rose-500" />
+                  Wedding Media
+                </div>
+                <ChevronRight className={`w-4 h-4 transition-transform ${expandedFolders['wedding'] ? 'rotate-90' : ''}`} />
+              </div>
+              {expandedFolders['wedding'] && (
+                <ul className="mt-1 pl-10 space-y-1 border-l-2 border-gray-100 dark:border-gray-800 ml-5">
+                  {['Venue Photos', 'Event Photos', 'Decoration Samples', 'Catering Photos', 'Behind the Scenes', 'Client Events'].map(sub => {
+                    const fid = `wedding_${sub.toLowerCase().replace(/ /g, '_')}`;
+                    return (
+                      <li key={fid}>
+                        <button 
+                          onClick={() => setSelectedFolder(fid)}
+                          className={`w-full flex items-center justify-start px-3 py-2 rounded-lg text-xs font-medium transition-colors ${selectedFolder === fid ? 'bg-rose-50 dark:bg-rose-500/10 text-rose-600' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-[#0f172a]'}`}
+                        >
+                          {sub}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
             </li>
           </ul>
         </div>
@@ -214,7 +258,15 @@ export default function MediaLibraryPage() {
                 <>
                   <Upload className="w-10 h-10 text-[#ea580c] mb-3" />
                   <h3 className="font-bold text-gray-900 dark:text-white text-lg">Click to select files</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Supports JPG, PNG, WEBP images</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Supports JPG, PNG, WEBP images. Bulk upload from events supported.</p>
+                  
+                  <div className="mt-4 flex flex-col items-center gap-3" onClick={(e) => e.stopPropagation()}>
+                    <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                      <input type="checkbox" className="rounded border-gray-300 text-[#ea580c] focus:ring-[#ea580c]" />
+                      Automatically add watermark to uploaded wedding photos
+                    </label>
+                  </div>
+                  
                   <div className="mt-4 flex gap-4" onClick={(e) => e.stopPropagation()}>
                     <button onClick={() => fileInputRef.current?.click()} className="px-6 py-2 bg-[#ea580c] text-white font-bold rounded-xl shadow-md">Browse Files</button>
                     <button onClick={() => setIsUploadingZoneOpen(false)} className="px-6 py-2 bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors">Cancel</button>
@@ -379,6 +431,32 @@ export default function MediaLibraryPage() {
                   </button>
                 </div>
               </div>
+              
+              {selectedFolder?.startsWith('wedding') && (
+                <div className="bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 p-4 rounded-xl space-y-4">
+                  <h4 className="text-xs font-bold text-rose-500 uppercase tracking-wider flex items-center gap-1.5">
+                    Wedding Metadata
+                  </h4>
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-500 mb-1">Tags (Event, Couple, Date)</label>
+                    <input type="text" placeholder="e.g. Sangeet, Rahul & Priya, 15 Nov" className="w-full px-3 py-2 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-lg text-xs outline-none focus:border-rose-500" />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-bold text-gray-700 dark:text-gray-300">Show in Gallery</label>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" className="sr-only peer" defaultChecked />
+                      <div className="w-7 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-500 peer-checked:bg-rose-500"></div>
+                    </label>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-bold text-gray-700 dark:text-gray-300">Client Permission</label>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" className="sr-only peer" />
+                      <div className="w-7 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-500 peer-checked:bg-green-500"></div>
+                    </label>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Actions */}

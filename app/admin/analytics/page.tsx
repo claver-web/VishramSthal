@@ -9,6 +9,7 @@ import { LineChart, Line, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tool
 
 export default function VisitorAnalyticsPage() {
   const [range, setRange] = useState('7');
+  const [activeMode, setActiveMode] = useState('Combined');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
 
@@ -46,15 +47,26 @@ export default function VisitorAnalyticsPage() {
           <h1 className="text-3xl font-black text-gray-900 dark:text-white">Visitor Analytics</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">Website traffic and user behavior insights.</p>
         </div>
-        <select 
-          value={range}
-          onChange={(e) => setRange(e.target.value)}
-          className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 px-4 py-2 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-300 outline-none shadow-sm"
-        >
-          <option value="7">Last 7 Days</option>
-          <option value="30">Last 30 Days</option>
-          <option value="365">This Year</option>
-        </select>
+        <div className="flex gap-4">
+          <select 
+            value={activeMode}
+            onChange={(e) => setActiveMode(e.target.value)}
+            className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 px-4 py-2 rounded-xl text-sm font-bold text-[#ea580c] outline-none shadow-sm"
+          >
+            <option value="Combined">Combined (Hotel + Wedding)</option>
+            <option value="Hotel">Hotel Analytics Only</option>
+            <option value="Wedding">Wedding Analytics Only</option>
+          </select>
+          <select 
+            value={range}
+            onChange={(e) => setRange(e.target.value)}
+            className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 px-4 py-2 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-300 outline-none shadow-sm"
+          >
+            <option value="7">Last 7 Days</option>
+            <option value="30">Last 30 Days</option>
+            <option value="365">This Year</option>
+          </select>
+        </div>
       </div>
 
       {/* Top Metrics */}
@@ -106,7 +118,12 @@ export default function VisitorAnalyticsPage() {
                 <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '12px', color: '#fff' }} />
-                <Area type="monotone" dataKey="visitors" stroke="#ea580c" strokeWidth={3} fillOpacity={1} fill="url(#colorVis)" />
+                {(activeMode === 'Combined' || activeMode === 'Hotel') && (
+                  <Area type="monotone" dataKey="visitors" stroke="#ea580c" strokeWidth={3} fillOpacity={1} fill="url(#colorVis)" />
+                )}
+                {(activeMode === 'Combined' || activeMode === 'Wedding') && (
+                  <Area type="monotone" dataKey="visitors" name="wedding" stroke="#f43f5e" strokeWidth={3} fillOpacity={0} />
+                )}
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -175,24 +192,58 @@ export default function VisitorAnalyticsPage() {
             <p className="font-bold text-gray-700 dark:text-gray-300">Room Views</p>
             <p className="text-xs text-gray-400 font-bold mt-1">{roomViewDrop}% Drop-off</p>
           </div>
-          <ArrowRight className="w-6 h-6 text-gray-300 dark:text-gray-700 hidden md:block rotate-90 md:rotate-0" />
-          <div className="text-center w-full md:w-auto">
-            <div className="w-24 h-24 mx-auto rounded-full bg-gray-100 dark:bg-[#0f172a] border-4 border-gray-200 dark:border-gray-700 flex items-center justify-center mb-3">
-              <span className="text-xl font-black text-gray-900 dark:text-white">{funnel.checkoutsStarted}</span>
-            </div>
-            <p className="font-bold text-gray-700 dark:text-gray-300">Checkout Started</p>
-            <p className="text-xs text-gray-400 font-bold mt-1">{checkoutDrop}% Drop-off</p>
-          </div>
-          <ArrowRight className="w-6 h-6 text-gray-300 dark:text-gray-700 hidden md:block rotate-90 md:rotate-0" />
-          <div className="text-center w-full md:w-auto">
-            <div className="w-24 h-24 mx-auto rounded-full bg-gray-100 dark:bg-[#0f172a] border-4 border-gray-200 dark:border-gray-700 flex items-center justify-center mb-3">
-              <span className="text-xl font-black text-gray-900 dark:text-white">{funnel.completedBookings}</span>
-            </div>
-            <p className="font-bold text-gray-900 dark:text-white">Bookings Completed</p>
-            <p className="text-xs text-gray-400 font-bold mt-1">{conversionRate}% Conversion Rate</p>
-          </div>
+          {activeMode !== 'Hotel' && (
+            <>
+              <ArrowRight className="w-6 h-6 text-gray-300 dark:text-gray-700 hidden md:block rotate-90 md:rotate-0" />
+              <div className="text-center w-full md:w-auto">
+                <div className="w-24 h-24 mx-auto rounded-full bg-rose-50 dark:bg-rose-900/20 border-4 border-rose-200 dark:border-rose-900/40 flex items-center justify-center mb-3 text-rose-500">
+                  <span className="text-xl font-black">{Math.floor(funnel.roomViews * 0.4)}</span>
+                </div>
+                <p className="font-bold text-gray-700 dark:text-gray-300">Venue Views</p>
+              </div>
+              <ArrowRight className="w-6 h-6 text-gray-300 dark:text-gray-700 hidden md:block rotate-90 md:rotate-0" />
+              <div className="text-center w-full md:w-auto">
+                <div className="w-24 h-24 mx-auto rounded-full bg-rose-50 dark:bg-rose-900/20 border-4 border-rose-200 dark:border-rose-900/40 flex items-center justify-center mb-3 text-rose-500">
+                  <span className="text-xl font-black">{Math.floor(funnel.checkoutsStarted * 0.2)}</span>
+                </div>
+                <p className="font-bold text-gray-900 dark:text-white">Enquiries Sent</p>
+                <p className="text-xs text-gray-400 font-bold mt-1">Wedding Leads</p>
+              </div>
+            </>
+          )}
         </div>
       </div>
+      
+      {activeMode === 'Wedding' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-rose-100 dark:border-rose-900/30">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2"><span className="text-rose-500">💒</span> Venue Performance</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-2">
+                <span className="font-bold text-gray-700 dark:text-gray-300">Grand Banquet</span>
+                <span className="text-rose-500 font-black">65% Utilization</span>
+              </div>
+              <div className="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-2">
+                <span className="font-bold text-gray-700 dark:text-gray-300">Royal Lawns</span>
+                <span className="text-rose-500 font-black">42% Utilization</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-bold text-gray-700 dark:text-gray-300">Terrace Garden</span>
+                <span className="text-rose-500 font-black">28% Utilization</span>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl shadow-sm border border-rose-100 dark:border-rose-900/30">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2"><span className="text-rose-500">💍</span> Enquiry to Booking Rate</h3>
+            <div className="flex items-center justify-center h-32">
+              <div className="text-center">
+                <span className="text-5xl font-black text-gray-900 dark:text-white">18%</span>
+                <p className="text-gray-500 dark:text-gray-400 mt-2 font-bold">Conversion Rate (Avg)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
