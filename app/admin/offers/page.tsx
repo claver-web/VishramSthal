@@ -1,17 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Tag, Plus, Calendar, Users, Edit, Trash2, Power, MoreVertical, X, Upload
 } from 'lucide-react';
 
-const mockOffers: any[] = [
-  { id: 'OFF-1', title: 'Diwali Special', type: 'Both', value: '20%', valid: 'Oct 20 - Nov 5', target: 'All Rooms & Venues', usage: 45, status: 'Active', featured: true },
-  { id: 'OFF-2', title: 'Summer Stay', type: 'Hotel', value: '₹1000', valid: 'May 1 - Jun 30', target: 'Deluxe & Suite', usage: 120, status: 'Inactive', featured: false },
-  { id: 'OFF-3', title: 'Monsoon Weddings', type: 'Wedding', value: '15%', valid: 'Jul 1 - Sep 30', target: 'Grand Banquet', usage: 12, status: 'Active', featured: true },
-];
-
 export default function OffersPage() {
+  const [offers, setOffers] = useState<any[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState('All');
   const [formType, setFormType] = useState('Both');
@@ -171,7 +166,7 @@ export default function OffersPage() {
         </div>
       </div>
 
-      {mockOffers.length === 0 ? (
+      {offers.length === 0 ? (
         <div className="bg-white dark:bg-[#1e293b] p-16 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col items-center justify-center text-center">
           <div className="w-16 h-16 rounded-full bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center mb-4">
             <Tag className="w-8 h-8 text-[#ea580c]" />
@@ -184,7 +179,7 @@ export default function OffersPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockOffers.filter(o => activeFilter === 'All' || o.type === activeFilter).map((offer) => {
+          {offers.filter(o => activeFilter === 'All' || o.type === activeFilter).map((offer) => {
             let colorClass = 'border-[#ea580c]/50 text-[#ea580c] bg-orange-100 dark:bg-orange-900/30';
             let labelColor = 'bg-[#ea580c] text-white';
             if (offer.type === 'Wedding') {
@@ -209,6 +204,7 @@ export default function OffersPage() {
                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${labelColor}`}>{offer.type}</span>
                   <button className="p-2 text-gray-400 hover:text-blue-500 transition-colors"><Edit className="w-4 h-4" /></button>
                   <button className={`p-2 transition-colors ${offer.status === 'Active' ? 'text-green-500' : 'text-gray-400'}`}><Power className="w-4 h-4" /></button>
+                  <button onClick={() => setOffers(offers.filter(o => o.id !== offer.id))} className="p-2 text-gray-400 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
                 </div>
               </div>
 

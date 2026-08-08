@@ -1,17 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Search, Key, PlusCircle, Activity, Power, Trash2, ShieldCheck, Tag 
 } from 'lucide-react';
 
-const mockCoupons: any[] = [
-  { id: 'C1', code: 'DIWALI20', discount: '20%', usage: 45, type: 'Universal', generatedBy: 'System', status: 'Active' },
-  { id: 'C2', code: 'SUMMERSTAY', discount: '₹1000', usage: 120, type: 'Hotel', generatedBy: 'Admin', status: 'Inactive' },
-  { id: 'C3', code: 'ROYALWED', discount: '15%', usage: 12, type: 'Wedding', generatedBy: 'Sales', status: 'Active' }
-];
-
 export default function CouponsPage() {
+  const [coupons, setCoupons] = useState<any[]>([]);
   const [activeType, setActiveType] = useState('All');
   return (
     <div className="space-y-6 animate-fade-in pb-10">
@@ -61,9 +56,9 @@ export default function CouponsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {mockCoupons.length === 0 && (
+            {coupons.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
+                <td colSpan={7} className="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
                   <div className="flex flex-col items-center justify-center">
                     <Key className="w-12 h-12 mb-3 text-gray-300 dark:text-gray-600" />
                     <p className="font-medium text-lg">No coupon codes found.</p>
@@ -72,7 +67,7 @@ export default function CouponsPage() {
                 </td>
               </tr>
             )}
-            {mockCoupons.filter(c => activeType === 'All' || c.type === activeType).map((coupon) => (
+            {coupons.filter(c => activeType === 'All' || c.type === activeType).map((coupon) => (
               <tr key={coupon.id} className="hover:bg-orange-50/30 dark:hover:bg-[#0f172a]/50 transition-colors">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
@@ -103,7 +98,7 @@ export default function CouponsPage() {
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
                     <button className={`p-2 rounded-lg transition-colors tooltip-trigger ${coupon.status === 'Active' ? 'text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20' : 'text-gray-400'}`} title="Toggle Status"><Power className="w-4 h-4" /></button>
-                    <button className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors tooltip-trigger" title="Delete"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={() => setCoupons(coupons.filter(c => c.id !== coupon.id))} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors tooltip-trigger" title="Delete"><Trash2 className="w-4 h-4" /></button>
                   </div>
                 </td>
               </tr>
