@@ -57,9 +57,20 @@ export default function WeddingMediaPage() {
   };
 
   const handleDelete = async (imageUrl: string) => {
-    // In a real app we'd also delete from ImageKit or pass the ID instead
-    // Here we'll just mock it or handle client-side as it requires a specific DELETE endpoint
-    toast.error('Delete functionality requires further ImageKit API integration');
+    if (!selectedVenueId) return;
+    try {
+      const res = await fetch(`/api/wedding/media?venueId=${selectedVenueId}&imageUrl=${encodeURIComponent(imageUrl)}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to delete');
+      }
+      toast.success('Image removed from gallery');
+      fetchVenues();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to delete image');
+    }
   };
 
   const selectedVenue = venues.find(v => v.id === selectedVenueId);

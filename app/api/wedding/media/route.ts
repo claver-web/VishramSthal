@@ -37,8 +37,37 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ url: response.url, venue });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Image upload error:', error);
-    return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || String(error) || 'Failed to upload image' }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const venueId = searchParams.get('venueId');
+    const imageUrl = searchParams.get('imageUrl');
+
+    if (!venueId || !imageUrl) {
+      return NextResponse.json({ error: 'venueId and imageUrl are required' }, { status: 400 });
+    }
+
+    const venue = await prisma.weddingVenue.findUnique({ where: { id: venueId } });
+    if (!venue) {
+      return NextResponse.json({ error: 'Venue not found' }, { status: 404 });
+    }
+
+    const updatedImages = venue.images.filter(img => img !== imageUrl);
+
+    await prisma.weddingVenue.update({
+      where: { id: venueId },
+      data: { images: updatedImages }
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error('Delete error:', error);
+    return NextResponse.json({ error: error?.message || 'Failed to delete' }, { status: 500 });
   }
 }
