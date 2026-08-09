@@ -151,8 +151,8 @@ enum BookingStatus {
 model VisitorLog {
   id        String   @id @default(cuid())
   path      String
-  device    String?  // 'Mobile', 'Desktop', 'Tablet'
-  source    String?  // 'Direct', 'Search', 'Social', 'Referral'
+  device    String? // 'Mobile', 'Desktop', 'Tablet'
+  source    String? // 'Direct', 'Search', 'Social', 'Referral'
   sessionId String?
   createdAt DateTime @default(now())
 }
@@ -176,13 +176,18 @@ model WeddingVenue {
 }
 
 enum WeddingVenueType {
-  Signle Hall
-  Double Hall
-  Diamond Hall
+  BANQUET
+  LAWN
+  TERRACE
+  GARDEN
+  HALL
+  SINGLE_HALL
+  DOUBLE_HALL
+  DIAMOND_HALL
 }
 
 model WeddingEnquiry {
-  id              String         @id @default(cuid())
+  id              String        @id @default(cuid())
   brideName       String?
   groomName       String?
   phone           String
@@ -192,9 +197,9 @@ model WeddingEnquiry {
   venuePreference String?
   eventTypes      String[]
   message         String?
-  status          EnquiryStatus  @default(PENDING)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  status          EnquiryStatus @default(PENDING)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
 
 enum EnquiryStatus {
