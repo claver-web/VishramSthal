@@ -10,26 +10,58 @@ export default function GalleryPage() {
   const [images, setImages] = useState<any[]>([]);
   
   useEffect(() => {
-    fetch('/api/media')
-      .then(res => res.json())
-      .then(data => {
-        if (!Array.isArray(data)) return;
-        const weddingImgs = data
-          .filter((item: any) => item.folder === 'wedding' || item.folder?.startsWith('wedding_'))
-          .map((item: any, i: number) => {
-             const typeStr = item.folder === 'wedding' ? 'Wedding' : item.folder.replace('wedding_', '');
-             const capitalizedType = typeStr.charAt(0).toUpperCase() + typeStr.slice(1);
-             return {
-               id: item.id,
-               src: item.url,
-               type: capitalizedType,
-               title: item.filename || 'Gallery Image',
-               height: i % 3 === 0 ? "h-96" : (i % 2 === 0 ? "h-80" : "h-64")
-             };
+    const loadGallery = async () => {
+      try {
+        const [mediaRes, venuesRes] = await Promise.all([
+          fetch('/api/media'),
+          fetch('/api/wedding/venues')
+        ]);
+        const mediaData = await mediaRes.json().catch(() => []);
+        const venuesData = await venuesRes.json().catch(() => []);
+        
+        let allImages: any[] = [];
+        
+        if (Array.isArray(mediaData)) {
+          const weddingImgs = mediaData
+            .filter((item: any) => item.folder === 'wedding' || item.folder?.startsWith('wedding_'))
+            .map((item: any, i: number) => {
+               const typeStr = item.folder === 'wedding' ? 'Wedding' : item.folder.replace('wedding_', '');
+               const capitalizedType = typeStr.charAt(0).toUpperCase() + typeStr.slice(1);
+               return {
+                 id: item.id,
+                 src: item.url,
+                 type: capitalizedType,
+                 title: item.filename || 'Gallery Image',
+                 height: i % 3 === 0 ? "h-96" : (i % 2 === 0 ? "h-80" : "h-64")
+               };
+            });
+          allImages = [...allImages, ...weddingImgs];
+        }
+
+        if (Array.isArray(venuesData)) {
+          venuesData.forEach((venue: any) => {
+            if (venue.images && Array.isArray(venue.images)) {
+              venue.images.forEach((imgUrl: string, idx: number) => {
+                if (!allImages.find(img => img.src === imgUrl)) {
+                   allImages.push({
+                     id: `venue-${venue.id}-${idx}`,
+                     src: imgUrl,
+                     type: venue.type || 'Venues',
+                     title: `${venue.name} - Photo ${idx + 1}`,
+                     height: (allImages.length + idx) % 3 === 0 ? "h-96" : ((allImages.length + idx) % 2 === 0 ? "h-80" : "h-64")
+                   });
+                }
+              });
+            }
           });
-        setImages(weddingImgs);
-      })
-      .catch(err => console.error(err));
+        }
+        
+        setImages(allImages);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    loadGallery();
   }, []);
 
   const filters = ['All', ...Array.from(new Set(images.map(img => img.type)))];

@@ -36,6 +36,20 @@ export async function POST(req: Request) {
       }
     });
 
+    try {
+      await prisma.media.create({
+        data: {
+          url: response.url,
+          filename: file.name || `venue-${venueId}-${Date.now()}.jpg`,
+          type: file.type || 'image/jpeg',
+          size: file.size ? Number(file.size) : 0,
+          folder: `wedding_venue`,
+        }
+      });
+    } catch(e) {
+      console.error('Failed to log media record:', e);
+    }
+
     return NextResponse.json({ url: response.url, venue });
   } catch (error: any) {
     console.error('Image upload error:', error);
