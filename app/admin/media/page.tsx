@@ -17,6 +17,7 @@ interface MediaItem {
   dimensions: string;
   date: string;
   type: string;
+  folder: string;
   usedIn: string[];
 }
 
@@ -51,6 +52,7 @@ export default function MediaLibraryPage() {
           dimensions: 'Original',
           date: new Date(m.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
           type: m.type || 'image/jpeg',
+          folder: m.folder || 'all',
           usedIn: ['Gallery']
         }));
         setMediaList(items);
@@ -86,6 +88,7 @@ export default function MediaLibraryPage() {
               filename: file.name,
               type: file.type || 'image/jpeg',
               size: file.size || 0,
+              folder: selectedFolder || 'all',
             }),
           });
         } else {
@@ -155,7 +158,20 @@ export default function MediaLibraryPage() {
   const filteredMedia = mediaList.filter(item => {
     const matchesTab = activeTab === 'All Media' || (activeTab === 'Images' && item.type.startsWith('image'));
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesTab && matchesSearch;
+    
+    // Check if the current selected folder matches the item's folder
+    let matchesFolder = true;
+    if (selectedFolder === 'hotel') {
+      matchesFolder = item.folder === 'hotel';
+    } else if (selectedFolder === 'wedding') {
+      matchesFolder = item.folder === 'wedding' || item.folder.startsWith('wedding_');
+    } else if (selectedFolder && selectedFolder.startsWith('wedding_')) {
+      matchesFolder = item.folder === selectedFolder;
+    } else if (selectedFolder === 'all' || selectedFolder === null) {
+      matchesFolder = true;
+    }
+
+    return matchesTab && matchesSearch && matchesFolder;
   });
 
   return (

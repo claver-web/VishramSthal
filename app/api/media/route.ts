@@ -18,7 +18,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { url, filename, type, size } = body;
+    const { url, filename, type, size, folder } = body;
 
     if (!url) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
@@ -30,6 +30,7 @@ export async function POST(req: Request) {
         filename: filename || `image-${Date.now()}.jpg`,
         type: type || 'image/jpeg',
         size: size ? Number(size) : 0,
+        folder: folder || 'all',
       },
     });
 
