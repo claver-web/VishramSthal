@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
+import prisma from '@/lib/prisma';
+
 export const metadata = {
   title: "Wedding Venues - Shani Marriage Palace | Banquet Halls & Lawns",
   description: "Browse our stunning selection of indoor banquet halls, outdoor lawns, and terrace venues for your perfect day."
@@ -8,12 +10,10 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default function VenuesListing() {
-  const venues = [
-    { id: 1, name: "Grand Banquet Hall", type: "Indoor", capacity: "500-800", price: "₹1,50,000", features: ["Central AC", "Stage setup", "Bridal rooms", "Parking"], img: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=800" },
-    { id: 2, name: "Garden Lawns", type: "Outdoor", capacity: "300-500", price: "₹1,00,000", features: ["Open sky", "Fairy lights", "Valet parking", "Dining area"], img: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800" },
-    { id: 3, name: "Terrace Venue", type: "Semi-open", capacity: "150-250", price: "₹75,000", features: ["Panoramic views", "Lounge seating", "Covered dining", "Bar setup"], img: "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?q=80&w=800" },
-  ];
+export default async function VenuesListing() {
+  const venues = await prisma.weddingVenue.findMany({
+    where: { isAvailable: true }
+  });
 
   return (
     <div className="flex flex-col min-h-screen bg-[#1a0a0a]">
@@ -68,7 +68,7 @@ export default function VenuesListing() {
             {venues.map(venue => (
               <div key={venue.id} className="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-rose-500/50 transition-colors flex flex-col group">
                 <div className="relative h-64 overflow-hidden">
-                  <Image src={venue.img} alt={venue.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <Image src={venue.images?.[0] || 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=800'} alt={venue.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute top-4 left-4 bg-rose-600 text-white text-xs font-bold uppercase px-3 py-1 rounded-full shadow-lg">
                     {venue.type}
                   </div>
@@ -81,11 +81,11 @@ export default function VenuesListing() {
                   
                   <div className="flex items-center gap-4 text-sm text-gray-400 mb-6">
                     <span className="flex items-center gap-1">👥 {venue.capacity} Guests</span>
-                    <span className="flex items-center gap-1">🏷️ {venue.price}/day</span>
+                    <span className="flex items-center gap-1">🏷️ ₹{(venue.priceStarting || 0).toLocaleString()}/day</span>
                   </div>
                   
                   <ul className="text-sm text-gray-400 space-y-2 mb-8 flex-grow">
-                    {venue.features.map(f => (
+                    {(venue.amenities || []).slice(0, 4).map(f => (
                       <li key={f} className="flex items-center gap-2">
                         <span className="text-amber-500">✓</span> {f}
                       </li>

@@ -1,25 +1,38 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { X, ChevronLeft, ChevronRight, Play } from 'lucide-react';
 
 export default function GalleryPage() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-
-  const filters = ['All', 'Wedding', 'Reception', 'Mehendi', 'Sangeet', 'Engagement'];
+  const [images, setImages] = useState<any[]>([]);
   
-  const images = [
-    { id: 1, src: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=800", type: "Wedding", title: "Mandap Setup", height: "h-64" },
-    { id: 2, src: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=800", type: "Reception", title: "Grand Banquet", height: "h-96" },
-    { id: 3, src: "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?q=80&w=800", type: "Engagement", title: "Terrace Ring Ceremony", height: "h-64" },
-    { id: 4, src: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800", type: "Wedding", title: "Outdoor Rituals", height: "h-80" },
-    { id: 5, src: "https://images.unsplash.com/photo-1522273400909-fd1a8f77637e?q=80&w=800", type: "Sangeet", title: "Sangeet Decor", height: "h-64" },
-    { id: 6, src: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=800", type: "Wedding", title: "Couple Portrait", height: "h-96" },
-    { id: 7, src: "https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=800", type: "Mehendi", title: "Catering & Ambience", height: "h-64" },
-    { id: 8, src: "https://images.unsplash.com/photo-1505932794465-147d1f1bce2d?q=80&w=800", type: "Reception", title: "Dining Setup", height: "h-80" },
-  ];
+  useEffect(() => {
+    fetch('/api/media')
+      .then(res => res.json())
+      .then(data => {
+        if (!Array.isArray(data)) return;
+        const weddingImgs = data
+          .filter((item: any) => item.folder === 'wedding' || item.folder?.startsWith('wedding_'))
+          .map((item: any, i: number) => {
+             const typeStr = item.folder === 'wedding' ? 'Wedding' : item.folder.replace('wedding_', '');
+             const capitalizedType = typeStr.charAt(0).toUpperCase() + typeStr.slice(1);
+             return {
+               id: item.id,
+               src: item.url,
+               type: capitalizedType,
+               title: item.filename || 'Gallery Image',
+               height: i % 3 === 0 ? "h-96" : (i % 2 === 0 ? "h-80" : "h-64")
+             };
+          });
+        setImages(weddingImgs);
+      })
+      .catch(err => console.error(err));
+  }, []);
+
+  const filters = ['All', ...Array.from(new Set(images.map(img => img.type)))];
 
   const filteredImages = activeFilter === 'All' ? images : images.filter(img => img.type === activeFilter);
 
