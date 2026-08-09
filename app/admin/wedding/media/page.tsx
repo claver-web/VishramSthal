@@ -44,12 +44,15 @@ export default function WeddingMediaPage() {
         method: 'POST',
         body: formData
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.error || 'Failed to upload image');
+      }
       
       toast.success('Image uploaded successfully!');
       fetchVenues();
-    } catch (error) {
-      toast.error('Upload failed');
+    } catch (error: any) {
+      toast.error(error.message || 'Upload failed');
     } finally {
       setUploading(false);
       e.target.value = '';
