@@ -8,6 +8,7 @@ export default function GalleryPage() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [images, setImages] = useState<any[]>([]);
+  const [videoUrl, setVideoUrl] = useState('');
   
   useEffect(() => {
     const loadGallery = async () => {
@@ -20,10 +21,18 @@ export default function GalleryPage() {
         const venuesData = await venuesRes.json().catch(() => []);
         
         let allImages: any[] = [];
+        let fetchedVideoUrl = "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200"; // Fallback poster
         
         if (Array.isArray(mediaData)) {
+          // Extract Cinematic Video if it exists
+          const cinematicMedia = mediaData.find((m: any) => m.folder === 'wedding_cinematic');
+          if (cinematicMedia) {
+            fetchedVideoUrl = cinematicMedia.url;
+          }
+          setVideoUrl(fetchedVideoUrl);
+
           const weddingImgs = mediaData
-            .filter((item: any) => item.folder === 'wedding' || item.folder?.startsWith('wedding_'))
+            .filter((item: any) => item.folder === 'wedding' || (item.folder?.startsWith('wedding_') && item.folder !== 'wedding_cinematic' && item.folder !== 'wedding_venue'))
             .map((item: any, i: number) => {
                const typeStr = item.folder === 'wedding' ? 'Wedding' : item.folder.replace('wedding_', '');
                const capitalizedType = typeStr.charAt(0).toUpperCase() + typeStr.slice(1);
@@ -101,9 +110,13 @@ export default function GalleryPage() {
       {/* Video Highlights Section */}
       <div className="container mx-auto px-4 py-12">
         <h2 className="text-3xl font-serif text-white mb-8 text-center">Wedding Highlights</h2>
-        <div className="relative w-full max-w-4xl mx-auto rounded-3xl overflow-hidden aspect-video bg-gray-900 border border-gray-800 group cursor-pointer shadow-2xl shadow-rose-900/20">
-          <Image src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200" alt="Video Cover" fill className="object-cover opacity-60 group-hover:opacity-80 transition-opacity" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+        <div className="relative w-full max-w-4xl mx-auto rounded-3xl overflow-hidden aspect-video bg-gray-900 border border-gray-800 group cursor-pointer shadow-2xl shadow-rose-900/20" onClick={() => window.open(videoUrl, '_blank')}>
+          {videoUrl.match(/\.(mp4|webm|ogg)$/i) ? (
+            <video src={videoUrl} className="w-full h-full object-cover opacity-80" autoPlay muted loop playsInline />
+          ) : (
+            <Image src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200" alt="Video Cover" fill className="object-cover opacity-60 group-hover:opacity-80 transition-opacity" />
+          )}
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/20 group-hover:bg-transparent transition-colors">
             <div className="w-20 h-20 rounded-full bg-rose-600/80 backdrop-blur-md flex items-center justify-center text-white mb-4 group-hover:scale-110 group-hover:bg-rose-500 transition-all shadow-lg">
               <Play size={32} className="ml-2" />
             </div>
