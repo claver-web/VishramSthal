@@ -18,12 +18,26 @@ export default function WeddingMediaPage() {
   // Cinematic State
   const [videoLink, setVideoLink] = useState('');
   
+  // All Media State
+  const [allMedia, setAllMedia] = useState<any[]>([]);
+  
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchVenues();
-    fetchCinematicVideo();
+    fetchMedia();
   }, []);
+
+  const fetchMedia = async () => {
+    try {
+      const res = await fetch('/api/media');
+      const data = await res.json();
+      setAllMedia(data);
+      
+      const cinematic = data.find((m: any) => m.folder === 'wedding_cinematic');
+      if (cinematic) setVideoLink(cinematic.url);
+    } catch(e) {}
+  };
 
   const fetchVenues = async () => {
     try {
@@ -36,15 +50,6 @@ export default function WeddingMediaPage() {
     } catch (e) {
       toast.error('Failed to load venues');
     }
-  };
-
-  const fetchCinematicVideo = async () => {
-    try {
-      const res = await fetch('/api/media');
-      const data = await res.json();
-      const cinematic = data.find((m: any) => m.folder === 'wedding_cinematic');
-      if (cinematic) setVideoLink(cinematic.url);
-    } catch(e) {}
   };
 
   const handleVenueUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,6 +107,7 @@ export default function WeddingMediaPage() {
       });
       
       toast.success(`Image added to category: ${newCategory}`);
+      fetchMedia();
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -139,14 +145,28 @@ export default function WeddingMediaPage() {
     try {
       const res = await fetch(`/api/wedding/media?venueId=${selectedVenueId}&imageUrl=${encodeURIComponent(imageUrl)}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Failed to delete');
-      toast.success('Image removed from gallery');
+      toast.success('Image removed from venue gallery');
       fetchVenues();
     } catch (err: any) {
       toast.error('Failed to delete image');
     }
   };
 
+  const handleDeleteCategoryMedia = async (id: string) => {
+    try {
+      await fetch(`/api/media?id=${id}`, { method: 'DELETE' });
+      toast.success('Image removed from category');
+      fetchMedia();
+    } catch (err) {
+      toast.error('Failed to delete image');
+    }
+  };
+
   const selectedVenue = venues.find(v => v.id === selectedVenueId);
+
+  // Derive categories from allMedia
+  const categoryMedia = allMedia.filter(m => m.folder?.startsWith('wedding_') && m.folder !== 'wedding_cinematic' && m.folder !== 'wedding_venue');
+  const categories = Array.from(new Set(categoryMedia.map(m => m.folder.replace('wedding_', ''))));
 
   return (
     <div className="space-y-6 animate-fade-in pb-10">
@@ -213,27 +233,60 @@ export default function WeddingMediaPage() {
       {activeTab === 'categories' && (
         <div className="space-y-6">
           <div className="bg-white dark:bg-[#1e293b] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-            <div className="max-w-xl mx-auto text-center space-y-6">
-              <FolderPlus className="w-16 h-16 text-rose-500 mx-auto opacity-20" />
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Create a New Media Category</h2>
+            <div className="max-w-xl mx-auto space-y-6">
+              <div className="text-center">
+                <FolderPlus className="w-16 h-16 text-rose-500 mx-auto opacity-20" />
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 mt-4">Upload to a Category</h2>
                 <p className="text-gray-500 text-sm">Photos uploaded here will automatically create a new filter category on the public Wedding Gallery page (e.g., "Mehendi", "Sangeet").</p>
               </div>
               
-              <input 
-                type="text" 
-                placeholder="Enter Category Name (e.g., Mehendi)" 
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-center font-bold focus:border-rose-500 outline-none"
-              />
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Category Name</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g., Haldi, Mehendi, Sangeet" 
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl font-bold focus:border-rose-500 outline-none"
+                />
+              </div>
 
               <div className={`border-2 border-dashed ${newCategory ? 'border-rose-300 dark:border-rose-700/50 hover:bg-rose-50 dark:hover:bg-rose-950/20' : 'border-gray-200 dark:border-gray-700 opacity-50'} rounded-2xl p-8 flex flex-col items-center justify-center transition-colors relative`}>
                 <input type="file" accept="image/*" onChange={handleCategoryUpload} disabled={uploading || !newCategory} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10" />
                 <Upload className={`w-8 h-8 mb-3 ${uploading ? 'text-rose-500 animate-bounce' : 'text-gray-400'}`} />
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white">{uploading ? 'Uploading...' : 'Drop Photo to Create Category'}</h3>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">{!newCategory ? 'Type a category name first' : uploading ? 'Uploading...' : 'Click or Drop Photo to Upload'}</h3>
               </div>
             </div>
+          </div>
+
+          <div className="bg-white dark:bg-[#1e293b] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Existing Categories</h2>
+            {categories.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">No categories created yet. Upload a photo above to start.</p>
+            ) : (
+              <div className="space-y-8">
+                {categories.map(category => (
+                  <div key={category} className="space-y-4 border-b border-gray-100 dark:border-gray-800 pb-8 last:border-0 last:pb-0">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white capitalize flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+                      {category}
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                      {categoryMedia.filter(m => m.folder === `wedding_${category}`).map((img: any) => (
+                        <div key={img.id} className="relative aspect-square rounded-xl overflow-hidden group border border-gray-200 dark:border-gray-700 shadow-sm">
+                          <Image src={img.url} alt={img.filename} fill className="object-cover" />
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                            <button onClick={() => handleDeleteCategoryMedia(img.id)} className="p-2.5 bg-red-500 text-white rounded-xl hover:bg-red-600 hover:scale-110 transition-all shadow-lg">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
