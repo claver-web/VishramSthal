@@ -37,7 +37,7 @@ export default async function VenuesListing() {
             <div className="mb-6">
               <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Venue Type</h4>
               <div className="space-y-2">
-                {['Indoor', 'Outdoor', 'Terrace', 'Semi-open'].map(t => (
+                {['Single Hall', 'Double Hall', 'Diamond Hall'].map(t => (
                   <label key={t} className="flex items-center gap-3 text-gray-300">
                     <input type="checkbox" className="accent-rose-500 w-4 h-4" /> {t}
                   </label>

@@ -176,11 +176,6 @@ model WeddingVenue {
 }
 
 enum WeddingVenueType {
-  BANQUET
-  LAWN
-  TERRACE
-  GARDEN
-  HALL
   SINGLE_HALL
   DOUBLE_HALL
   DIAMOND_HALL

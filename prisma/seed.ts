@@ -71,8 +71,8 @@ async function main() {
   // 3. Create Wedding Venues
   const weddingVenues = [
     {
-      name: "Grand Banquet Hall",
-      type: WeddingVenueType.BANQUET,
+      name: 'Grand Single Hall',
+      type: WeddingVenueType.SINGLE_HALL,
       capacity: 500,
       priceStarting: 200000,
       description: "Luxurious indoor setup with crystal chandeliers.",
@@ -80,8 +80,8 @@ async function main() {
       amenities: ["Central AC", "Stage setup", "Bridal rooms", "Parking"],
     },
     {
-      name: "Garden Lawns",
-      type: WeddingVenueType.LAWN,
+      name: 'Grand Double Hall',
+      type: WeddingVenueType.DOUBLE_HALL,
       capacity: 300,
       priceStarting: 150000,
       description: "Spacious outdoor lawns surrounded by greenery.",
@@ -89,8 +89,8 @@ async function main() {
       amenities: ["Open sky", "Fairy lights", "Valet parking", "Dining area"],
     },
     {
-      name: "Terrace Venue",
-      type: WeddingVenueType.TERRACE,
+      name: 'Starlight Diamond Hall',
+      type: WeddingVenueType.DIAMOND_HALL,
       capacity: 200,
       priceStarting: 100000,
       description: "Stunning semi-open area with sunset views.",
@@ -98,8 +98,8 @@ async function main() {
       amenities: ["Panoramic views", "Lounge seating", "Covered dining", "Bar setup"],
     },
     {
-      name: "Intimate Hall",
-      type: WeddingVenueType.HALL,
+      name: 'Classic Single Hall',
+      type: WeddingVenueType.SINGLE_HALL,
       capacity: 100,
       priceStarting: 50000,
       description: "Cozy space for pre-wedding ceremonies.",

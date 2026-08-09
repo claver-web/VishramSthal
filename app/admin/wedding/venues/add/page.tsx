@@ -95,11 +95,9 @@ export default function AddVenuePage() {
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Venue Type <span className="text-red-500">*</span></label>
                   <select className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:border-rose-500 focus:outline-none">
-                    <option>Banquet Hall</option>
-                    <option>Lawn</option>
-                    <option>Terrace</option>
-                    <option>Garden</option>
-                    <option>Intimate Hall</option>
+                    <option value="SINGLE_HALL">Single Hall</option>
+                    <option value="DOUBLE_HALL">Double Hall</option>
+                    <option value="DIAMOND_HALL">Diamond Hall</option>
                   </select>
                 </div>
                 <div className="space-y-2">
