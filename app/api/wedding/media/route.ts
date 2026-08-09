@@ -13,9 +13,10 @@ export async function POST(req: Request) {
     const formData = await req.formData();
     const file = formData.get('file') as File;
     const venueId = formData.get('venueId') as string;
+    const customFolder = formData.get('folder') as string;
 
-    if (!file || !venueId) {
-      return NextResponse.json({ error: 'File and venueId are required' }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ error: 'File is required' }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();
@@ -24,33 +25,35 @@ export async function POST(req: Request) {
     const response = await imagekit.upload({
       file: buffer,
       fileName: file.name,
-      folder: '/wedding-venues'
+      folder: customFolder ? `/${customFolder}` : (venueId ? '/wedding-venues' : '/wedding-media')
     });
 
-    const venue = await prisma.weddingVenue.update({
-      where: { id: venueId },
-      data: {
-        images: {
-          push: response.url
+    if (venueId) {
+      await prisma.weddingVenue.update({
+        where: { id: venueId },
+        data: {
+          images: {
+            push: response.url
+          }
         }
-      }
-    });
+      });
+    }
 
     try {
       await prisma.media.create({
         data: {
           url: response.url,
-          filename: file.name || `venue-${venueId}-${Date.now()}.jpg`,
+          filename: file.name || `media-${Date.now()}.jpg`,
           type: file.type || 'image/jpeg',
           size: file.size ? Number(file.size) : 0,
-          folder: `wedding_venue`,
+          folder: customFolder || (venueId ? `wedding_venue` : `all`),
         }
       });
     } catch(e) {
       console.error('Failed to log media record:', e);
     }
 
-    return NextResponse.json({ url: response.url, venue });
+    return NextResponse.json({ url: response.url });
   } catch (error: any) {
     console.error('Image upload error:', error);
     return NextResponse.json({ error: error?.message || String(error) || 'Failed to upload image' }, { status: 500 });

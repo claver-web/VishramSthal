@@ -84,27 +84,14 @@ export default function WeddingMediaPage() {
 
     setUploading(true);
     try {
-      // We use the general media API for categories
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('folder', `wedding_${newCategory.trim().toLowerCase()}`);
       
       const uploadRes = await fetch('/api/wedding/media', { method: 'POST', body: formData });
       const uploadData = await uploadRes.json();
       
-      if (!uploadData.url) throw new Error('Upload failed');
-      
-      // Update global media table
-      await fetch('/api/media', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          url: uploadData.url,
-          filename: file.name,
-          type: file.type || 'image/jpeg',
-          size: file.size || 0,
-          folder: `wedding_${newCategory.trim().toLowerCase()}`
-        })
-      });
+      if (!uploadRes.ok || !uploadData.url) throw new Error(uploadData.error || 'Upload failed');
       
       toast.success(`Image added to category: ${newCategory}`);
       fetchMedia();
