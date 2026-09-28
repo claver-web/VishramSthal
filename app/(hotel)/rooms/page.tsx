@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import RoomsContent from './RoomsContent';
+import RoomsContent from '@/features/rooms/components/RoomsContent';
 import Image from 'next/image';
 import Link from 'next/link';
 import { PrismaClient } from '@prisma/client';

@@ -1,14 +1,2 @@
-'use client';
-
-import { usePathname } from 'next/navigation';
-
-export default function MainWrapper({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const isAdmin = pathname?.startsWith('/admin');
-
-  return (
-    <main className={`flex-grow ${isAdmin ? '' : 'pt-20'}`}>
-      {children}
-    </main>
-  );
-}
+export { default } from '@/components/layout/MainWrapper';
+export * from '@/components/layout/MainWrapper';

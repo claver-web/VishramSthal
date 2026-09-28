@@ -1,5 +1,5 @@
 import React from 'react';
-import BookingFlow from '@/components/booking/BookingFlow';
+import BookingFlow from '@/features/booking/components/BookingFlow';
 import { PrismaClient } from '@prisma/client';
 import { notFound } from 'next/navigation';
 import { ShieldCheck, Star, Award, Users, Sparkles, AlertCircle } from 'lucide-react';

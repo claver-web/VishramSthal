@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { PrismaClient } from '@prisma/client';
 import { notFound } from 'next/navigation';
-import RoomDetailsClient from './RoomDetailsClient';
+import RoomDetailsClient from '@/features/rooms/components/RoomDetails';
 
 const prisma = new PrismaClient();
 
