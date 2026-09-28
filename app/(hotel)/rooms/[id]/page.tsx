@@ -1,11 +1,9 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import RoomDetailsClient from '@/features/rooms/components/RoomDetails';
-
-const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 

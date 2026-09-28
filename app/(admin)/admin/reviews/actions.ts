@@ -1,9 +1,8 @@
 'use server';
 
+import prisma from '@/lib/prisma';
+
 export async function getReviews() {
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
-  
   try {
     const reviews = await prisma.review.findMany({
       include: {
@@ -24,9 +23,6 @@ export async function getReviews() {
 }
 
 export async function updateReviewStatus(id: string, status: string) {
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
-  
   try {
     await prisma.review.update({
       where: { id },
@@ -39,9 +35,6 @@ export async function updateReviewStatus(id: string, status: string) {
 }
 
 export async function addReply(id: string, reply: string) {
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
-  
   try {
     await prisma.review.update({
       where: { id },

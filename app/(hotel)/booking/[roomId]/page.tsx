@@ -1,11 +1,8 @@
 import React from 'react';
 import BookingFlow from '@/features/booking/components/BookingFlow';
-import { PrismaClient } from '@prisma/client';
 import { notFound } from 'next/navigation';
-import { ShieldCheck, Star, Award, Users, Sparkles, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
-
-const prisma = new PrismaClient();
+import prisma from '@/lib/prisma';
 
 export default async function BookingPage({ params }: { params: Promise<{ roomId: string }> }) {
   const { roomId } = await params;

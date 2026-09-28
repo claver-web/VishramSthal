@@ -7,6 +7,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "test:load": "bash tests/run_load_test.sh",
+    "test:load:web": "bash tests/run_load_test.sh --web",
     "postinstall": "prisma generate"
   },
   "dependencies": {

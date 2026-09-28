@@ -1,8 +1,8 @@
 'use server';
 
+import prisma from '@/lib/prisma';
+
 export async function getUsers() {
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
   
   try {
     const users = await prisma.user.findMany({

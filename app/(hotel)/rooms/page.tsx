@@ -2,12 +2,10 @@ import React, { Suspense } from 'react';
 import RoomsContent from '@/features/rooms/components/RoomsContent';
 import Image from 'next/image';
 import Link from 'next/link';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { MapPin, Users, Star, Hotel, Sparkles, ChevronDown } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
-
-const prisma = new PrismaClient();
 
 async function getRoomsStats() {
   const totalRooms = await prisma.room.count();

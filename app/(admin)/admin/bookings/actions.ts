@@ -1,8 +1,8 @@
 'use server';
 
+import prisma from '@/lib/prisma';
+
 export async function getBookings() {
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
   
   try {
     const bookings = await prisma.booking.findMany({
@@ -45,9 +45,6 @@ export async function getBookings() {
 }
 
 export async function updateBookingStatus(id: string, status: string) {
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
-  
   try {
     await prisma.booking.update({
       where: { id },
@@ -60,9 +57,6 @@ export async function updateBookingStatus(id: string, status: string) {
 }
 
 export async function bulkUpdateBookingStatus(ids: string[], status: string) {
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
-  
   try {
     const validStatus = status.toUpperCase() as any;
     const res = await prisma.booking.updateMany({
@@ -77,9 +71,6 @@ export async function bulkUpdateBookingStatus(ids: string[], status: string) {
 }
 
 export async function deleteBookings(ids: string[]) {
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
-  
   try {
     await prisma.transaction.deleteMany({
       where: { bookingId: { in: ids } }
@@ -106,9 +97,6 @@ export async function updateBookingDetails(id: string, data: {
   guestName?: string;
   guestPhone?: string;
 }) {
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
-  
   try {
     const booking = await prisma.booking.findUnique({
       where: { id },
@@ -149,9 +137,6 @@ export async function updateBookingDetails(id: string, data: {
 }
 
 export async function getRoomsList() {
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
-  
   try {
     const rooms = await prisma.room.findMany({
       select: {

@@ -1,6 +1,7 @@
 'use server';
 
 import ImageKit from "imagekit";
+import prisma from "@/lib/prisma";
 
 export async function uploadRoomImage(formData: FormData) {
   try {
@@ -50,9 +51,6 @@ export async function uploadRoomImage(formData: FormData) {
 
 export async function saveRoom(data: any) {
   try {
-    const { PrismaClient } = await import('@prisma/client');
-    const prisma = new PrismaClient();
-    
     const room = await prisma.room.create({
       data: {
         number: data.number,

@@ -1,10 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import Image from 'next/image';
 import { CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
-
-const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 

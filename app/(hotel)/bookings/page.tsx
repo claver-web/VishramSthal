@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { format, differenceInDays, isToday, isTomorrow, isPast } from 'date-fns';
 import { 
@@ -9,8 +9,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-
-const prisma = new PrismaClient();
 
 export default async function UserBookingsPage() {
   const { userId } = await auth();

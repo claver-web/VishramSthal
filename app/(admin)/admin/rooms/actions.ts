@@ -1,8 +1,8 @@
 'use server';
 
+import prisma from '@/lib/prisma';
+
 export async function getRooms() {
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
   
   try {
     const rooms = await prisma.room.findMany({
@@ -16,8 +16,6 @@ export async function getRooms() {
 }
 
 export async function getRoomById(id: string) {
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
   try {
     const room = await prisma.room.findUnique({ where: { id } });
     return room;
@@ -28,8 +26,6 @@ export async function getRoomById(id: string) {
 }
 
 export async function deleteRoom(id: string) {
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
   try {
     await prisma.room.delete({ where: { id } });
     return { success: true };
@@ -40,8 +36,6 @@ export async function deleteRoom(id: string) {
 }
 
 export async function updateRoom(id: string, data: any) {
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
   try {
     const room = await prisma.room.update({
       where: { id },

@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { differenceInDays, parseISO } from 'date-fns';
-
-const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
